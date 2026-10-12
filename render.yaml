@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ai-market-zzt
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn market_core.wsgi:application"
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: "True"
