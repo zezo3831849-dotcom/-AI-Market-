@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}لوحة التحكم والتحليلات الذكية | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1">لوحة التحكم والتحليلات المالية والذكاء الاصطناعي</h3>
+        <p class="text-muted small mb-0">نظرة شاملة ومحدثة فورياً على حركة المبيعات، المخزون، المصروفات التشغيلية، وصافي الأرباح.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sales:pos' %}" class="btn btn-warning fw-bold px-3 d-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-upc-scan fs-5"></i>
+            <span>فتح نقطة البيع (POS)</span>
+        </a>
+        <a href="{% url 'intelligence:run_pipeline' %}" class="btn btn-ai px-3 d-flex align-items-center gap-2">
+            <i class="bi bi-stars"></i>
+            <span>تشغيل فحص الذكاء الاصطناعي</span>
+        </a>
+    </div>
+</div>
+
+<!-- 1. Executive Financial KPI Cards -->
+<div class="row g-3 mb-4">
+    <!-- Net Revenue -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="metric-card primary shadow-sm">
+            <i class="bi bi-cash-coin icon-backdrop"></i>
+            <div class="metric-label">صافي إيرادات المبيعات</div>
+            <div class="metric-value my-1">{{ finance.net_sales_revenue|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
+            <div class="small opacity-75">إجمالي المبيعات المكتملة</div>
+        </div>
+    </div>
+
+    <!-- COGS -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="metric-card teal shadow-sm">
+            <i class="bi bi-boxes icon-backdrop"></i>
+            <div class="metric-label">تكلفة البضاعة المباعة (COGS)</div>
+            <div class="metric-value my-1">{{ finance.cogs|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
+            <div class="small opacity-75">تكلفة شراء السلع المباعة</div>
+        </div>
+    </div>
+
+    <!-- Gross Profit -->
+    <div class="col-xl-3 col-md-6 col-sm-6">
+        <div class="metric-card success shadow-sm">
+            <i class="bi bi-graph-up-arrow icon-backdrop"></i>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="metric-label">مجمل الربح (Gross Profit)</div>
+                <span class="badge bg-white text-success fw-bold">هامش {{ finance.gross_margin_pct }}%</span>
+            </div>
+            <div class="metric-value my-1">{{ finance.gross_profit|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
+            <div class="small opacity-75">الإيرادات − تكلفة البضاعة المباعة</div>
+        </div>
+    </div>
+
+    <!-- Operating Expenses -->
+    <div class="col-xl-2 col-md-6 col-sm-6">
+        <div class="metric-card danger shadow-sm">
+            <i class="bi bi-receipt-cutoff icon-backdrop"></i>
+            <div class="metric-label">المصروفات التشغيلية</div>
+            <div class="metric-value my-1">{{ finance.operating_expenses|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
+            <div class="small opacity-75">إيجار، كهرباء، رواتب، صيانة</div>
+        </div>
+    </div>
+
+    <!-- Net Operating Profit -->
+    <div class="col-xl-3 col-md-6 col-sm-12">
+        <div class="metric-card {% if finance.net_operating_profit >= 0 %}purple{% else %}danger{% endif %} shadow-sm">
+            <i class="bi bi-trophy-fill icon-backdrop"></i>
+            <div class="metric-label">صافي الربح التشغيلي الحقيقي</div>
+            <div class="metric-value my-1">{{ finance.net_operating_profit|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
+            <div class="small opacity-75">مجمل الربح − المصروفات التشغيلية</div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Charts Section -->
+<div class="row g-3 mb-4">
+    <!-- Trend Chart -->
+    <div class="col-lg-8">
+        <div class="card card-custom p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-line text-primary me-2"></i> حركة المبيعات ومجمل الربح والمصروفات (آخر 10 أيام)</h5>
+                <span class="badge bg-light text-muted border">تحديث لحظي</span>
+            </div>
+            <div style="height: 300px; position: relative;">
+                <canvas id="salesTrendsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expenses Donut Chart -->
+    <div class="col-lg-4">
+        <div class="card card-custom p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-pie-chart text-danger me-2"></i> توزيع المصروفات التشغيلية</h5>
+                <a href="{% url 'expenses:expenses_list' %}" class="small text-decoration-none">عرض الكل</a>
+            </div>
+            <div style="height: 240px; position: relative;">
+                <canvas id="expensesDonutChart"></canvas>
+            </div>
+            <div class="text-center mt-2 small text-muted">
+                إجمالي المصروفات: <strong>{{ finance.operating_expenses|floatformat:2 }} {{ system_settings.currency }}</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Actionable AI Recommendations (Human-in-the-Loop) -->
+<div class="card card-custom p-3 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-stars text-info fs-4"></i>
+                <span>توصيات الذكاء الاصطناعي الحديثة بانتظار قرار المدير (Human-in-the-Loop)</span>
+            </h5>
+            <small class="text-muted">يقدم الذكاء الاصطناعي الأسباب والبيانات الداعمة، ويبقى القرار النهائي للإدارة.</small>
+        </div>
+        <a href="{% url 'intelligence:center' %}" class="btn btn-outline-primary btn-sm">مركز الذكاء الاصطناعي الكامل</a>
+    </div>
+
+    <div class="row g-3">
+        {% for rec in ai_recs %}
+        <div class="col-md-6">
+            <div class="ai-card {% if rec.recommendation_type == 'SMART_OFFER' %}offer{% elif rec.recommendation_type == 'ANOMALY' %}anomaly{% elif rec.recommendation_type == 'RESTOCK' %}restock{% else %}seasonal{% endif %}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge-ai mb-1 d-inline-block">{{ rec.get_recommendation_type_display }}</span>
+                        <h6 class="fw-bold mb-0 mt-1">{{ rec.title }}</h6>
+                    </div>
+                    <span class="badge bg-light text-dark border">يقين {{ rec.confidence_level }}%</span>
+                </div>
+                <p class="text-dark small mb-2">{{ rec.description }}</p>
+                <div class="bg-light p-2 rounded small mb-2 border-start border-3 border-primary">
+                    <strong class="text-primary d-block mb-1"><i class="bi bi-lightbulb"></i> الإجراء المقترح:</strong>
+                    {{ rec.suggested_action }}
+                </div>
+                <div class="text-muted small mb-3">
+                    <strong>السبب والتحليل:</strong> {{ rec.rationale }}
+                </div>
+                
+                <!-- Action Form -->
+                {% if request.user.is_admin_or_manager %}
+                <form action="{% url 'intelligence:recommendation_decision' rec.id %}" method="POST" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <button type="submit" name="decision" value="APPROVED" class="btn btn-sm btn-success fw-bold flex-grow-1">
+                        <i class="bi bi-check-lg"></i> موافقة وتطبيق
+                    </button>
+                    <button type="submit" name="decision" value="REJECTED" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i> رفض
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-4 text-muted">
+            <i class="bi bi-check-circle-fill text-success fs-2 d-block mb-2"></i>
+            لا توجد توصيات معلقة حالياً. النظام يعمل بأعلى كفاءة!
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 4. Operational Tables & Alerts Grid -->
+<div class="row g-3">
+    <!-- Top Selling Products -->
+    <div class="col-lg-4">
+        <div class="card card-custom p-3 h-100">
+            <h6 class="fw-bold mb-3"><i class="bi bi-award-fill text-warning me-2"></i> السلع الأكثر مبيعاً</h6>
+            <div class="table-responsive">
+                <table class="table table-custom table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>المنتج</th>
+                            <th>المباع</th>
+                            <th>الإيراد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in top_products %}
+                        <tr>
+                            <td>
+                                <strong class="d-block text-truncate" style="max-width: 130px;">{{ item.product__name }}</strong>
+                                <small class="text-muted">{{ item.product__code }}</small>
+                            </td>
+                            <td><span class="badge bg-primary-subtle text-primary">{{ item.total_sold }}</span></td>
+                            <td class="fw-bold text-success">{{ item.total_rev|floatformat:1 }} {{ system_settings.currency }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted">لا توجد مبيعات مسجلة</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Alerts -->
+    <div class="col-lg-4">
+        <div class="card card-custom p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i> تنبيهات نقص المخزون</h6>
+                <a href="{% url 'inventory:products_list' %}?stock=low" class="small text-decoration-none">إدارة</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>المنتج</th>
+                            <th>المتاح</th>
+                            <th>الحد الأدنى</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prod in low_stock_products %}
+                        <tr>
+                            <td>
+                                <strong class="d-block text-truncate" style="max-width: 140px;">{{ prod.name }}</strong>
+                                <small class="text-muted">{{ prod.code }}</small>
+                            </td>
+                            <td>
+                                <span class="badge {% if prod.total_stock == 0 %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                    {{ prod.total_stock }} {{ prod.get_unit_display }}
+                                </span>
+                            </td>
+                            <td class="text-muted">{{ prod.min_stock_limit }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted">المخزون بمستويات آمنة</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Near Expiry Batches -->
+    <div class="col-lg-4">
+        <div class="card card-custom p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-warning"><i class="bi bi-clock-history me-2"></i> دفعات تقترب صلاحيتها</h6>
+                <a href="{% url 'inventory:batches_list' %}?filter=near_expiry" class="small text-decoration-none">عرض</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-custom table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>المنتج والتشغيلة</th>
+                            <th>المتبقي</th>
+                            <th>تاريخ الانتهاء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in near_expiry_batches %}
+                        <tr>
+                            <td>
+                                <strong class="d-block text-truncate" style="max-width: 130px;">{{ b.product.name }}</strong>
+                                <small class="text-muted">{{ b.batch_number }}</small>
+                            </td>
+                            <td><span class="badge bg-warning-subtle text-dark">{{ b.current_quantity }}</span></td>
+                            <td class="text-danger fw-bold">{{ b.expiry_date|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted">لا توجد دفعات منتهية أو قاربت</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Sales & Profit Trend Chart
+    const ctxTrend = document.getElementById('salesTrendsChart').getContext('2d');
+    const chartDates = {{ chart_dates_json|safe }};
+    const chartSales = {{ chart_sales_json|safe }};
+    const chartProfit = {{ chart_profit_json|safe }};
+    const chartExpenses = {{ chart_expenses_json|safe }};
+
+    new Chart(ctxTrend, {
+        type: 'bar',
+        data: {
+            labels: chartDates,
+            datasets: [
+                {
+                    label: 'إيراد المبيعات',
+                    data: chartSales,
+                    backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                    borderRadius: 6,
+                },
+                {
+                    label: 'مجمل الربح',
+                    data: chartProfit,
+                    backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                    borderRadius: 6,
+                },
+                {
+                    label: 'المصروفات التشغيلية',
+                    data: chartExpenses,
+                    backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                    borderRadius: 6,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', rtl: true }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // 2. Expenses Donut Chart
+    const ctxDonut = document.getElementById('expensesDonutChart').getContext('2d');
+    const donutLabels = {{ donut_labels_json|safe }};
+    const donutValues = {{ donut_values_json|safe }};
+
+    if (donutValues.length > 0) {
+        new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: donutLabels,
+                datasets: [{
+                    data: donutValues,
+                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#06b6d4']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', rtl: true }
+                }
+            }
+        });
+    } else {
+        ctxDonut.canvas.parentNode.innerHTML = '<div class="text-center py-5 text-muted">لا توجد بيانات مصروفات كافية</div>';
+    }
+});
+</script>
+{% endblock %}

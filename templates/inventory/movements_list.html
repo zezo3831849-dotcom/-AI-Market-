@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}سجل حركات المخزون | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-clock-history text-primary me-2"></i> سجل حركات المخزون</h4>
+        <p class="text-muted small mb-0">سجل تدقيق كامل لكافة حركات الوارد والمنصرف والتسويات والمبيعات والمرتجعات مع الرصيد اللحظي.</p>
+    </div>
+</div>
+
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>الوقت والتاريخ</th>
+                    <th>المنتج</th>
+                    <th>الدفعة / المخزن</th>
+                    <th>نوع الحركة</th>
+                    <th>الكمية</th>
+                    <th>الرصيد بعد الحركة</th>
+                    <th>المرجع / الفاتورة</th>
+                    <th>السبب / البيان</th>
+                    <th>المستخدم</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in movements %}
+                <tr>
+                    <td class="text-muted small">{{ m.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <strong class="text-dark">{{ m.product.name }}</strong>
+                        <span class="text-muted small d-block">{{ m.product.code }}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-muted border">{{ m.warehouse.name }}</span>
+                        {% if m.batch %}<small class="d-block text-muted">{{ m.batch.batch_number }}</small>{% endif %}
+                    </td>
+                    <td>
+                        {% if m.movement_type == 'SALE' %}
+                            <span class="badge bg-primary-subtle text-primary"><i class="bi bi-arrow-up-right"></i> منصرف مبيعات</span>
+                        {% elif m.movement_type == 'PURCHASE' %}
+                            <span class="badge bg-success-subtle text-success"><i class="bi bi-arrow-down-left"></i> وارد مشتريات</span>
+                        {% elif m.movement_type == 'RETURN_IN' %}
+                            <span class="badge bg-info-subtle text-info"><i class="bi bi-arrow-counterclockwise"></i> وارد مرتجع</span>
+                        {% elif m.movement_type == 'ADJUST_ADD' %}
+                            <span class="badge bg-warning-subtle text-dark">تسوية بالزيادة</span>
+                        {% elif m.movement_type == 'ADJUST_SUB' %}
+                            <span class="badge bg-danger-subtle text-danger">تسوية بالعجز</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ m.get_movement_type_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold fs-7">
+                        {% if m.movement_type == 'SALE' or m.movement_type == 'ADJUST_SUB' or m.movement_type == 'WASTE' %}
+                            <span class="text-danger">-{{ m.quantity }}</span>
+                        {% else %}
+                            <span class="text-success">+{{ m.quantity }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold">{{ m.balance_after }}</td>
+                    <td><span class="badge bg-light text-dark font-monospace border">{{ m.reference_id|default:"-" }}</span></td>
+                    <td class="small">{{ m.reason }}</td>
+                    <td class="text-muted small">{{ m.user.username|default:"النظام" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-muted">لا توجد حركات مخزون مسجلة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

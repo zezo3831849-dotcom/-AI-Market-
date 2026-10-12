@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل جلسة الجرد #{{ count_session.id }} | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-clipboard2-data text-primary me-2"></i> جلسة الجرد رقم #{{ count_session.id }} ({{ count_session.warehouse.name }})</h4>
+        <span class="badge {% if count_session.status == 'ADJUSTED' %}bg-success{% elif count_session.status == 'COMPLETED' %}bg-info text-dark{% else %}bg-warning text-dark{% endif %} fs-7">
+            {{ count_session.get_status_display }}
+        </span>
+        <span class="text-muted small ms-2">بتاريخ: {{ count_session.count_date|date:"Y-m-d" }}</span>
+    </div>
+    <a href="{% url 'inventory:counts_list' %}" class="btn btn-outline-secondary btn-sm">العودة للجرد</a>
+</div>
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="card card-custom p-0 overflow-hidden mb-4">
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>الرصيد الدفتري (المسجل)</th>
+                        <th>الرصيد الفعلي (المعدود على الرف)</th>
+                        <th>الفارق (الفعلي − الدفتري)</th>
+                        <th>سبب الفارق / الملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in count_session.items.all %}
+                    <tr>
+                        <td>
+                            <strong class="text-dark">{{ item.product.name }}</strong>
+                            <small class="text-muted d-block">{{ item.product.code }}</small>
+                        </td>
+                        <td class="fw-bold">{{ item.system_quantity }} {{ item.product.get_unit_display }}</td>
+                        <td>
+                            {% if count_session.status != 'ADJUSTED' %}
+                            <input type="number" step="0.01" name="qty_{ item.id }" value="{{ item.physical_quantity }}" class="form-control form-control-sm text-center" style="width: 120px;" required>
+                            {% else %}
+                            <span class="fw-bold fs-6">{{ item.physical_quantity }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.difference > 0 %}
+                                <span class="badge bg-success-subtle text-success fs-7">+{{ item.difference }} (زيادة)</span>
+                            {% elif item.difference < 0 %}
+                                <span class="badge bg-danger-subtle text-danger fs-7">{{ item.difference }} (عجز)</span>
+                            {% else %}
+                                <span class="badge bg-light text-muted border">مطابق تماماً</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if count_session.status != 'ADJUSTED' %}
+                            <input type="text" name="note_{ item.id }" value="{{ item.notes }}" class="form-control form-control-sm" placeholder="سبب الفرق إن وجد">
+                            {% else %}
+                            <span class="small text-muted">{{ item.notes|default:"-" }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if count_session.status != 'ADJUSTED' %}
+    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+        <div>
+            <button type="submit" name="action" value="save_counts" class="btn btn-primary fw-bold">
+                <i class="bi bi-save me-1"></i> حفظ الأرقام الفعلية
+            </button>
+        </div>
+        <div>
+            <button type="submit" name="action" value="apply_adjustments" class="btn btn-success fw-bold px-4" onclick="return confirm('هل أنت متأكد من تطبيق التسويات الجردية آلياً؟ سيتم تحديث أرصدة المخزون الفعلية فوراً.')">
+                <i class="bi bi-check2-all me-1"></i> اعتماد وتطبيق التسويات الجردية آلياً
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</form>
+{% endblock %}

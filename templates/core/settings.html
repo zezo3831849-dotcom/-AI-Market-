@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}إعدادات النظام العامة | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="card card-custom p-4 shadow-sm" style="max-width: 800px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-gear text-primary me-2"></i> إعدادات المتجر والنظام العامة</h4>
+        <span class="badge bg-primary">لوحة الإدارة</span>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label small fw-bold">اسم المتجر / السوبرماركت <span class="text-danger">*</span></label>
+                <input type="text" name="store_name" class="form-control" value="{{ settings.store_name }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">العملة الافتراضية <span class="text-danger">*</span></label>
+                <input type="text" name="currency" class="form-control" value="{{ settings.currency }}" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">رقم الهاتف الرسمي</label>
+                <input type="text" name="phone" class="form-control" value="{{ settings.phone }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">عنوان المقر / الفرع</label>
+                <input type="text" name="address" class="form-control" value="{{ settings.address }}">
+            </div>
+
+            <!-- AI & Control Limits -->
+            <div class="col-12 mt-4 pt-3 border-top">
+                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-sliders"></i> الحدود الرقابية وخوارزميات الذكاء الاصطناعي</h6>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">الحد الأدنى لهامش الربح المقبول للعروض (%)</label>
+                        <div class="input-group">
+                            <input type="number" step="0.1" name="min_profit_margin_percent" class="form-control" value="{{ settings.min_profit_margin_percent }}" required>
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="text-muted" style="font-size: 0.72rem;">يمنع الذكاء الاصطناعي من اقتراح أي خصم يهبط بهامش الربح دون هذه النسبة.</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">حد التنبيه الافتراضي لنقص المخزون</label>
+                        <input type="number" name="default_low_stock_limit" class="form-control" value="{{ settings.default_low_stock_limit }}" required>
+                        <small class="text-muted" style="font-size: 0.72rem;">عدد الوحدات التي يصدر عندها تنبيه إعادة الطلب.</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">أيام التنبيه بقرب انتهاء الصلاحية</label>
+                        <input type="number" name="near_expiry_days" class="form-control" value="{{ settings.near_expiry_days }}" required>
+                        <small class="text-muted" style="font-size: 0.72rem;">عدد الأيام قبل تاريخ الصلاحية لإطلاق عروض التصريف.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="offline_sync_enabled" id="offlineCheck" {% if settings.offline_sync_enabled %}checked{% endif %}>
+                    <label class="form-check-label small fw-bold" for="offlineCheck">تفعيل خاصية استمرارية البيع دون اتصال بالإنترنت (Offline Mode & Auto-Sync)</label>
+                </div>
+            </div>
+
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> حفظ وتحديث الإعدادات
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

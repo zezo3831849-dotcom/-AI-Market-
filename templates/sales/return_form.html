@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}تسجيل إذن مرتجع جديد | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="card card-custom p-4 shadow-sm" style="max-width: 750px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-arrow-return-right text-primary me-2"></i> تسجيل إذن مرتجع</h4>
+        <a href="{% url 'sales:returns_list' %}" class="btn btn-outline-secondary btn-sm">العودة</a>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">الفاتورة الأصلية (اختياري)</label>
+                <select name="sale_id" class="form-select">
+                    <option value="">-- بدون ربط بفاتورة سابقة --</option>
+                    {% for s in recent_sales %}
+                    <option value="{{ s.id }}">{{ s.invoice_number }} - {{ s.customer_name }} ({{ s.total_amount }} ج.م)</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">المنتج المرتجع <span class="text-danger">*</span></label>
+                <select name="product_id" id="returnProductSelect" class="form-select" required onchange="updatePrice(this)">
+                    <option value="">-- اختر المنتج --</option>
+                    {% for p in products %}
+                    <option value="{{ p.id }}" data-price="{{ p.sale_price }}">{{ p.name }} (كود: {{ p.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">الكمية المرتجعة <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" name="quantity" class="form-control" value="1" min="0.01" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">سعر الاسترداد للوحدة (ج.م) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" name="unit_price" id="returnPriceInput" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">حالة المنتج المرتجع <span class="text-danger">*</span></label>
+                <select name="condition" class="form-select" required>
+                    <option value="SELLABLE">سليم وصالح للبيع (يعاد للمخزون)</option>
+                    <option value="DAMAGED">تالف أو معيب (لا يعاد للمخزون)</option>
+                    <option value="EXPIRED">منتهي الصلاحية (هالك)</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label small fw-bold">سبب الإرجاع</label>
+                <textarea name="reason" class="form-control" rows="2" placeholder="مثال: رغبة العميل في الاستبدال، منتج زائد، عيب تغليف..."></textarea>
+            </div>
+
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> تسجيل المرتجع واسترداد المبلغ
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updatePrice(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const price = selectedOption.dataset.price || '0.00';
+    document.getElementById('returnPriceInput').value = price;
+}
+</script>
+{% endblock %}

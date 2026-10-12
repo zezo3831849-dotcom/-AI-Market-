@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}سجل التدقيق والعمليات | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-shield-check text-primary me-2"></i> سجل العمليات والتدقيق (Audit Trail)</h4>
+        <p class="text-muted small mb-0">توثيق رقابي دائم لجميع العمليات الحساسة (تغيير الأسعار، تسويات المخزون، المصروفات، وقرارات الذكاء الاصطناعي).</p>
+    </div>
+</div>
+
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>تاريخ ووقت العملية</th>
+                    <th>المستخدم المسؤول</th>
+                    <th>نوع الإجراء</th>
+                    <th>الكيان المستهدف</th>
+                    <th>معرف السجل</th>
+                    <th>تفاصيل العملية والبيان</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="text-muted small">{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+                    <td>
+                        <strong class="text-dark">{{ log.user.username|default:"النظام الآلي" }}</strong>
+                        {% if log.user.role %}<small class="text-muted d-block">({{ log.user.get_role_display }})</small>{% endif %}
+                    </td>
+                    <td>
+                        {% if log.action == 'PRICE_CHANGE' %}
+                            <span class="badge bg-danger"><i class="bi bi-tag-fill me-1"></i> تغيير سعر بيع</span>
+                        {% elif log.action == 'STOCK_ADJUST' %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-sliders me-1"></i> تسوية مخزون</span>
+                        {% elif log.action == 'EXPENSE_ADD' or log.action == 'EXPENSE_APPROVE' %}
+                            <span class="badge bg-info text-dark"><i class="bi bi-cash me-1"></i> عملية مصروفات</span>
+                        {% elif log.action == 'AI_DECISION' %}
+                            <span class="badge-ai"><i class="bi bi-stars me-1"></i> قرار توصية AI</span>
+                        {% elif log.action == 'BACKUP' or log.action == 'RESTORE' %}
+                            <span class="badge bg-secondary"><i class="bi bi-database me-1"></i> نسخ احتياطي</span>
+                        {% else %}
+                            <span class="badge bg-light text-dark border">{{ log.get_action_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge bg-light text-muted border font-monospace">{{ log.target_model }}</span></td>
+                    <td><span class="font-monospace small text-primary">{{ log.target_id|default:"-" }}</span></td>
+                    <td class="small">{{ log.description }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">لا توجد سجلات تدقيق مسجلة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

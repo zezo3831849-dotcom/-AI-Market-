@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}إدارة المستخدمين والصلاحيات | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-people text-primary me-2"></i> إدارة المستخدمين والصلاحيات (RBAC)</h4>
+        <p class="text-muted small mb-0">تحديد أدوار الموظفين (مدير، كاشير، مسؤول مخزن، محاسب) والتحكم في إمكانية تعديل الأسعار واعتماد المصروفات.</p>
+    </div>
+    {% if request.user.is_admin_or_manager %}
+    <a href="{% url 'accounts:user_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-person-plus"></i>
+        <span>إضافة مستخدم جديد</span>
+    </a>
+    {% endif %}
+</div>
+
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>اسم المستخدم</th>
+                    <th>الاسم الكامل</th>
+                    <th>الدور الوظيفي والصلاحيات</th>
+                    <th>رقم الهاتف</th>
+                    <th>الحالة</th>
+                    <th>تاريخ التسجيل</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <strong class="text-primary font-monospace">{{ u.username }}</strong>
+                        {% if u.is_superuser %}<span class="badge bg-danger ms-1">Superuser</span>{% endif %}
+                    </td>
+                    <td><strong>{{ u.get_full_name|default:"-" }}</strong></td>
+                    <td>
+                        {% if u.role == 'ADMIN' %}
+                            <span class="badge bg-danger">مدير عام / مالك</span>
+                        {% elif u.role == 'MANAGER' %}
+                            <span class="badge bg-primary">مدير فرع وعمليات</span>
+                        {% elif u.role == 'CASHIER' %}
+                            <span class="badge bg-warning text-dark">كاشير ومبيعات</span>
+                        {% elif u.role == 'INVENTORY' %}
+                            <span class="badge bg-info text-dark">مسؤول مخزن وجرد</span>
+                        {% elif u.role == 'ACCOUNTANT' %}
+                            <span class="badge bg-success">محاسب مالي</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ u.role }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted small" dir="ltr">{{ u.phone|default:"-" }}</td>
+                    <td>
+                        {% if u.is_active %}
+                            <span class="badge bg-success-subtle text-success">نشط</span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger">معطل</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted small">{{ u.date_joined|date:"Y-m-d" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">لا يوجد مستخدمون مسجلون</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

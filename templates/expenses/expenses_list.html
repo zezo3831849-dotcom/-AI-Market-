@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}المصروفات التشغيلية والفواتير | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-cash-stack text-danger me-2"></i> المصروفات التشغيلية والفواتير</h4>
+        <p class="text-muted small mb-0">متابعة دقيقة لفواتير الكهرباء، المياه، الإيجار، المرتبات، والصيانة لحساب صافي الربح الحقيقي بدقة وتفادي أي ازدواجية محاسبية.</p>
+    </div>
+    {% if request.user.can_manage_expenses %}
+    <a href="{% url 'expenses:expense_create' %}" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
+        <i class="bi bi-plus-circle"></i>
+        <span>تسجيل مصروف تشغيلي جديد</span>
+    </a>
+    {% endif %}
+</div>
+
+<!-- Financial Expense Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card card-custom p-3 border-start border-4 border-danger">
+            <span class="text-muted small">إجمالي المصروفات المسجلة</span>
+            <h4 class="fw-bold text-danger my-1">{{ total_amount|floatformat:2|intcomma }} {{ system_settings.currency }}</h4>
+            <small class="text-muted">تشمل كافة البنود التشغيلية</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom p-3 border-start border-4 border-success">
+            <span class="text-muted small">المبالغ المسددة فعلياً</span>
+            <h4 class="fw-bold text-success my-1">{{ total_paid|floatformat:2|intcomma }} {{ system_settings.currency }}</h4>
+            <small class="text-muted">خرجت من الخزينة / الحساب</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom p-3 border-start border-4 border-warning">
+            <span class="text-muted small">المبالغ المستحقة المتبقية (مؤجلة)</span>
+            <h4 class="fw-bold text-warning my-1">{{ total_remaining|floatformat:2|intcomma }} {{ system_settings.currency }}</h4>
+            <small class="text-muted">فواتير أو التزامات قيد السداد</small>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card card-custom p-3 mb-4">
+    <form method="GET" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <select name="category" class="form-select">
+                <option value="">جميع تصنيفات المصروفات</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select name="status" class="form-select">
+                <option value="">جميع حالات السداد</option>
+                <option value="PAID" {% if selected_status == 'PAID' %}selected{% endif %}>مسدد بالكامل</option>
+                <option value="PARTIAL" {% if selected_status == 'PARTIAL' %}selected{% endif %}>مسدد جزئياً</option>
+                <option value="PENDING" {% if selected_status == 'PENDING' %}selected{% endif %}>مستحق (غير مسدد)</option>
+                <option value="OVERDUE" {% if selected_status == 'OVERDUE' %}selected{% endif %}>متأخر عن موعده</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">تصفية</button>
+            <a href="{% url 'expenses:expenses_list' %}" class="btn btn-light border"><i class="bi bi-arrow-counterclockwise"></i></a>
+        </div>
+    </form>
+</div>
+
+<!-- Expenses Table -->
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>تاريخ المصروف</th>
+                    <th>بيان المصروف</th>
+                    <th>التصنيف</th>
+                    <th>المبلغ الإجمالي</th>
+                    <th>المسدد</th>
+                    <th>المتبقي</th>
+                    <th>الفترة المغطاة</th>
+                    <th>تاريخ الاستحقاق</th>
+                    <th>حالة السداد</th>
+                    <th class="text-center">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exp in expenses %}
+                <tr>
+                    <td class="text-muted small">{{ exp.expense_date|date:"Y-m-d" }}</td>
+                    <td>
+                        <strong class="text-dark">{{ exp.title }}</strong>
+                        {% if exp.invoice_number %}<small class="text-muted d-block font-monospace">إيصال #{{ exp.invoice_number }}</small>{% endif %}
+                    </td>
+                    <td><span class="badge bg-light text-dark border">{{ exp.category.name }}</span></td>
+                    <td class="fw-bold text-danger">{{ exp.amount|floatformat:2 }} {{ system_settings.currency }}</td>
+                    <td class="text-success">{{ exp.paid_amount|floatformat:2 }}</td>
+                    <td class="{% if exp.remaining_amount > 0 %}text-warning fw-bold{% else %}text-muted{% endif %}">{{ exp.remaining_amount|floatformat:2 }}</td>
+                    <td class="small text-muted">{{ exp.period_covered|default:"-" }}</td>
+                    <td>
+                        {% if exp.due_date %}
+                            <span class="small {% if exp.is_overdue %}text-danger fw-bold{% else %}text-muted{% endif %}">{{ exp.due_date|date:"Y-m-d" }}</span>
+                        {% else %}
+                            <span class="text-muted small">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if exp.payment_status == 'PAID' %}
+                            <span class="badge bg-success">مسدد بالكامل</span>
+                        {% elif exp.payment_status == 'PARTIAL' %}
+                            <span class="badge bg-info text-dark">مسدد جزئياً</span>
+                        {% elif exp.payment_status == 'OVERDUE' %}
+                            <span class="badge bg-danger">متأخر عن موعده</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">مستحق الدفع</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if request.user.can_manage_expenses %}
+                        <div class="btn-group btn-group-sm">
+                            {% if exp.remaining_amount > 0 %}
+                            <button class="btn btn-outline-success py-0 px-2" data-bs-toggle="modal" data-bs-target="#payModal{{ exp.id }}" title="سداد دفعة">
+                                <i class="bi bi-cash"></i> سداد
+                            </button>
+                            {% endif %}
+                            <a href="{% url 'expenses:expense_edit' exp.id %}" class="btn btn-outline-secondary py-0 px-2" title="تعديل">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </div>
+
+                        <!-- Payment Modal -->
+                        <div class="modal fade" id="payModal{{ exp.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+                                <div class="modal-content text-start" style="text-align: right !important;">
+                                    <form action="{% url 'expenses:expense_add_payment' exp.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="modal-header">
+                                            <h6 class="modal-title fw-bold">سداد دفعة: {{ exp.title }}</h6>
+                                            <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold">المبلغ المراد سداده (ج.م)</label>
+                                                <input type="number" step="0.01" name="amount" class="form-control" value="{{ exp.remaining_amount }}" max="{{ exp.remaining_amount }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold">طريقة الدفع</label>
+                                                <select name="payment_method" class="form-select">
+                                                    <option value="CASH">نقداً من الخزينة</option>
+                                                    <option value="BANK">تحويل بنكي</option>
+                                                    <option value="CARD">بطاقة / إلكتروني</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold">ملاحظات السداد</label>
+                                                <input type="text" name="notes" class="form-control" placeholder="رقم الشيك أو الحوالة...">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">إلغاء</button>
+                                            <button type="submit" class="btn btn-success btn-sm fw-bold">تأكيد السداد</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center py-5 text-muted">لا توجد مصروفات مسجلة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

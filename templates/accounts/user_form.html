@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}إضافة مستخدم جديد | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="card card-custom p-4 shadow-sm" style="max-width: 650px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-person-plus text-primary me-2"></i> إنشاء حساب مستخدم جديد</h4>
+        <a href="{% url 'accounts:users_list' %}" class="btn btn-outline-secondary btn-sm">العودة</a>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">اسم المستخدم (لتسجيل الدخول) <span class="text-danger">*</span></label>
+                <input type="text" name="username" class="form-control" placeholder="مثال: cashier2" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">كلمة المرور <span class="text-danger">*</span></label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">الاسم الأول</label>
+                <input type="text" name="first_name" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">الاسم الأخير</label>
+                <input type="text" name="last_name" class="form-control">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">رقم الهاتف</label>
+                <input type="text" name="phone" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">الدور الوظيفي والصلاحية <span class="text-danger">*</span></label>
+                <select name="role" class="form-select" required>
+                    <option value="CASHIER">كاشير / مسؤول مبيعات (نقطة البيع)</option>
+                    <option value="INVENTORY">مسؤول مخزن وجرد (إدارة البضائع والدفعات)</option>
+                    <option value="ACCOUNTANT">محاسب مالي (المصروفات والتقارير)</option>
+                    <option value="MANAGER">مدير عمليات / فرع</option>
+                    <option value="ADMIN">مدير عام / مالك (كامل الصلاحيات)</option>
+                </select>
+            </div>
+
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> إنشاء حساب المستخدم
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

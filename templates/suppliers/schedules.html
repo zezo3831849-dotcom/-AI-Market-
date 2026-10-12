@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}مواعيد زيارات الموردين | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-calendar3 text-primary me-2"></i> مواعيد وجداول زيارات الموردين</h4>
+        <p class="text-muted small mb-0">جدول الزيارات الأسبوعية لمندوبي الشركات لتجهيز طلبات النواقص وتفادي التأخير.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card card-custom p-4 shadow-sm">
+            <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle text-primary me-2"></i> إضافة موعد زيارة مورد</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">المورد <span class="text-danger">*</span></label>
+                    <select name="supplier" class="form-select" required>
+                        <option value="">-- اختر المورد --</option>
+                        {% for s in suppliers %}
+                        <option value="{{ s.id }}">{{ s.company_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">يوم الزيارة المعتاد <span class="text-danger">*</span></label>
+                    <select name="visit_day" class="form-select" required>
+                        <option value="SAT">السبت</option>
+                        <option value="SUN">الأحد</option>
+                        <option value="MON">الاثنين</option>
+                        <option value="TUE">الثلاثاء</option>
+                        <option value="WED">الأربعاء</option>
+                        <option value="THU">الخميس</option>
+                        <option value="FRI">الجمعة</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">الموعد النهائي للطلب</label>
+                    <input type="time" name="order_deadline_time" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">أيام التوريد المتوقعة بعد الزيارة</label>
+                    <input type="number" name="expected_delivery_delay_days" class="form-control" value="1">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">ملاحظات الموعد</label>
+                    <textarea name="notes" class="form-control" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary fw-bold w-100 py-2">
+                    <i class="bi bi-check2-circle me-1"></i> حفظ موعد الزيارة
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card card-custom p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>المورد</th>
+                            <th>يوم الزيارة</th>
+                            <th>الموعد الأخير للطلب</th>
+                            <th>مهلة التوصيل</th>
+                            <th>الملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sch in schedules %}
+                        <tr>
+                            <td>
+                                <strong>{{ sch.supplier.company_name }}</strong>
+                                <small class="text-muted d-block">{{ sch.supplier.phone }}</small>
+                            </td>
+                            <td><span class="badge bg-primary fs-7">{{ sch.get_visit_day_display }}</span></td>
+                            <td class="text-muted small">{{ sch.order_deadline_time|time:"H:i"|default:"غير محدد" }}</td>
+                            <td><span class="badge bg-light text-muted border">{{ sch.expected_delivery_delay_days }} أيام</span></td>
+                            <td class="small">{{ sch.notes|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">لا توجد مواعيد زيارات مسجلة</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

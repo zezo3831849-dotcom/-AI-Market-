@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}سجل عمليات مزامنة الأوفلاين | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-cloud-arrow-up text-primary me-2"></i> سجل عمليات مزامنة الأوفلاين (Sales Continuity)</h4>
+        <p class="text-muted small mb-0">توثيق تسوية ومطابقة العمليات المسجلة محلياً أثناء انقطاع الإنترنت لمنع تكرار القيود وحماية ترابط المخزون.</p>
+    </div>
+    <button class="btn btn-warning fw-bold d-flex align-items-center gap-2" onclick="OfflineManager.syncQueue()">
+        <i class="bi bi-arrow-repeat"></i>
+        <span>مزامنة العمليات المعلقة الآن</span>
+    </button>
+</div>
+
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>تاريخ ووقت المزامنة</th>
+                    <th>معرف العملية العميل (Client UUID)</th>
+                    <th>الكاشير المنفذ</th>
+                    <th>نوع العملية</th>
+                    <th>حالة المزامنة</th>
+                    <th>تقرير التسوية والمطابقة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in sync_logs %}
+                <tr>
+                    <td class="text-muted small">{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+                    <td><span class="badge bg-light text-dark font-monospace border">{{ log.client_uuid }}</span></td>
+                    <td>{{ log.cashier.username|default:"كاشير محلي" }}</td>
+                    <td><span class="badge bg-secondary-subtle text-secondary">{{ log.operation_type }}</span></td>
+                    <td>
+                        {% if log.status == 'SUCCESS' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> نجاح المزامنة</span>
+                        {% elif log.status == 'DUPLICATE' %}
+                            <span class="badge bg-info text-dark"><i class="bi bi-intersect"></i> مكررة (تم التجاهل بأمان)</span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> تعارض / خطأ</span>
+                        {% endif %}
+                    </td>
+                    <td class="small">{{ log.reconciliation_notes|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="bi bi-cloud-check fs-1 opacity-50 d-block mb-2"></i>
+                        لا توجد عمليات مزامنة سابقة. جميع المبيعات مسجلة في الوقت الحقيقي.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

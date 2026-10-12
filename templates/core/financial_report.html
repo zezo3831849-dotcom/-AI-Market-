@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}التقرير المالي وحساب الأرباح | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-graph-up-arrow text-primary me-2"></i> القوائم المالية وحساب الأرباح التشغيلية</h4>
+        <p class="text-muted small mb-0">عرض محاسبي دقيق يفصل تكلفة البضاعة المباعة (COGS) عن المصروفات التشغيلية لحساب صافي الربح الحقيقي.</p>
+    </div>
+    <button class="btn btn-primary btn-sm fw-bold" onclick="window.print()"><i class="bi bi-printer me-1"></i> طباعة التقرير</button>
+</div>
+
+<!-- Date Filter Form -->
+<div class="card card-custom p-3 mb-4">
+    <form method="GET" class="row g-2 align-items-center">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text bg-light small">من تاريخ:</span>
+                <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text bg-light small">إلى تاريخ:</span>
+                <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100 fw-bold">تحديث التقرير المالي</button>
+            <a href="{% url 'core:financial_report' %}" class="btn btn-light border"><i class="bi bi-arrow-counterclockwise"></i></a>
+        </div>
+    </form>
+</div>
+
+<!-- Financial Statement Cards & Breakdown -->
+<div class="card card-custom p-4 mb-4 shadow-sm">
+    <div class="border-bottom pb-3 mb-4 text-center">
+        <h5 class="fw-bold mb-1">{{ system_settings.store_name }}</h5>
+        <h6 class="text-primary mb-0">قائمة الدخل والأرباح التشغيلية للفترة من {{ start_date }} إلى {{ end_date }}</h6>
+    </div>
+
+    <!-- Income Statement Table Format -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle mb-0">
+            <tbody>
+                <!-- 1. Revenue -->
+                <tr class="table-light">
+                    <th colspan="2" class="fs-6 text-primary"><i class="bi bi-1-circle me-1"></i> إيرادات المبيعات (Revenue)</th>
+                    <th class="text-end fs-6 text-primary">المبلغ ({{ system_settings.currency }})</th>
+                </tr>
+                <tr>
+                    <td class="ps-4">إجمالي المبيعات المحققة (عدد الفواتير: {{ finance.sales_count }})</td>
+                    <td class="text-muted text-center">+</td>
+                    <td class="text-end fw-bold">{{ finance.gross_sales_revenue|floatformat:2|intcomma }}</td>
+                </tr>
+                <tr>
+                    <td class="ps-4">مردودات ومرتجعات المبيعات (عدد المرتجعات: {{ finance.returns_count }})</td>
+                    <td class="text-danger text-center">−</td>
+                    <td class="text-end text-danger fw-bold">({{ finance.total_refunds|floatformat:2|intcomma }})</td>
+                </tr>
+                <tr class="table-info fw-bold">
+                    <td class="ps-4"><strong>صافي إيرادات المبيعات (Net Revenue)</strong></td>
+                    <td class="text-center">=</td>
+                    <td class="text-end text-primary fs-5">{{ finance.net_sales_revenue|floatformat:2|intcomma }}</td>
+                </tr>
+
+                <!-- 2. COGS -->
+                <tr class="table-light">
+                    <th colspan="2" class="fs-6 text-dark"><i class="bi bi-2-circle me-1"></i> تكلفة البضاعة المباعة (Cost of Goods Sold - COGS)</th>
+                    <th class="text-end fs-6"></th>
+                </tr>
+                <tr>
+                    <td class="ps-4">تكلفة مشتريات السلع المباعة فعلياً (بحسب دفعات الشراء)</td>
+                    <td class="text-danger text-center">−</td>
+                    <td class="text-end text-danger fw-bold">({{ finance.cogs|floatformat:2|intcomma }})</td>
+                </tr>
+                <tr class="table-success fw-bold">
+                    <td class="ps-4">
+                        <span class="fs-6">مجمل الربح (Gross Profit)</span>
+                        <span class="badge bg-success ms-2">هامش الربح: {{ finance.gross_margin_pct }}%</span>
+                    </td>
+                    <td class="text-center">=</td>
+                    <td class="text-end text-success fs-4">{{ finance.gross_profit|floatformat:2|intcomma }}</td>
+                </tr>
+
+                <!-- 3. Operating Expenses -->
+                <tr class="table-light">
+                    <th colspan="2" class="fs-6 text-danger"><i class="bi bi-3-circle me-1"></i> المصروفات التشغيلية (Operating Expenses)</th>
+                    <th class="text-end fs-6 text-danger"></th>
+                </tr>
+                {% for cat in cat_expenses %}
+                <tr>
+                    <td class="ps-4">{{ cat.name }}</td>
+                    <td class="text-danger text-center">−</td>
+                    <td class="text-end text-danger">{{ cat.period_total|floatformat:2|intcomma }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td class="ps-4 text-muted">لا توجد بنود مصروفات مسجلة لهذه الفترة</td>
+                    <td class="text-center">-</td>
+                    <td class="text-end text-muted">0.00</td>
+                </tr>
+                {% endfor %}
+                <tr class="table-warning fw-bold">
+                    <td class="ps-4">إجمالي المصروفات التشغيلية (Operating Expenses)</td>
+                    <td class="text-center">−</td>
+                    <td class="text-end text-danger fs-5">({{ finance.operating_expenses|floatformat:2|intcomma }})</td>
+                </tr>
+
+                <!-- 4. Net Operating Profit -->
+                <tr class="{% if finance.net_operating_profit >= 0 %}table-primary{% else %}table-danger{% endif %} fw-bold">
+                    <td class="ps-4 fs-5">
+                        <i class="bi bi-trophy-fill me-1"></i> صافي الربح التشغيلي الحقيقي (Net Operating Profit)
+                    </td>
+                    <td class="text-center fs-5">=</td>
+                    <td class="text-end fs-3 {% if finance.net_operating_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ finance.net_operating_profit|floatformat:2|intcomma }} {{ system_settings.currency }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Notes on Financial Integrity -->
+    <div class="mt-4 p-3 bg-light rounded border small text-muted">
+        <i class="bi bi-info-circle-fill text-primary me-1"></i>
+        <strong>ملاحظة تدقيقية هامة:</strong>
+        تم تطبيق الفصل المحاسبي التام بين تكلفة البضاعة المباعة (COGS) والمصروفات التشغيلية تجنباً لخصم أي تكلفة مرتين.
+        يمثل مجمل الربح الفارق المباشر بين أسعار البيع وأسعار الشراء، بينما يمثل صافي الربح التشغيلي العائد الفعلي بعد تغطية كافة نفقات التشغيل (الإيجار، الفواتير، المرتبات، والصيانة).
+    </div>
+</div>
+{% endblock %}

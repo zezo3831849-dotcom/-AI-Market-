@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}إصدار أمر شراء جديد | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="card card-custom p-4 shadow-sm" style="max-width: 850px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-file-earmark-plus text-primary me-2"></i> إصدار أمر شراء توريد</h4>
+        <a href="{% url 'suppliers:orders_list' %}" class="btn btn-outline-secondary btn-sm">العودة</a>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">المورد المستهدف <span class="text-danger">*</span></label>
+                <select name="supplier" class="form-select" required>
+                    <option value="">-- اختر المورد --</option>
+                    {% for s in suppliers %}
+                    <option value="{{ s.id }}">{{ s.company_name }} (مهلة: {{ s.lead_time_days }} أيام)</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">تاريخ التسليم المتوقع</label>
+                <input type="date" name="expected_delivery_date" class="form-control">
+            </div>
+        </div>
+
+        <h6 class="fw-bold text-primary mb-3"><i class="bi bi-cart-check"></i> تحديد السلع والكميات المطلوبة</h6>
+        <div class="table-responsive mb-4">
+            <table class="table table-custom table-sm">
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>المخزون الحالي</th>
+                        <th>الكمية المطلوبة</th>
+                        <th>سعر الوحدة المتفق عليه</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td>
+                            <strong>{{ p.name }}</strong>
+                            <small class="text-muted d-block">{{ p.code }}</small>
+                        </td>
+                        <td>
+                            <span class="badge {% if p.is_low_stock %}bg-warning text-dark{% else %}bg-light text-muted border{% endif %}">
+                                {{ p.total_stock }} {{ p.get_unit_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="qty_{{ p.id }}" class="form-control form-control-sm text-center" style="width: 110px;" placeholder="0" min="0">
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="cost_{{ p.id }}" class="form-control form-control-sm text-center" style="width: 110px;" value="{{ p.default_cost_price }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-bold">شروط وتفاصيل إضافية</label>
+            <textarea name="notes" class="form-control" rows="2" placeholder="ملاحظات التسليم..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+            <i class="bi bi-check2-circle me-1"></i> اعتماد أمر الشراء وإرساله
+        </button>
+    </form>
+</div>
+{% endblock %}

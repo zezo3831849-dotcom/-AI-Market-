@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}العروض والخصومات الذكية | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-percent text-warning me-2"></i> العروض والخصومات الذكية (Smart Offers)</h4>
+        <p class="text-muted small mb-0">اقتراحات خوارزمية لتخفيض الأسعار وتنشيط المنتجات الراكدة مع الالتزام الصارم بالحد الأدنى لهامش الربح ({{ system_settings.min_profit_margin_percent }}%).</p>
+    </div>
+    <a href="{% url 'intelligence:center' %}" class="btn btn-outline-secondary btn-sm">مركز الذكاء الاصطناعي</a>
+</div>
+
+<div class="row g-4">
+    {% for off in offers %}
+    <div class="col-md-6">
+        <div class="ai-card offer h-100">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="fw-bold mb-0 text-dark">{{ off.title }}</h5>
+                <span class="badge bg-warning text-dark"><i class="bi bi-tag-fill me-1"></i> عرض مقترح</span>
+            </div>
+            <p class="text-secondary small mb-3">{{ off.description }}</p>
+
+            <div class="bg-light p-3 rounded small mb-3 border-start border-3 border-warning">
+                <strong class="text-warning-emphasis d-block mb-1">الإجراء الترويجي المقترح:</strong>
+                <div class="fw-bold text-dark">{{ off.suggested_action }}</div>
+            </div>
+
+            <div class="small text-muted mb-3 bg-white p-2 rounded border">
+                <strong>مبررات الذكاء الاصطناعي:</strong> {{ off.rationale }}
+            </div>
+
+            {% if off.data_evidence %}
+            <div class="small text-muted mb-3">
+                <strong>البيانات المحاسبية:</strong> {{ off.data_evidence }}
+            </div>
+            {% endif %}
+
+            {% if request.user.is_admin_or_manager and off.status == 'PENDING' %}
+            <form action="{% url 'intelligence:recommendation_decision' off.id %}" method="POST" class="d-flex gap-2 pt-2 border-top">
+                {% csrf_token %}
+                <button type="submit" name="decision" value="APPROVED" class="btn btn-sm btn-success fw-bold flex-grow-1">
+                    <i class="bi bi-check-lg"></i> تطبيق العرض
+                </button>
+                <button type="submit" name="decision" value="REJECTED" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-lg"></i> صرف النظر
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-percent fs-1 opacity-50 d-block mb-2"></i>
+        لا توجد مقترحات عروض معلقة حالياً
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

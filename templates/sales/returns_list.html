@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}إدارة المرتجعات | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-arrow-return-right text-primary me-2"></i> سجل مرتجعات العملاء</h4>
+        <p class="text-muted small mb-0">توثيق طلبات الاسترجاع مع التحقق من حالة السلعة (سليم يعاد للمخزون / تالف لا يعاد للمخزون) وتحديث الحسابات بدقة.</p>
+    </div>
+    <a href="{% url 'sales:return_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle"></i>
+        <span>تسجيل إذن مرتجع جديد</span>
+    </a>
+</div>
+
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>رقم المرتجع</th>
+                    <th>التاريخ والوقت</th>
+                    <th>الفاتورة الأصلية</th>
+                    <th>المستلم</th>
+                    <th>إجمالي المبلغ المسترد</th>
+                    <th>سبب الإرجاع</th>
+                    <th>بنود المرتجع وحالتها</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in returns %}
+                <tr>
+                    <td><strong class="font-monospace text-primary">{{ r.return_number }}</strong></td>
+                    <td class="text-muted small">{{ r.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if r.sale %}
+                        <a href="{% url 'sales:invoice_detail' r.sale.id %}" class="font-monospace">{{ r.sale.invoice_number }}</a>
+                        {% else %}
+                        <span class="text-muted small">غير مرتبطة بفاتورة</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.cashier.get_full_name|default:r.cashier.username }}</td>
+                    <td class="fw-bold text-danger">{{ r.total_refund_amount }} {{ system_settings.currency }}</td>
+                    <td class="small">{{ r.reason }}</td>
+                    <td>
+                        {% for itm in r.items.all %}
+                        <div class="small mb-1">
+                            <strong>{{ itm.product.name }}</strong> ({{ itm.quantity }} {{ itm.product.get_unit_display }})
+                            {% if itm.condition == 'SELLABLE' %}
+                                <span class="badge bg-success-subtle text-success">سليم - أعيد للمخزون</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger">تالف/معيب - لم يعد للمخزون</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">لا توجد عمليات مرتجع مسجلة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

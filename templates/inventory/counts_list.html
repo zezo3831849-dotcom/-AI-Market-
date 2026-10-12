@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}الجرد الفعلي والتسويات المخزنية | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-clipboard2-check text-primary me-2"></i> جلسات الجرد الفعلي والتسويات</h4>
+        <p class="text-muted small mb-0">مقارنة الرصيد الدفتري بالرصيد الفعلي على الأرفف، وتطبيق تسويات العجز أو الزيادة آلياً.</p>
+    </div>
+    {% if request.user.can_manage_inventory %}
+    <a href="{% url 'inventory:count_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle"></i>
+        <span>بدء جلسة جرد جديدة</span>
+    </a>
+    {% endif %}
+</div>
+
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>رقم الجلسة</th>
+                    <th>المخزن</th>
+                    <th>تاريخ الجرد</th>
+                    <th>المسؤول</th>
+                    <th>الحالة</th>
+                    <th>ملاحظات</th>
+                    <th class="text-center">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in counts %}
+                <tr>
+                    <td><span class="badge bg-light text-dark font-monospace border">#{{ c.id }}</span></td>
+                    <td><strong>{{ c.warehouse.name }}</strong></td>
+                    <td>{{ c.count_date|date:"Y-m-d" }}</td>
+                    <td>{{ c.conducted_by.get_full_name|default:c.conducted_by.username }}</td>
+                    <td>
+                        {% if c.status == 'ADJUSTED' %}
+                            <span class="badge bg-success">تمت التسوية آلياً</span>
+                        {% elif c.status == 'COMPLETED' %}
+                            <span class="badge bg-info text-dark">تم الحصر والاعتماد</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">مسودة جرد جارية</span>
+                        {% endif %}
+                    </td>
+                    <td class="small text-muted">{{ c.notes|default:"-" }}</td>
+                    <td class="text-center">
+                        <a href="{% url 'inventory:count_detail' c.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> عرض وتعديل البنود
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">لا توجد جلسات جرد مسجلة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

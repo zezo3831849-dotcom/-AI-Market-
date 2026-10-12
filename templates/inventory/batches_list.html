@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}دفعات الشراء وتواريخ الصلاحية | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-calendar-check text-primary me-2"></i> دفعات الشراء وتواريخ الصلاحية</h4>
+        <p class="text-muted small mb-0">تتبع دقيق لكل دفعة شراء، سعر تكلفتها، وتاريخ انتهاء صلاحيتها لضمان تطبيق سياسة FIFO وتفادي الهوالك.</p>
+    </div>
+    {% if request.user.can_manage_inventory %}
+    <a href="{% url 'inventory:batch_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle"></i>
+        <span>إيداع دفعة شراء جديدة</span>
+    </a>
+    {% endif %}
+</div>
+
+<!-- Filters -->
+<div class="card card-custom p-3 mb-4">
+    <div class="d-flex gap-2">
+        <a href="{% url 'inventory:batches_list' %}" class="btn btn-sm {% if not filter_type %}btn-primary{% else %}btn-outline-secondary{% endif %}">كل الدفعات</a>
+        <a href="{% url 'inventory:batches_list' %}?filter=active" class="btn btn-sm {% if filter_type == 'active' %}btn-primary{% else %}btn-outline-secondary{% endif %}">الدفعات المتوفرة بالمخزن</a>
+        <a href="{% url 'inventory:batches_list' %}?filter=near_expiry" class="btn btn-sm {% if filter_type == 'near_expiry' %}btn-warning text-dark fw-bold{% else %}btn-outline-warning text-dark{% endif %}">
+            <i class="bi bi-clock-history"></i> تقترب صلاحيتها (&lt; 30 يوم)
+        </a>
+        <a href="{% url 'inventory:batches_list' %}?filter=expired" class="btn btn-sm {% if filter_type == 'expired' %}btn-danger fw-bold{% else %}btn-outline-danger{% endif %}">
+            <i class="bi bi-x-circle"></i> منتهية الصلاحية
+        </a>
+    </div>
+</div>
+
+<!-- Batches Table -->
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>رقم الدفعة</th>
+                    <th>المنتج</th>
+                    <th>المخزن</th>
+                    <th>سعر تكلفة الشراء</th>
+                    <th>الكمية الأصلية</th>
+                    <th>الرصيد المتبقي</th>
+                    <th>تاريخ الاستلام</th>
+                    <th>تاريخ الصلاحية</th>
+                    <th>حالة الدفعة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in batches %}
+                <tr>
+                    <td><span class="badge bg-light text-dark border font-monospace">{{ b.batch_number }}</span></td>
+                    <td>
+                        <strong class="text-dark">{{ b.product.name }}</strong>
+                        <span class="text-muted small d-block">{{ b.product.code }}</span>
+                    </td>
+                    <td>{{ b.warehouse.name }}</td>
+                    <td class="fw-bold">{{ b.cost_price }} {{ system_settings.currency }}</td>
+                    <td>{{ b.initial_quantity }} {{ b.product.get_unit_display }}</td>
+                    <td>
+                        <strong class="{% if b.current_quantity == 0 %}text-muted{% else %}text-primary{% endif %} fs-6">
+                            {{ b.current_quantity }} {{ b.product.get_unit_display }}
+                        </strong>
+                    </td>
+                    <td class="text-muted small">{{ b.received_date|date:"Y-m-d" }}</td>
+                    <td>
+                        {% if b.expiry_date %}
+                            <span class="fw-bold {% if b.is_expired %}text-danger{% elif b.is_near_expiry %}text-warning{% else %}text-success{% endif %}">
+                                {{ b.expiry_date|date:"Y-m-d" }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted small">غير محدد</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if b.current_quantity == 0 %}
+                            <span class="badge bg-light text-muted border">تم نفادها بالكامل</span>
+                        {% elif b.is_expired %}
+                            <span class="badge bg-danger">منتهية الصلاحية (هالك)</span>
+                        {% elif b.is_near_expiry %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> تقترب صلاحيتها</span>
+                        {% else %}
+                            <span class="badge bg-success">صالحة وسليمة</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-muted">لا توجد دفعات مطابقة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

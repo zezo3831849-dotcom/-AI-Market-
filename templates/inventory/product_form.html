@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="card card-custom p-4 shadow-sm" style="max-width: 800px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-box-seam text-primary me-2"></i> {{ title }}</h4>
+        <a href="{% url 'inventory:products_list' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-right"></i> العودة للقائمة
+        </a>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label small fw-bold">اسم المنتج <span class="text-danger">*</span></label>
+                <input type="text" name="name" class="form-control" value="{{ product.name|default:'' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">كود المنتج (SKU) <span class="text-danger">*</span></label>
+                <input type="text" name="code" class="form-control" value="{{ product.code|default:'' }}" {% if product %}readonly{% endif %} required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">الباركود</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-upc"></i></span>
+                    <input type="text" name="barcode" class="form-control" value="{{ product.barcode|default:'' }}" placeholder="امسح الباركود أو اكتبه...">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">التصنيف</label>
+                <select name="category" class="form-select">
+                    <option value="">-- اختر التصنيف --</option>
+                    {% for c in categories %}
+                    <option value="{{ c.id }}" {% if product.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">العلامة التجارية / الشركة المصنعة</label>
+                <input type="text" name="brand" class="form-control" value="{{ product.brand|default:'' }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">المورد المعتمد</label>
+                <select name="supplier" class="form-select">
+                    <option value="">-- بدون مورد محدد --</option>
+                    {% for s in suppliers %}
+                    <option value="{{ s.id }}" {% if product.supplier_id == s.id %}selected{% endif %}>{{ s.company_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">سعر الشراء الافتراضي (ج.م)</label>
+                <input type="number" step="0.01" name="default_cost_price" class="form-control" value="{{ product.default_cost_price|default:'0.00' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">سعر البيع للجمهور (ج.م) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" name="sale_price" class="form-control" value="{{ product.sale_price|default:'0.00' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">حد الأمان ونقطة إعادة الطلب</label>
+                <input type="number" step="0.01" name="min_stock_limit" class="form-control" value="{{ product.min_stock_limit|default:'5.00' }}" required>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">وحدة القياس</label>
+                <select name="unit" class="form-select">
+                    <option value="piece" {% if product.unit == 'piece' %}selected{% endif %}>قطعة</option>
+                    <option value="kg" {% if product.unit == 'kg' %}selected{% endif %}>كيلوجرام</option>
+                    <option value="liter" {% if product.unit == 'liter' %}selected{% endif %}>لتر</option>
+                    <option value="box" {% if product.unit == 'box' %}selected{% endif %}>كرتونة</option>
+                    <option value="pack" {% if product.unit == 'pack' %}selected{% endif %}>باكتة / عبوة</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">الحجم أو الوزن</label>
+                <input type="text" name="size_or_weight" class="form-control" value="{{ product.size_or_weight|default:'' }}" placeholder="مثال: 1 لتر / 500 جم">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">مكان التخزين (الرف / القسم)</label>
+                <input type="text" name="storage_location" class="form-control" value="{{ product.storage_location|default:'' }}" placeholder="مثال: رف A-2">
+            </div>
+
+            {% if not product %}
+            <div class="col-12 mt-4 pt-3 border-top">
+                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-stack"></i> رصيد المخزون الأولي (الدفعة الأولى)</h6>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label small">الكمية الأولية بالمخزن</label>
+                        <input type="number" step="0.01" name="initial_qty" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">رقم تشغيلة الدفعة</label>
+                        <input type="text" name="batch_number" class="form-control" value="BATCH-001">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">تاريخ انتهاء الصلاحية</label>
+                        <input type="date" name="expiry_date" class="form-control">
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" name="is_active" id="isActiveCheck" {% if product.is_active %}checked{% endif %}>
+                    <label class="form-check-label fw-bold small" for="isActiveCheck">المنتج نشط ومتاح في نقطة البيع</label>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+                    <i class="bi bi-check2-circle me-1"></i> حفظ بيانات المنتج
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

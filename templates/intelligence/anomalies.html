@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}رصد الشذوذ والتنبيهات الرقابية | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-shield-exclamation text-danger me-2"></i> رصد الشذوذ والتنبيهات الرقابية (AI Anomaly Detection)</h4>
+        <p class="text-muted small mb-0">نظام الرصد الذكي لاكتشاف القفزات المالية غير المبررة وفجوات الباركود وعجز المخزون دون اتهام مباشر، بل لعرض الأدلة وطلب التدقيق البشري.</p>
+    </div>
+    <a href="{% url 'intelligence:center' %}" class="btn btn-outline-secondary btn-sm">مركز الذكاء الاصطناعي</a>
+</div>
+
+<div class="row g-4">
+    {% for anom in anomalies %}
+    <div class="col-md-6">
+        <div class="ai-card anomaly h-100">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="fw-bold mb-0 text-dark">{{ anom.title }}</h5>
+                <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i> اشتباه شذوذ</span>
+            </div>
+            <p class="text-secondary small mb-3">{{ anom.description }}</p>
+
+            <div class="bg-light p-3 rounded small mb-3 border-start border-3 border-danger">
+                <strong class="text-danger d-block mb-1">إجراء التحقق والمراجعة الموصى به:</strong>
+                <div class="fw-bold text-dark">{{ anom.suggested_action }}</div>
+            </div>
+
+            <div class="small text-muted mb-3 bg-white p-2 rounded border">
+                <strong>التحليل الإحصائي المقارن:</strong> {{ anom.rationale }}
+            </div>
+
+            {% if anom.data_evidence %}
+            <div class="small text-muted mb-3">
+                <strong>الأدلة الرقمية:</strong> {{ anom.data_evidence }}
+            </div>
+            {% endif %}
+
+            {% if request.user.is_admin_or_manager and anom.status == 'PENDING' %}
+            <form action="{% url 'intelligence:recommendation_decision' anom.id %}" method="POST" class="d-flex gap-2 pt-2 border-top">
+                {% csrf_token %}
+                <button type="submit" name="decision" value="APPROVED" class="btn btn-sm btn-danger fw-bold flex-grow-1">
+                    <i class="bi bi-check-lg"></i> إحالة للتحقيق والتدقيق
+                </button>
+                <button type="submit" name="decision" value="REJECTED" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-lg"></i> إغلاق التنبيه كحالة طبيعية
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-shield-check fs-1 opacity-50 d-block mb-2 text-success"></i>
+        لا توجد أنماط شاذة مرصودة حالياً. كافة العمليات متسقة ومطابقة!
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

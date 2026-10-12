@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}التقويم الذكي والمناسبات الموسمية | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-calendar-event text-success me-2"></i> التقويم الذكي وذكاء المواسم (Seasonal Intelligence)</h4>
+        <p class="text-muted small mb-0">ربط مواسم الأعياد ورمضان والعودة للمدارس بالأصناف الأكثر طلباً لتجهيز المخزون المسبق وتفادي نفاد السلع.</p>
+    </div>
+    {% if request.user.is_admin_or_manager %}
+    <a href="{% url 'intelligence:calendar_event_create' %}" class="btn btn-success d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle"></i>
+        <span>إضافة مناسبة / موسم جديد</span>
+    </a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    {% for ev in events %}
+    <div class="col-md-6">
+        <div class="card card-custom p-4 h-100 border-start border-4 {% if ev.is_current %}border-success{% else %}border-primary{% endif %}">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="fw-bold mb-0 text-dark">{{ ev.title }}</h5>
+                {% if ev.is_current %}
+                    <span class="badge bg-success"><i class="bi bi-broadcast"></i> جاري الآن</span>
+                {% elif ev.is_upcoming %}
+                    <span class="badge bg-primary">قادم قريباً</span>
+                {% else %}
+                    <span class="badge bg-light text-muted border">منتهي</span>
+                {% endif %}
+            </div>
+
+            <div class="small text-muted mb-3">
+                <i class="bi bi-calendar-range me-1"></i>
+                الفترة: <strong>{{ ev.start_date|date:"Y-m-d" }}</strong> إلى <strong>{{ ev.end_date|date:"Y-m-d" }}</strong>
+                {% if ev.recurring_yearly %}<span class="badge bg-secondary-subtle text-secondary ms-2">متكرر سنوياً</span>{% endif %}
+            </div>
+
+            <p class="small text-secondary mb-3">{{ ev.description }}</p>
+
+            <div class="bg-light p-3 rounded small mb-2 border">
+                <strong class="text-primary d-block mb-1"><i class="bi bi-box-seam me-1"></i> الفئات الأكثر طلباً وتأثراً بالموسم:</strong>
+                <div>
+                    {% for cat in ev.target_categories.all %}
+                    <span class="badge bg-white text-dark border me-1 mb-1">{{ cat.name }}</span>
+                    {% empty %}
+                    <span class="text-muted">جميع السلع العامة</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-calendar-x fs-1 opacity-50 d-block mb-2"></i>
+        لا توجد مواسم مسجلة في التقويم
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

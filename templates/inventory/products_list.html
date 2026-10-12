@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}دليل المنتجات والمخزون | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-box-seam text-primary me-2"></i> دليل المنتجات والمخزون</h4>
+        <p class="text-muted small mb-0">سجل متكامل للسلع والأسعار والأرصدة ونقاط إعادة الطلب.</p>
+    </div>
+    {% if request.user.can_manage_inventory %}
+    <a href="{% url 'inventory:product_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle"></i>
+        <span>إضافة منتج جديد</span>
+    </a>
+    {% endif %}
+</div>
+
+<!-- Filters & Search -->
+<div class="card card-custom p-3 mb-4">
+    <form method="GET" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="بحث بالاسم أو الكود أو الباركود...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="category" class="form-select">
+                <option value="">جميع التصنيفات</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="stock" class="form-select">
+                <option value="">كل حالات المخزون</option>
+                <option value="low" {% if stock_status == 'low' %}selected{% endif %}>منخفض فقط</option>
+                <option value="out" {% if stock_status == 'out' %}selected{% endif %}>نافد (0)</option>
+                <option value="in" {% if stock_status == 'in' %}selected{% endif %}>متوفر</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">تصفية</button>
+            <a href="{% url 'inventory:products_list' %}" class="btn btn-light border"><i class="bi bi-arrow-counterclockwise"></i></a>
+        </div>
+    </form>
+</div>
+
+<!-- Products Table -->
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>كود المنتج</th>
+                    <th>الباركود</th>
+                    <th>اسم المنتج</th>
+                    <th>التصنيف</th>
+                    <th>سعر الشراء</th>
+                    <th>سعر البيع</th>
+                    <th>هامش الربح</th>
+                    <th>المخزون الحالي</th>
+                    <th>حد الأمان</th>
+                    <th class="text-center">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td><span class="badge bg-light text-dark border font-monospace">{{ p.code }}</span></td>
+                    <td>
+                        {% if p.barcode %}
+                        <span class="badge bg-secondary-subtle text-secondary font-monospace"><i class="bi bi-upc"></i> {{ p.barcode }}</span>
+                        {% else %}
+                        <span class="text-muted small">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong class="text-dark">{{ p.name }}</strong>
+                        {% if p.brand %}<span class="text-muted small d-block">{{ p.brand }}</span>{% endif %}
+                    </td>
+                    <td><span class="badge bg-info-subtle text-info">{{ p.category.name|default:"عام" }}</span></td>
+                    <td class="text-muted">{{ p.default_cost_price }} {{ system_settings.currency }}</td>
+                    <td class="fw-bold text-primary">{{ p.sale_price }} {{ system_settings.currency }}</td>
+                    <td>
+                        <span class="badge {% if p.gross_margin_percentage >= 20 %}bg-success-subtle text-success{% else %}bg-warning-subtle text-dark{% endif %}">
+                            {{ p.gross_margin_percentage }}%
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if p.total_stock == 0 %}bg-danger{% elif p.is_low_stock %}bg-warning text-dark{% else %}bg-success{% endif %} fs-7">
+                            {{ p.total_stock }} {{ p.get_unit_display }}
+                        </span>
+                    </td>
+                    <td class="text-muted small">{{ p.min_stock_limit }}</td>
+                    <td class="text-center">
+                        {% if request.user.can_manage_inventory %}
+                        <a href="{% url 'inventory:product_edit' p.id %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="تعديل">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center py-5 text-muted">
+                        <i class="bi bi-box fs-1 d-block mb-2 opacity-50"></i>
+                        لا توجد منتجات مطابقة لخيارات البحث
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

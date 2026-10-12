@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}مركز الذكاء الاصطناعي والتوصيات | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+            <i class="bi bi-stars text-info fs-3"></i>
+            <span>مركز الذكاء الاصطناعي والتوصيات التنبؤية (AI Decision Center)</span>
+        </h4>
+        <p class="text-muted small mb-0">نظام Human-in-the-Loop: يقدم النموذج المقترحات مدعومة بالبراهين الرياضية، وتبقى السلطة الكاملة لاتخاذ القرار للمدير.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'intelligence:run_pipeline' %}" class="btn btn-ai d-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-play-circle-fill fs-5"></i>
+            <span>إعادة فحص السوق بالكامل (AI Scan)</span>
+        </a>
+    </div>
+</div>
+
+<!-- Type Filter Buttons & Counter Badges -->
+<div class="card card-custom p-3 mb-4">
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'intelligence:center' %}" class="btn btn-sm {% if not selected_type %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+            جميع التوصيات ({{ counts.pending }})
+        </a>
+        <a href="{% url 'intelligence:center' %}?type=RESTOCK" class="btn btn-sm {% if selected_type == 'RESTOCK' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-box-arrow-in-down me-1"></i> طلبات إعادة التوريد ({{ counts.restock }})
+        </a>
+        <a href="{% url 'intelligence:center' %}?type=SMART_OFFER" class="btn btn-sm {% if selected_type == 'SMART_OFFER' %}btn-warning text-dark fw-bold{% else %}btn-outline-warning text-dark{% endif %}">
+            <i class="bi bi-percent me-1"></i> عروض الأسعار الذكية ({{ counts.offers }})
+        </a>
+        <a href="{% url 'intelligence:center' %}?type=ANOMALY" class="btn btn-sm {% if selected_type == 'ANOMALY' %}btn-danger fw-bold{% else %}btn-outline-danger{% endif %}">
+            <i class="bi bi-shield-exclamation me-1"></i> رصد الشذوذ والتجاوزات ({{ counts.anomalies }})
+        </a>
+        <a href="{% url 'intelligence:center' %}?type=SEASONAL_PREP" class="btn btn-sm {% if selected_type == 'SEASONAL_PREP' %}btn-success fw-bold{% else %}btn-outline-success{% endif %}">
+            <i class="bi bi-calendar-event me-1"></i> الاستعداد الموسمي ({{ counts.seasonal }})
+        </a>
+    </div>
+</div>
+
+<!-- Recommendations List -->
+<div class="row g-4">
+    {% for rec in recommendations %}
+    <div class="col-lg-6">
+        <div class="ai-card {% if rec.recommendation_type == 'SMART_OFFER' %}offer{% elif rec.recommendation_type == 'ANOMALY' %}anomaly{% elif rec.recommendation_type == 'RESTOCK' %}restock{% else %}seasonal{% endif %} h-100 d-flex flex-direction-column justify-content-between">
+            <div>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge-ai mb-1 d-inline-block">{{ rec.get_recommendation_type_display }}</span>
+                        <h5 class="fw-bold mb-0 mt-1 text-dark">{{ rec.title }}</h5>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-light text-dark border d-block mb-1">نسبة اليقين: {{ rec.confidence_level }}%</span>
+                        <span class="badge {% if rec.status == 'APPROVED' %}bg-success{% elif rec.status == 'REJECTED' %}bg-danger{% elif rec.status == 'MODIFIED' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                            {{ rec.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <p class="text-secondary small mb-3">{{ rec.description }}</p>
+
+                <!-- Proposed Action Box -->
+                <div class="bg-light p-3 rounded small mb-3 border-start border-3 border-primary">
+                    <strong class="text-primary d-block mb-1 fs-7"><i class="bi bi-check2-square"></i> الإجراء المقترح القابل للتنفيذ:</strong>
+                    <div class="fw-bold text-dark">{{ rec.suggested_action }}</div>
+                </div>
+
+                <!-- Explainability / Rationale -->
+                <div class="small mb-3">
+                    <strong class="text-muted d-block mb-1"><i class="bi bi-cpu"></i> السبب والتحليل الإحصائي الداعم:</strong>
+                    <div class="text-dark bg-white p-2 rounded border">{{ rec.rationale }}</div>
+                </div>
+
+                {% if rec.data_evidence %}
+                <div class="small text-muted mb-3">
+                    <i class="bi bi-bar-chart-steps me-1"></i> <strong>المؤشرات الرقمية:</strong> {{ rec.data_evidence }}
+                </div>
+                {% endif %}
+
+                {% if rec.decision %}
+                <div class="bg-light p-2 rounded small mb-3 border">
+                    <span class="text-muted">قرار المدير ({{ rec.decision.manager.username }}):</span>
+                    <strong>{{ rec.decision.get_decision_display }}</strong>
+                    {% if rec.decision.modification_notes %}<div class="text-muted">{{ rec.decision.modification_notes }}</div>{% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Human-in-the-Loop Action Panel -->
+            {% if request.user.is_admin_or_manager and rec.status == 'PENDING' %}
+            <div class="pt-3 border-top mt-3">
+                <form action="{% url 'intelligence:recommendation_decision' rec.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="input-group mb-2">
+                        <input type="text" name="notes" class="form-control form-control-sm" placeholder="ملاحظات أو تعديلات على التوصية (اختياري)...">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="decision" value="APPROVED" class="btn btn-sm btn-success fw-bold flex-grow-1">
+                            <i class="bi bi-check-lg"></i> موافقة وتطبيق
+                        </button>
+                        <button type="submit" name="decision" value="MODIFIED" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> تعديل
+                        </button>
+                        <button type="submit" name="decision" value="REJECTED" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-x-lg"></i> رفض
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-stars fs-1 opacity-50 d-block mb-2"></i>
+        لا توجد توصيات في هذا التصنيف حالياً. انقر على زر فحص السوق لتحديث المؤشرات.
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}نقطة البيع السريع (POS) | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="pos-wrapper">
+    <!-- Left: Products Catalog & Fast Scanner -->
+    <div class="pos-catalog shadow-sm">
+        <!-- Top Controls: Barcode & Filter -->
+        <div class="p-3 border-bottom bg-light">
+            <div class="row g-2 align-items-center">
+                <!-- Barcode Auto Scanner Input -->
+                <div class="col-md-7">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-upc-scan text-primary fs-5"></i></span>
+                        <input type="text" id="barcodeScannerInput" class="form-control form-control-lg border-start-0" placeholder="مسح الباركود أو إدخال الكود واضغط Enter..." autofocus>
+                    </div>
+                </div>
+                <!-- Search text -->
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="productSearchInput" class="form-control" placeholder="بحث بالاسم أو الكود...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Filter Badges -->
+            <div class="d-flex gap-2 overflow-x-auto pt-3 pb-1">
+                <button class="btn btn-sm btn-primary category-btn active" data-category="all">الكل</button>
+                {% for cat in categories %}
+                <button class="btn btn-sm btn-outline-secondary category-btn text-nowrap" data-category="{{ cat.id }}">
+                    <i class="bi {{ cat.icon }} me-1"></i> {{ cat.name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productsGrid" class="product-grid">
+            {% for prod in products %}
+            <div class="pos-product-card" data-id="{{ prod.id }}" data-category="{{ prod.category_id }}" data-name="{{ prod.name }}" data-barcode="{{ prod.barcode }}" data-code="{{ prod.code }}" data-price="{{ prod.sale_price }}" data-cost="{{ prod.default_cost_price }}" data-stock="{{ prod.total_stock }}" data-unit="{{ prod.get_unit_display }}" onclick="Cart.addItem({{ prod.id }}, '{{ prod.name|escapejs }}', {{ prod.sale_price }}, {{ prod.default_cost_price }}, {{ prod.total_stock }})">
+                <div>
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">{{ prod.code }}</span>
+                        <span class="badge {% if prod.total_stock <= 0 %}bg-danger{% elif prod.is_low_stock %}bg-warning text-dark{% else %}bg-success-subtle text-success{% endif %}" style="font-size: 0.7rem;">
+                            متاح: {{ prod.total_stock }}
+                        </span>
+                    </div>
+                    <div class="fw-bold text-dark fs-7 lh-sm mb-2" style="height: 38px; overflow: hidden;">{{ prod.name }}</div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                    <span class="fw-bold text-primary fs-5">{{ prod.sale_price }} <small class="fs-7">{{ system_settings.currency }}</small></span>
+                    <button class="btn btn-sm btn-light border text-primary rounded-circle" style="width: 32px; height: 32px;"><i class="bi bi-plus-lg"></i></button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Right: Live Cart & Fast Checkout -->
+    <div class="pos-cart shadow-sm">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+            <h5 class="fw-bold mb-0"><i class="bi bi-cart3 text-primary me-2"></i> سلة الفاتورة</h5>
+            <button class="btn btn-sm btn-outline-danger" onclick="Cart.clear()"><i class="bi bi-trash"></i> إفراغ</button>
+        </div>
+
+        <!-- Customer & Payment Options -->
+        <div class="px-3 pt-2">
+            <input type="text" id="customerNameInput" class="form-control form-control-sm mb-2" placeholder="اسم العميل (اختياري، افتراضي: عميل نقدي)">
+        </div>
+
+        <!-- Items Container -->
+        <div id="cartItemsContainer" class="cart-items-list">
+            <div id="emptyCartMessage" class="text-center py-5 text-muted">
+                <i class="bi bi-cart-x fs-1 opacity-50 d-block mb-2"></i>
+                السلة فارغة حالياً. امسح الباركود أو اختر منتجات للبدء.
+            </div>
+        </div>
+
+        <!-- Cart Summary & Calculations -->
+        <div class="p-3 border-top bg-light">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+                <span>الإجمالي قبل الخصم:</span>
+                <span id="cartSubtotal" class="fw-bold">0.00 {{ system_settings.currency }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
+                <span>الخصم (ج.م):</span>
+                <input type="number" id="cartDiscount" class="form-control form-control-sm text-center" style="width: 90px;" value="0" min="0" oninput="Cart.calculateTotals()">
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center py-2 border-top border-bottom my-2">
+                <span class="fw-bold fs-6">صافي الفاتورة للدفع:</span>
+                <span id="cartTotal" class="fw-bold fs-4 text-success">0.00 {{ system_settings.currency }}</span>
+            </div>
+
+            <!-- Transparency / Profit margin for cashier & manager -->
+            <div class="d-flex justify-content-between small text-muted mb-3 bg-white p-2 rounded border">
+                <span>التكلفة (COGS): <strong id="cartCogs">0.00</strong></span>
+                <span>مجمل الربح: <strong id="cartGrossProfit" class="text-primary">0.00</strong></span>
+                <span id="cartMarginBadge" class="badge bg-primary-subtle text-primary">0%</span>
+            </div>
+
+            <!-- Payment Method Buttons -->
+            <div class="btn-group w-100 mb-3" role="group">
+                <input type="radio" class="btn-check" name="paymentMethod" id="payCash" value="CASH" checked>
+                <label class="btn btn-outline-secondary btn-sm" for="payCash"><i class="bi bi-cash"></i> نقداً</label>
+
+                <input type="radio" class="btn-check" name="paymentMethod" id="payCard" value="CARD">
+                <label class="btn btn-outline-secondary btn-sm" for="payCard"><i class="bi bi-credit-card"></i> بطاقة / فيزا</label>
+
+                <input type="radio" class="btn-check" name="paymentMethod" id="payWallet" value="WALLET">
+                <label class="btn btn-outline-secondary btn-sm" for="payWallet"><i class="bi bi-phone"></i> محفظة</label>
+            </div>
+
+            <!-- Complete Sale Button -->
+            <button id="checkoutBtn" class="btn btn-success btn-lg w-100 fw-bold shadow-sm d-flex justify-content-center align-items-center gap-2" onclick="Cart.checkout()">
+                <i class="bi bi-check2-circle fs-4"></i>
+                <span>إتمام عملية البيع وطباعة الفاتورة</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-body p-4" id="printableReceipt">
+                <div class="text-center mb-3">
+                    <h5 class="fw-bold mb-1">{{ system_settings.store_name }}</h5>
+                    <div class="small text-muted">{{ system_settings.address }}</div>
+                    <div class="small text-muted">هاتف: {{ system_settings.phone }}</div>
+                    <div class="border-top border-dashed my-2"></div>
+                    <h6 class="fw-bold mb-0">فاتورة بيع نقدي</h6>
+                    <small id="recInvoiceNumber" class="text-muted"></small>
+                    <div id="recDate" class="small text-muted"></div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm border-bottom">
+                        <thead>
+                            <tr class="small text-muted">
+                                <th>الصنف</th>
+                                <th class="text-center">الكمية</th>
+                                <th class="text-end">السعر</th>
+                                <th class="text-end">الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recItemsBody" class="small"></tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between mb-1 small">
+                    <span>الإجمالي قبل الخصم:</span>
+                    <span id="recSubtotal"></span>
+                </div>
+                <div class="d-flex justify-content-between mb-1 small text-danger">
+                    <span>قيمة الخصم:</span>
+                    <span id="recDiscount"></span>
+                </div>
+                <div class="d-flex justify-content-between fw-bold fs-5 border-top border-bottom py-2 my-2">
+                    <span>الصافي المطلوب:</span>
+                    <span id="recTotal" class="text-success"></span>
+                </div>
+
+                <div class="text-center mt-3 small text-muted">
+                    شكراً لزيارتكم! نتشرف بخدمتكم دائماً.
+                </div>
+            </div>
+            <div class="modal-footer bg-light p-2">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-primary btn-sm fw-bold" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> طباعة الفاتورة
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const Cart = {
+    items: [],
+
+    addItem(productId, name, salePrice, costPrice, stock) {
+        const existing = this.items.find(i => i.product_id === productId);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            this.items.push({
+                product_id: productId,
+                name: name,
+                unit_price: parseFloat(salePrice),
+                cost_price: parseFloat(costPrice),
+                quantity: 1,
+                stock: parseFloat(stock)
+            });
+        }
+        this.render();
+    },
+
+    updateQty(productId, delta) {
+        const item = this.items.find(i => i.product_id === productId);
+        if (!item) return;
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+            this.removeItem(productId);
+            return;
+        }
+        this.render();
+    },
+
+    removeItem(productId) {
+        this.items = this.items.filter(i => i.product_id !== productId);
+        this.render();
+    },
+
+    clear() {
+        this.items = [];
+        this.render();
+    },
+
+    calculateTotals() {
+        let subtotal = 0;
+        let cogs = 0;
+        this.items.forEach(i => {
+            subtotal += i.quantity * i.unit_price;
+            cogs += i.quantity * i.cost_price;
+        });
+
+        const discountInput = parseFloat(document.getElementById('cartDiscount').value || 0);
+        const total = Math.max(subtotal - discountInput, 0);
+        const grossProfit = total - cogs;
+        const marginPct = total > 0 ? ((grossProfit / total) * 100).toFixed(1) : 0;
+
+        document.getElementById('cartSubtotal').innerText = subtotal.toFixed(2) + ' {{ system_settings.currency }}';
+        document.getElementById('cartTotal').innerText = total.toFixed(2) + ' {{ system_settings.currency }}';
+        document.getElementById('cartCogs').innerText = cogs.toFixed(2);
+        document.getElementById('cartGrossProfit').innerText = grossProfit.toFixed(2);
+        document.getElementById('cartMarginBadge').innerText = marginPct + '%';
+
+        return { subtotal, discountInput, total, cogs, grossProfit };
+    },
+
+    render() {
+        const container = document.getElementById('cartItemsContainer');
+        const emptyMsg = document.getElementById('emptyCartMessage');
+
+        if (this.items.length === 0) {
+            container.innerHTML = '';
+            container.appendChild(emptyMsg);
+            emptyMsg.style.display = 'block';
+            this.calculateTotals();
+            return;
+        }
+
+        emptyMsg.style.display = 'none';
+        container.innerHTML = this.items.map(i => `
+            <div class="cart-item-row">
+                <div style="flex: 1; min-width: 0;">
+                    <div class="fw-bold small text-truncate">${i.name}</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">${i.unit_price.toFixed(2)} {{ system_settings.currency }}</div>
+                </div>
+                <div class="d-flex align-items-center gap-1 mx-2">
+                    <button class="btn btn-sm btn-light border py-0 px-2" onclick="Cart.updateQty(${i.product_id}, -1)">-</button>
+                    <span class="fw-bold px-1 small">${i.quantity}</span>
+                    <button class="btn btn-sm btn-light border py-0 px-2" onclick="Cart.updateQty(${i.product_id}, 1)">+</button>
+                </div>
+                <div class="text-end fw-bold text-primary small" style="width: 70px;">
+                    ${(i.quantity * i.unit_price).toFixed(2)}
+                </div>
+                <button class="btn btn-sm text-danger p-0 ms-2" onclick="Cart.removeItem(${i.product_id})">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </div>
+        `).join('');
+
+        this.calculateTotals();
+    },
+
+    async checkout() {
+        if (this.items.length === 0) {
+            OfflineManager.showToast('تنبيه', 'يرجى إضافة سلع للسلة أولاً قبل إتمام البيع.', 'warning');
+            return;
+        }
+
+        const totals = this.calculateTotals();
+        const customerName = document.getElementById('customerNameInput').value.trim() || 'عميل نقدي';
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        const clientUuid = 'sale-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+
+        const payload = {
+            items: this.items,
+            customer_name: customerName,
+            discount_amount: totals.discountInput,
+            payment_method: paymentMethod,
+            client_uuid: clientUuid
+        };
+
+        // If offline: save to local queue
+        if (!navigator.onLine) {
+            OfflineManager.enqueueSale(payload);
+            OfflineManager.showToast('تم الحفظ دون اتصال (Offline)', 'تم تسجيل الفاتورة محلياً بنجاح وستُرفع تلقائياً عند عودة الإنترنت.', 'warning');
+            this.showReceiptModal('INV-OFFLINE-' + Date.now().toString().slice(-4), totals, customerName);
+            this.clear();
+            return;
+        }
+
+        // If online: submit to API
+        try {
+            const btn = document.getElementById('checkoutBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الحفظ...';
+
+            const res = await fetch('/sales/api/process-sale/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check2-circle fs-4"></i> <span>إتمام عملية البيع وطباعة الفاتورة</span>';
+
+            if (data.success) {
+                OfflineManager.showToast('تمت العملية بنجاح!', `فاتورة رقم ${data.invoice_number} بإجمالي ${data.total_amount} {{ system_settings.currency }}`, 'success');
+                this.showReceiptModal(data.invoice_number, totals, customerName);
+                this.clear();
+            } else {
+                OfflineManager.showToast('خطأ', data.message, 'danger');
+            }
+        } catch (err) {
+            console.error(err);
+            // Fallback to offline queue on unexpected network error
+            OfflineManager.enqueueSale(payload);
+            OfflineManager.showToast('تم التحويل لوضع الأوفلاين', 'تعذر الوصول للخادم، تم حفظ الفاتورة محلياً لمزامنتها لاحقاً.', 'warning');
+            this.showReceiptModal('INV-OFFLINE', totals, customerName);
+            this.clear();
+            document.getElementById('checkoutBtn').disabled = false;
+        }
+    },
+
+    showReceiptModal(invNumber, totals, customer) {
+        document.getElementById('recInvoiceNumber').innerText = 'رقم: ' + invNumber;
+        document.getElementById('recDate').innerText = 'التاريخ: ' + new Date().toLocaleString('ar-EG');
+        document.getElementById('recSubtotal').innerText = totals.subtotal.toFixed(2) + ' {{ system_settings.currency }}';
+        document.getElementById('recDiscount').innerText = totals.discountInput.toFixed(2) + ' {{ system_settings.currency }}';
+        document.getElementById('recTotal').innerText = totals.total.toFixed(2) + ' {{ system_settings.currency }}';
+
+        document.getElementById('recItemsBody').innerHTML = this.items.map(i => `
+            <tr>
+                <td>${i.name}</td>
+                <td class="text-center">${i.quantity}</td>
+                <td class="text-end">${i.unit_price.toFixed(2)}</td>
+                <td class="text-end">${(i.quantity * i.unit_price).toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+        const modal = new bootstrap.Modal(document.getElementById('receiptModal'));
+        modal.show();
+    }
+};
+
+// Barcode Scanner Listener & Category Filtering
+document.addEventListener('DOMContentLoaded', () => {
+    const scannerInput = document.getElementById('barcodeScannerInput');
+    const searchInput = document.getElementById('productSearchInput');
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const productCards = document.querySelectorAll('.pos-product-card');
+
+    // Barcode Auto Enter
+    scannerInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const barcodeVal = scannerInput.value.trim();
+            if (!barcodeVal) return;
+
+            let matched = false;
+            productCards.forEach(card => {
+                if (card.dataset.barcode === barcodeVal || card.dataset.code.toLowerCase() === barcodeVal.toLowerCase()) {
+                    card.click();
+                    matched = true;
+                }
+            });
+
+            if (matched) {
+                scannerInput.value = '';
+            } else {
+                OfflineManager.showToast('الباركود غير موجود', `لم يتم العثور على منتج بالباركود: ${barcodeVal}`, 'warning');
+                scannerInput.select();
+            }
+        }
+    });
+
+    // Product search filter
+    searchInput.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        productCards.forEach(card => {
+            const name = card.dataset.name.toLowerCase();
+            const code = card.dataset.code.toLowerCase();
+            const barcode = (card.dataset.barcode || '').toLowerCase();
+            const match = name.includes(q) || code.includes(q) || barcode.includes(q);
+            card.style.display = match ? 'flex' : 'none';
+        });
+    });
+
+    // Category filter buttons
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryBtns.forEach(b => b.classList.remove('active', 'btn-primary'));
+            categoryBtns.forEach(b => b.classList.add('btn-outline-secondary'));
+            btn.classList.add('active', 'btn-primary');
+            btn.classList.remove('btn-outline-secondary');
+
+            const cat = btn.dataset.category;
+            productCards.forEach(card => {
+                if (cat === 'all' || card.dataset.category === cat) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

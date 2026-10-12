@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}التنبؤ المستقبلي بالطلب | {{ system_settings.store_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-graph-up text-primary me-2"></i> التنبؤ بالطلب المستقبلي (AI Demand Forecasting)</h4>
+        <p class="text-muted small mb-0">نماذج تعلم آلي وتحليل سلاسل زمنية (Scikit-Learn + Linear Regression + الموسمية) لتقدير الطلب القادم ونطاقات عدم اليقين.</p>
+    </div>
+</div>
+
+<!-- Trigger Forecast Form -->
+<div class="card card-custom p-3 mb-4">
+    <form action="{% url 'intelligence:run_forecast' %}" method="POST" class="row g-2 align-items-center">
+        {% csrf_token %}
+        <div class="col-md-5">
+            <select name="product_id" class="form-select">
+                <option value="">جميع المنتجات (تحديث شامل)</option>
+                {% for p in products %}
+                <option value="{{ p.id }}">{{ p.name }} (كود: {{ p.code }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select name="horizon_days" class="form-select">
+                <option value="7">أفق التوقع: 7 أيام قادمة</option>
+                <option value="14">أفق التوقع: 14 يوماً قادمة</option>
+                <option value="30">أفق التوقع: 30 يوماً قادمة</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100 fw-bold">
+                <i class="bi bi-play-circle me-1"></i> إعادة تدريب وتحديث التنبؤ
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Forecasts Table -->
+<div class="card card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom mb-0">
+            <thead>
+                <tr>
+                    <th>المنتج</th>
+                    <th>كود المنتج</th>
+                    <th>أفق التوقع</th>
+                    <th>الطلب المتوقع (وحدة)</th>
+                    <th>نطاق عدم اليقين (Confidence Interval)</th>
+                    <th>نسبة الاعتمادية</th>
+                    <th>الخوارزمية / النموذج</th>
+                    <th>المخزون الحالي</th>
+                    <th>الحالة والتقييم</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in forecasts %}
+                <tr>
+                    <td><strong class="text-dark">{{ f.product.name }}</strong></td>
+                    <td><span class="badge bg-light text-dark border font-monospace">{{ f.product.code }}</span></td>
+                    <td><span class="badge bg-primary-subtle text-primary">{{ f.horizon_days }} أيام</span></td>
+                    <td>
+                        <strong class="fs-6 text-primary">{{ f.predicted_quantity }} {{ f.product.get_unit_display }}</strong>
+                    </td>
+                    <td>
+                        <span class="small font-monospace text-muted">
+                            [{{ f.lower_bound }} &larr; {{ f.predicted_quantity }} &rarr; {{ f.upper_bound }}]
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: {{ f.confidence_score }}%;"></div>
+                            </div>
+                            <span class="small fw-bold">{{ f.confidence_score }}%</span>
+                        </div>
+                    </td>
+                    <td class="small text-muted">{{ f.algorithm_used }}</td>
+                    <td>
+                        <span class="badge {% if f.product.is_low_stock %}bg-danger{% else %}bg-success{% endif %}">
+                            {{ f.product.total_stock }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if f.product.total_stock < f.predicted_quantity %}
+                            <span class="badge bg-danger"><i class="bi bi-exclamation-triangle"></i> خطر عجز مخزون</span>
+                        {% else %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> المخزون كافٍ</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-muted">لا توجد تنبؤات مسجلة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
