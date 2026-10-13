@@ -1,0 +1,15 @@
+runtime: python312
+instance_class: F1
+
+entrypoint: gunicorn -b :$PORT market_core.wsgi:application
+
+env_variables:
+  DEBUG: "True"
+  PYTHONUNBUFFERED: "1"
+
+handlers:
+  - url: /static
+    static_dir: staticfiles/
+
+  - url: /.*
+    script: auto
