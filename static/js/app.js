@@ -420,13 +420,22 @@ const ChatbotController = {
                     pending_action: this.currentPendingAction
                 })
             });
-            const data = await res.json();
+
+            let data;
+            try {
+                data = await res.json();
+            } catch (parseErr) {
+                const textErr = await res.text();
+                data = { reply: textErr ? textErr.slice(0, 300) : "استجاب الخادم ولكن تعذر فك صيغة الرد." };
+            }
+
             this.hideTyping();
             this.handleBotResponse(data);
         } catch (err) {
+            console.error("Chatbot sendMessage error:", err);
             this.hideTyping();
             this.appendBotMessage({
-                reply: "عذراً، حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+                reply: "عذراً، حدث انقطاع مؤقت في الاتصال بالخادم. يرجى التأكد من اتصال الإنترنت ثم إعادة المحاولة."
             });
         }
     },
@@ -448,13 +457,22 @@ const ChatbotController = {
                     pending_action: this.currentPendingAction
                 })
             });
-            const data = await res.json();
+
+            let data;
+            try {
+                data = await res.json();
+            } catch (parseErr) {
+                const textErr = await res.text();
+                data = { reply: textErr ? textErr.slice(0, 300) : "استجاب الخادم ولكن تعذر فك صيغة الرد." };
+            }
+
             this.hideTyping();
             this.handleBotResponse(data);
         } catch (err) {
+            console.error("Chatbot sendAuthenticatedAction error:", err);
             this.hideTyping();
             this.appendBotMessage({
-                reply: "عذراً، تعذر إتمام التحقق. يرجى المحاولة لاحقاً."
+                reply: "عذراً، تعذر إتمام التحقق بسبب انقطاع الاتصال. يرجى المحاولة لاحقاً."
             });
         }
     },

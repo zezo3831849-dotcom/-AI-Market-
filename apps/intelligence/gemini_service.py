@@ -36,11 +36,9 @@ class GeminiMarketAgent:
     @classmethod
     def get_models(cls):
         return getattr(settings, 'GEMINI_MODELS', [
-            'gemini-3.1-flash-lite',
             'gemini-flash-lite-latest',
-            'gemini-3.5-flash',
-            'gemini-3.8-flash',
-            'gemini-pro-latest'
+            'gemini-3.1-flash-lite',
+            'gemini-flash-latest',
         ])
 
     # =========================================================================
@@ -215,13 +213,14 @@ class GeminiMarketAgent:
                 headers={"Content-Type": "application/json"}
             )
             try:
-                with urllib.request.urlopen(req, timeout=14) as resp:
+                with urllib.request.urlopen(req, timeout=9) as resp:
                     res_json = json.loads(resp.read().decode('utf-8'))
                     candidates = res_json.get('candidates', [])
                     if candidates and 'content' in candidates[0]:
                         parts = candidates[0]['content'].get('parts', [])
-                        if parts and 'text' in parts[0]:
-                            return parts[0]['text'].strip(), model_name
+                        text_parts = [p.get('text', '') for p in parts if p.get('text')]
+                        if text_parts:
+                            return "\n".join(text_parts).strip(), model_name
             except Exception as e:
                 # Silently try next candidate model upon rate limit (429), high demand (503), or timeout
                 continue

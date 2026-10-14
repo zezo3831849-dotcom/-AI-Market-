@@ -349,7 +349,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     pending_action: currentPendingAction
                 })
             });
-            const data = await res.json();
+
+            let data;
+            try {
+                data = await res.json();
+            } catch (parseErr) {
+                const textErr = await res.text();
+                data = { reply: textErr ? textErr.slice(0, 300) : "استجاب الخادم ولكن تعذر فك صيغة الرد." };
+            }
+
             hideTyping();
 
             if (data.auth_required) {
@@ -370,9 +378,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             appendBotMessage(data);
         } catch (err) {
+            console.error("Chatbot sendMessage error:", err);
             hideTyping();
             appendBotMessage({
-                reply: "عذراً، حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+                reply: "عذراً، حدث انقطاع مؤقت في الاتصال بالخادم. يرجى التأكد من اتصال الإنترنت ثم إعادة المحاولة."
             });
         }
     }
@@ -394,14 +403,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     pending_action: currentPendingAction
                 })
             });
-            const data = await res.json();
+
+            let data;
+            try {
+                data = await res.json();
+            } catch (parseErr) {
+                const textErr = await res.text();
+                data = { reply: textErr ? textErr.slice(0, 300) : "استجاب الخادم ولكن تعذر فك صيغة الرد." };
+            }
+
             hideTyping();
             currentPendingAction = null;
             appendBotMessage(data);
         } catch (err) {
+            console.error("Chatbot sendAuthenticatedAction error:", err);
             hideTyping();
             appendBotMessage({
-                reply: "عذراً، فشل تنفيذ العملية. يرجى المحاولة لاحقاً."
+                reply: "عذراً، فشل تنفيذ العملية بسبب انقطاع الاتصال. يرجى المحاولة لاحقاً."
             });
         }
     }

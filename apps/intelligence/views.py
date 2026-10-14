@@ -192,20 +192,25 @@ def chatbot_api_view(request):
         return JsonResponse({'reply': 'يرجى إرسال طلب POST.', 'action': 'error'}, status=405)
 
     try:
-        if request.content_type == 'application/json':
-            data = json.loads(request.body.decode('utf-8'))
-        else:
+        data = {}
+        if request.body:
+            try:
+                data = json.loads(request.body.decode('utf-8'))
+            except Exception:
+                pass
+        if not data:
             data = request.POST.dict()
-            if 'auth_data' in data and isinstance(data['auth_data'], str):
-                try:
-                    data['auth_data'] = json.loads(data['auth_data'])
-                except Exception:
-                    pass
-            if 'pending_action' in data and isinstance(data['pending_action'], str):
-                try:
-                    data['pending_action'] = json.loads(data['pending_action'])
-                except Exception:
-                    pass
+
+        if 'auth_data' in data and isinstance(data['auth_data'], str):
+            try:
+                data['auth_data'] = json.loads(data['auth_data'])
+            except Exception:
+                pass
+        if 'pending_action' in data and isinstance(data['pending_action'], str):
+            try:
+                data['pending_action'] = json.loads(data['pending_action'])
+            except Exception:
+                pass
 
         message = data.get('message', '')
         auth_data = data.get('auth_data', None)
@@ -223,7 +228,7 @@ def chatbot_api_view(request):
         return JsonResponse({
             'reply': f'عذراً، حدث خطأ أثناء معالجة طلبك: {str(e)}',
             'action': 'error'
-        }, status=500)
+        }, status=200)
 
 
 @login_required
