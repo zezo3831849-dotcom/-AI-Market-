@@ -178,11 +178,11 @@ def smart_offers_view(request):
 
 import json
 from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 from .chatbot_service import MarketAIChatbot
 
 
-@ensure_csrf_cookie
+@csrf_exempt
 def chatbot_api_view(request):
     """
     API endpoint for the intelligent AI market assistant widget.

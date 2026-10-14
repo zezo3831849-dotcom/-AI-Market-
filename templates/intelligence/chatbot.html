@@ -233,13 +233,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatMarkdown(text) {
+        if (!text) return '';
         let t = escapeHtml(text);
+        t = t.replace(/^### (.*)$/gm, '<h6 class="fw-bold mt-2 mb-1 text-primary">$1</h6>');
+        t = t.replace(/^## (.*)$/gm, '<h6 class="fw-bold fs-6 mt-2 mb-1 text-primary">$1</h6>');
         t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         t = t.replace(/~~(.*?)~~/g, '<del>$1</del>');
-        t = t.replace(/`(.*?)`/g, '<code class="bg-light p-1 rounded">$1</code>');
-        t = t.replace(/^[•\-]\s*(.*)$/gm, '<li class="mb-1">$1</li>');
-        t = t.replace(/(<li.*<\/li>)/s, '<ul class="mb-2 ps-3">$1</ul>');
-        t = t.replace(/\n/g, '<br>');
+        t = t.replace(/`([^`]+)`/g, '<code class="bg-light p-1 rounded">$1</code>');
+        t = t.replace(/^[•\-\*]\s+(.*)$/gm, '<li class="mb-1">$1</li>');
+        t = t.replace(/(<li class="mb-1">.*?<\/li>(?:\s*<li class="mb-1">.*?<\/li>)*)/gs, '<ul class="mb-2 ps-3">$1</ul>');
+        t = t.replace(/\n{2,}/g, '<br><br>');
+        t = t.replace(/([^\n>])\n([^\n<])/g, '$1<br>$2');
         return t;
     }
 
