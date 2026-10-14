@@ -17,12 +17,14 @@ from apps.sales.models import Sale, SaleItem
 from apps.expenses.models import OperatingExpense, ExpenseCategory
 from apps.suppliers.models import Supplier
 from apps.intelligence.models import CalendarEvent, Forecast, AIRecommendation
+from .gemini_service import GeminiMarketAgent
 
 
 class MarketAIChatbot:
     """
     Intelligent chatbot engine that guides users, answers queries, adds data,
     and updates existing system records with strict credential verification.
+    Powered by Google Gemini Pro with store-grounded RAG.
     """
 
     @classmethod
@@ -38,12 +40,12 @@ class MarketAIChatbot:
 
         if not message:
             return {
-                "reply": "مرحباً بك! أنا مساعد السوق الذكي 🤖 كيف يمكنني مساعدتك اليوم؟ يمكنك سؤالي عن المبيعات، النواقص، طلب إضافة منتج أو مصروف، أو تعديل أسعار المنتجات.",
+                "reply": "مرحباً بك! أنا مساعد السوق الذكي 🤖 مدعوم بـ Google Gemini Pro. كيف يمكنني مساعدتك اليوم؟ يمكنك سؤالي عن أي صنف في المحل، مبيعات اليوم، النواقص، طلب إضافة منتج أو مصروف، أو استشارتي في أي موضوع تجاري أو عام.",
                 "action": "greeting",
-                "suggestions": ["مبيعات اليوم 📈", "النواقص في المخزن ⚠️", "أضف منتج جديد ➕", "سجل مصروف 💸", "عدل سعر منتج ✏️"]
+                "suggestions": ["مبيعات اليوم 📈", "النواقص في المخزن ⚠️", "سعر السكر كام؟ 📦", "أضف منتج جديد ➕", "سجل مصروف 💸", "استشارة لزيادة الأرباح 💡"]
             }
 
-        # 2. Check for modification intents (requires authentication)
+        # 2. Check for modification intents (strictly requires authentication)
         update_match = cls.detect_update_intent(message)
         if update_match:
             return cls.handle_update_intent(update_match, user, auth_data)
@@ -53,17 +55,28 @@ class MarketAIChatbot:
         if create_match:
             return cls.handle_create_intent(create_match, user)
 
-        # 4. Check for system queries and statistics
-        query_match = cls.detect_query_intent(message)
-        if query_match:
-            return cls.handle_query_intent(query_match)
-
-        # 5. Check for navigation requests
+        # 4. Check for navigation requests (e.g. 'وديني للكاشير')
         nav_match = cls.detect_navigation_intent(message)
         if nav_match:
             return cls.handle_navigation_intent(nav_match)
 
-        # 6. Fallback smart assistant response
+        # 5. Check for exact direct system statistics queries
+        query_match = cls.detect_query_intent(message)
+        if query_match and query_match in ['today_sales', 'low_stock', 'near_expiry', 'month_expenses']:
+            return cls.handle_query_intent(query_match)
+
+        # 6. Conversational Gemini Pro AI Agent (Searches store database + answers any general or business question)
+        try:
+            gemini_res = GeminiMarketAgent.generate_response(message, user=user)
+            if gemini_res:
+                return gemini_res
+        except Exception:
+            pass
+
+        # 7. Fallback to smart local assistant response
+        if query_match:
+            return cls.handle_query_intent(query_match)
+
         return cls.handle_general_assistance(message)
 
     # =========================================================================

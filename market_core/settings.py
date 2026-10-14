@@ -8,6 +8,19 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load local environment variables from .env if present
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    try:
+        with open(env_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    k, v = line.split('=', 1)
+                    os.environ.setdefault(k.strip(), v.strip())
+    except Exception:
+        pass
+
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = 'django-insecure-ai-powered-market-manager-production-ready-key'
 
@@ -125,4 +138,14 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.pinggy.link',
     'https://*.onrender.com',
     'https://*.up.railway.app',
+]
+
+# Google Gemini AI Configuration
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+GEMINI_MODELS = [
+    'gemini-3.1-flash-lite',
+    'gemini-flash-lite-latest',
+    'gemini-3.5-flash',
+    'gemini-3.8-flash',
+    'gemini-pro-latest',
 ]

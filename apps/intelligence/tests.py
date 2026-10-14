@@ -194,6 +194,20 @@ class MarketAIChatbotTests(TestCase):
         self.product.refresh_from_db()
         self.assertEqual(self.product.sale_price, Decimal('30.00'))
 
+    def test_gemini_store_search_context(self):
+        from apps.intelligence.gemini_service import GeminiMarketAgent
+        context = GeminiMarketAgent.search_store_database("سكر")
+        self.assertIn("سكر الأسرة", context)
+        self.assertIn("30.00", context)
+        self.assertIn("بيانات المتجر", context)
+
+    def test_gemini_process_conversational_question(self):
+        # Conversational / general question routes to Gemini
+        res = MarketAIChatbot.process_message("سعر السكر كام في المخزن؟", user=self.admin_user)
+        self.assertIsNotNone(res)
+        self.assertTrue(len(res.get("reply", "")) > 0)
+        self.assertIn(res.get("action"), ["gemini_response", "product_info", "general_help", "info"])
+
 
 class ChatbotViewsTests(TestCase):
     def setUp(self):
