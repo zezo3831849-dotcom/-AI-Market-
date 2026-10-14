@@ -14,6 +14,10 @@
             <i class="bi bi-upc-scan fs-5"></i>
             <span>فتح نقطة البيع (POS)</span>
         </a>
+        <button type="button" class="btn btn-outline-primary fw-bold px-3 d-flex align-items-center gap-2 shadow-sm" onclick="ChatbotController.toggle(true)">
+            <i class="bi bi-robot fs-5"></i>
+            <span>المساعد الذكي</span>
+        </button>
         <a href="{% url 'intelligence:run_pipeline' %}" class="btn btn-ai px-3 d-flex align-items-center gap-2">
             <i class="bi bi-stars"></i>
             <span>تشغيل فحص الذكاء الاصطناعي</span>
@@ -119,7 +123,13 @@
             </h5>
             <small class="text-muted">يقدم الذكاء الاصطناعي الأسباب والبيانات الداعمة، ويبقى القرار النهائي للإدارة.</small>
         </div>
-        <a href="{% url 'intelligence:center' %}" class="btn btn-outline-primary btn-sm">مركز الذكاء الاصطناعي الكامل</a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'intelligence:chatbot_page' %}" class="btn btn-outline-info btn-sm d-flex align-items-center gap-1">
+                <i class="bi bi-robot"></i>
+                <span>استشارة المساعد</span>
+            </a>
+            <a href="{% url 'intelligence:center' %}" class="btn btn-outline-primary btn-sm">مركز الذكاء الاصطناعي الكامل</a>
+        </div>
     </div>
 
     <div class="row g-3">

@@ -9,12 +9,18 @@
         <h4 class="fw-bold mb-1"><i class="bi bi-box-seam text-primary me-2"></i> دليل المنتجات والمخزون</h4>
         <p class="text-muted small mb-0">سجل متكامل للسلع والأسعار والأرصدة ونقاط إعادة الطلب.</p>
     </div>
-    {% if request.user.can_manage_inventory %}
-    <a href="{% url 'inventory:product_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
-        <i class="bi bi-plus-circle"></i>
-        <span>إضافة منتج جديد</span>
-    </a>
-    {% endif %}
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-2" onclick="ChatbotController.ask('النواقص في المخزن')">
+            <i class="bi bi-robot"></i>
+            <span>استشارة النواقص مع المساعد</span>
+        </button>
+        {% if request.user.can_manage_inventory %}
+        <a href="{% url 'inventory:product_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle"></i>
+            <span>إضافة منتج جديد</span>
+        </a>
+        {% endif %}
+    </div>
 </div>
 
 <!-- Filters & Search -->
@@ -101,6 +107,9 @@
                         <a href="{% url 'inventory:product_edit' p.id %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="تعديل">
                             <i class="bi bi-pencil"></i>
                         </a>
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 ms-1" onclick="ChatbotController.ask('عدل سعر بيع {{ p.name|escapejs }} إلى ', false)" title="تعديل السعر بواسطة المساعد الذكي">
+                            <i class="bi bi-robot"></i>
+                        </button>
                         {% endif %}
                     </td>
                 </tr>

@@ -39,6 +39,7 @@ backups/*.json
 
 # Cloudflare & Binaries
 cloudflared.exe
+config.yml
 desktop_storage/
 
 # IDEs & OS
