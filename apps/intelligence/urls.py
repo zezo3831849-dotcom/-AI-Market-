@@ -13,4 +13,6 @@ urlpatterns = [
     path('calendar/add/', views.calendar_event_create_view, name='calendar_event_create'),
     path('anomalies/', views.anomalies_view, name='anomalies_list'),
     path('smart-offers/', views.smart_offers_view, name='smart_offers'),
+    path('chatbot/', views.chatbot_page_view, name='chatbot_page'),
+    path('chatbot/api/', views.chatbot_api_view, name='chatbot_api'),
 ]

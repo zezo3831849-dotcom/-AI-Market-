@@ -196,6 +196,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Initialize AI Market Assistant Chatbot
+    ChatbotController.init();
 });
 
 // CSRF Token Helper
@@ -213,3 +216,362 @@ function getCsrfToken() {
     }
     return cookieValue || '';
 }
+
+// AI Market Assistant Chatbot Controller (Comprehensive 19-Feature Manager)
+const ChatbotController = {
+    isOpen: false,
+    currentPendingAction: null,
+
+    init() {
+        this.navbarBtn = document.getElementById('navbarChatbotBtn');
+        this.windowEl = document.getElementById('chatbotWindow');
+        this.closeBtn = document.getElementById('chatbotCloseBtn');
+        this.clearBtn = document.getElementById('chatbotClearBtn');
+        this.messagesContainer = document.getElementById('chatbotMessages');
+        this.inputForm = document.getElementById('chatbotInputForm');
+        this.inputField = document.getElementById('chatbotInputField');
+        this.authContainer = document.getElementById('chatbotAuthContainer');
+        this.authForm = document.getElementById('chatbotAuthForm');
+        this.authSummary = document.getElementById('chatbotAuthSummary');
+        this.authPassword = document.getElementById('chatbotAuthPassword');
+        this.authUsername = document.getElementById('chatbotAuthUsername');
+        this.cancelAuthBtn = document.getElementById('cancelAuthBtn');
+        this.toggleAuthPasswordBtn = document.getElementById('toggleAuthPasswordBtn');
+
+        if (!this.windowEl) return;
+
+        this.bindEvents();
+    },
+
+    bindEvents() {
+        if (this.navbarBtn) {
+            this.navbarBtn.addEventListener('click', () => this.toggle());
+        }
+
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', () => this.closeWindow());
+        }
+
+        if (this.clearBtn) {
+            this.clearBtn.addEventListener('click', () => this.clearChat());
+        }
+
+        if (this.inputForm) {
+            this.inputForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = this.inputField.value.trim();
+                if (!text) return;
+                this.inputField.value = '';
+                this.sendMessage(text);
+            });
+        }
+
+        if (this.messagesContainer) {
+            this.messagesContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.btn-suggestion');
+                if (btn) {
+                    const msg = btn.getAttribute('data-msg');
+                    if (msg) {
+                        this.sendMessage(msg);
+                    }
+                }
+                const promptBtn = e.target.closest('[data-click-prompt]');
+                if (promptBtn) {
+                    const p = promptBtn.getAttribute('data-click-prompt');
+                    if (p) {
+                        this.inputField.value = p;
+                        this.inputField.focus();
+                    }
+                }
+            });
+        }
+
+        if (this.authForm) {
+            this.authForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = this.authUsername.value.trim();
+                const password = this.authPassword.value;
+                if (!password) return;
+                this.authPassword.value = '';
+                this.sendAuthenticatedAction({ username, password });
+            });
+        }
+
+        if (this.cancelAuthBtn) {
+            this.cancelAuthBtn.addEventListener('click', () => {
+                this.authContainer.classList.add('d-none');
+                this.currentPendingAction = null;
+                this.appendBotMessage({ reply: "تم إلغاء عملية التعديل بناءً على طلبك." });
+            });
+        }
+
+        if (this.toggleAuthPasswordBtn) {
+            this.toggleAuthPasswordBtn.addEventListener('click', () => {
+                const isPassword = this.authPassword.type === 'password';
+                this.authPassword.type = isPassword ? 'text' : 'password';
+                this.toggleAuthPasswordBtn.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+            });
+        }
+    },
+
+    toggle(forceOpen) {
+        if (typeof forceOpen === 'boolean') {
+            if (forceOpen) this.openWindow();
+            else this.closeWindow();
+        } else {
+            if (this.isOpen) this.closeWindow();
+            else this.openWindow();
+        }
+    },
+
+    openWindow() {
+        if (!this.windowEl) return;
+        this.windowEl.classList.remove('d-none');
+        this.isOpen = true;
+        this.scrollToBottom();
+        setTimeout(() => {
+            if (this.inputField) this.inputField.focus();
+        }, 150);
+    },
+
+    closeWindow() {
+        if (!this.windowEl) return;
+        this.windowEl.classList.add('d-none');
+        this.isOpen = false;
+    },
+
+    ask(prompt, sendImmediately = true) {
+        this.openWindow();
+        if (!prompt) return;
+        if (sendImmediately) {
+            this.sendMessage(prompt);
+        } else {
+            if (this.inputField) {
+                this.inputField.value = prompt;
+                this.inputField.focus();
+            }
+        }
+    },
+
+    clearChat() {
+        if (!this.messagesContainer) return;
+        const welcome = this.messagesContainer.querySelector('.chat-message:first-child');
+        this.messagesContainer.innerHTML = '';
+        if (welcome) {
+            this.messagesContainer.appendChild(welcome);
+        }
+        if (this.authContainer) this.authContainer.classList.add('d-none');
+        this.currentPendingAction = null;
+    },
+
+    appendUserMessage(text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message user-message mb-2';
+        msgDiv.innerHTML = `
+            <div class="message-bubble user-bubble">
+                ${this.escapeHtml(text)}
+            </div>
+        `;
+        this.messagesContainer.appendChild(msgDiv);
+        this.scrollToBottom();
+    },
+
+    showTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'chatbotTypingIndicator';
+        typingDiv.className = 'chat-message bot-message mb-2';
+        typingDiv.innerHTML = `
+            <div class="message-bubble bot-bubble text-muted">
+                <span class="typing-dots">
+                    <span></span><span></span><span></span>
+                </span>
+                <small class="ms-1">المساعد يبحث ويحلل...</small>
+            </div>
+        `;
+        this.messagesContainer.appendChild(typingDiv);
+        this.scrollToBottom();
+    },
+
+    hideTyping() {
+        const el = document.getElementById('chatbotTypingIndicator');
+        if (el) el.remove();
+    },
+
+    async sendMessage(text) {
+        this.appendUserMessage(text);
+        this.showTyping();
+
+        try {
+            const res = await fetch('/intelligence/chatbot/api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    message: text,
+                    pending_action: this.currentPendingAction
+                })
+            });
+
+            let data;
+            try {
+                data = await res.json();
+            } catch (parseErr) {
+                const textErr = await res.text();
+                data = { reply: textErr ? textErr.slice(0, 300) : "استجاب الخادم ولكن تعذر فك صيغة الرد." };
+            }
+
+            this.hideTyping();
+            this.handleBotResponse(data);
+        } catch (err) {
+            console.error("Chatbot sendMessage error:", err);
+            this.hideTyping();
+            this.appendBotMessage({
+                reply: "عذراً، حدث انقطاع مؤقت في الاتصال بالخادم. يرجى التأكد من اتصال الإنترنت ثم إعادة المحاولة."
+            });
+        }
+    },
+
+    async sendAuthenticatedAction(authData) {
+        this.authContainer.classList.add('d-none');
+        this.appendUserMessage("🔒 جاري التحقق من اسم المستخدم والباسورد وتنفيذ التعديل...");
+        this.showTyping();
+
+        try {
+            const res = await fetch('/intelligence/chatbot/api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    auth_data: authData,
+                    pending_action: this.currentPendingAction
+                })
+            });
+
+            let data;
+            try {
+                data = await res.json();
+            } catch (parseErr) {
+                const textErr = await res.text();
+                data = { reply: textErr ? textErr.slice(0, 300) : "استجاب الخادم ولكن تعذر فك صيغة الرد." };
+            }
+
+            this.hideTyping();
+            this.handleBotResponse(data);
+        } catch (err) {
+            console.error("Chatbot sendAuthenticatedAction error:", err);
+            this.hideTyping();
+            this.appendBotMessage({
+                reply: "عذراً، تعذر إتمام التحقق بسبب انقطاع الاتصال. يرجى المحاولة لاحقاً."
+            });
+        }
+    },
+
+    handleBotResponse(data) {
+        if (data.auth_required) {
+            this.currentPendingAction = data.pending_action;
+            if (this.authSummary && data.pending_action) {
+                const pa = data.pending_action;
+                this.authSummary.innerHTML = `
+                    تعديل <strong>${pa.action_title}</strong> لمنتج <strong>${pa.product_name}</strong><br>
+                    من: <span class="badge bg-secondary">${pa.old_value}</span> إلى: <span class="badge bg-success">${pa.new_value}</span>
+                `;
+            }
+            this.authContainer.classList.remove('d-none');
+            setTimeout(() => {
+                if (this.authPassword) this.authPassword.focus();
+            }, 150);
+        } else {
+            if (this.authContainer) this.authContainer.classList.add('d-none');
+            this.currentPendingAction = null;
+        }
+
+        this.appendBotMessage(data);
+    },
+
+    appendBotMessage(data) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message bot-message mb-3';
+
+        let formattedText = this.formatMarkdown(data.reply || '');
+
+        let cardHtml = '';
+        if (data.card) {
+            cardHtml = `
+                <div class="chat-action-card shadow-sm mt-2">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi ${data.card.icon || 'bi-box-seam'} text-primary fs-5"></i>
+                        <strong class="fs-7">${data.card.title}</strong>
+                    </div>
+                    <div class="small text-muted mb-2">${data.card.description || ''}</div>
+                    ${data.card.url ? `<a href="${data.card.url}" class="btn btn-sm btn-primary w-100 fw-bold">${data.card.button_text || 'عرض التفاصيل'}</a>` : ''}
+                </div>
+            `;
+        }
+
+        let buttonsHtml = '';
+        if (data.buttons && data.buttons.length > 0) {
+            buttonsHtml = `<div class="d-flex flex-wrap gap-1 mt-2">` +
+                data.buttons.map(b => {
+                    if (b.url) {
+                        return `<a href="${b.url}" class="btn btn-sm btn-outline-primary rounded-pill py-1 px-3 small fw-semibold">${b.text}</a>`;
+                    } else if (b.click_prompt) {
+                        return `<button type="button" class="btn btn-sm btn-outline-primary rounded-pill py-1 px-3 small fw-semibold" data-click-prompt="${this.escapeHtml(b.click_prompt)}">${b.text}</button>`;
+                    }
+                    return '';
+                }).join('') +
+            `</div>`;
+        }
+
+        let suggestionsHtml = '';
+        if (data.suggestions && data.suggestions.length > 0) {
+            suggestionsHtml = `<div class="chatbot-suggestions d-flex flex-wrap gap-1 mt-2 pt-2 border-top">` +
+                data.suggestions.map(s => `<button type="button" class="btn btn-sm btn-suggestion" data-msg="${this.escapeHtml(s)}">${s}</button>`).join('') +
+            `</div>`;
+        }
+
+        msgDiv.innerHTML = `
+            <div class="message-bubble bot-bubble">
+                <div>${formattedText}</div>
+                ${cardHtml}
+                ${buttonsHtml}
+                ${suggestionsHtml}
+            </div>
+        `;
+
+        this.messagesContainer.appendChild(msgDiv);
+        this.scrollToBottom();
+    },
+
+    formatMarkdown(text) {
+        if (!text) return '';
+        let t = this.escapeHtml(text);
+        t = t.replace(/^### (.*)$/gm, '<h6 class="fw-bold mt-2 mb-1 text-primary">$1</h6>');
+        t = t.replace(/^## (.*)$/gm, '<h6 class="fw-bold fs-6 mt-2 mb-1 text-primary">$1</h6>');
+        t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        t = t.replace(/~~(.*?)~~/g, '<del>$1</del>');
+        t = t.replace(/`([^`]+)`/g, '<code class="bg-light p-1 rounded">$1</code>');
+        t = t.replace(/^[•\-\*]\s+(.*)$/gm, '<li class="mb-1">$1</li>');
+        t = t.replace(/(<li class="mb-1">.*?<\/li>(?:\s*<li class="mb-1">.*?<\/li>)*)/gs, '<ul class="mb-2 ps-3">$1</ul>');
+        t = t.replace(/\n{2,}/g, '<br><br>');
+        t = t.replace(/([^\n>])\n([^\n<])/g, '$1<br>$2');
+        return t;
+    },
+
+    escapeHtml(str) {
+        if (!str) return '';
+        const p = document.createElement('p');
+        p.textContent = str;
+        return p.innerHTML;
+    },
+
+    scrollToBottom() {
+        if (this.messagesContainer) {
+            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        }
+    }
+};
+
