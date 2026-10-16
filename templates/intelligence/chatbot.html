@@ -31,11 +31,11 @@
     </div>
 
     <!-- Main Full-Page Chat Container -->
-    <div class="card card-custom shadow-sm border overflow-hidden" style="height: calc(100vh - 200px); min-height: 550px;">
+    <div class="card card-custom shadow-sm border overflow-hidden" style="height: calc(100vh - 170px); min-height: 480px;">
         <!-- Messages Box -->
-        <div id="fullpageMessages" class="card-body p-4 overflow-y-auto d-flex flex-column gap-3" style="background-color: var(--bs-tertiary-bg, #f8fafc);">
+        <div id="fullpageMessages" class="card-body p-2 p-md-3 overflow-y-auto d-flex flex-column gap-3" style="background-color: var(--bs-tertiary-bg, #f8fafc);">
             <div id="initialWelcomeBox" class="chat-message bot-message mb-3">
-                <div class="message-bubble bot-bubble p-3 rounded-3 shadow-sm" style="max-width: 85%;">
+                <div class="message-bubble bot-bubble p-3 rounded-3 shadow-sm" style="max-width: 95%;">
                     <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
                         <i class="bi bi-stars text-warning fs-5"></i>
                         <strong class="fs-7">مرحباً بك يا مدير في المساعد الذكي لإدارة السوق!</strong>
@@ -92,12 +92,12 @@
         </div>
 
         <!-- Footer / Input Form -->
-        <div class="card-footer p-3 bg-white border-top">
+        <div class="card-footer p-2 p-md-3 bg-white border-top">
             <form id="fullpageChatForm" class="d-flex align-items-center gap-2">
                 <input type="text" id="fullpageChatInput" class="form-control shadow-none rounded-pill py-2 px-3" placeholder="اسألني أي شيء عن المتجر أو اطلب إضافة أو تعديل..." autocomplete="off">
-                <button type="submit" id="fullpageSendBtn" class="btn btn-primary rounded-pill px-4 py-2 d-flex align-items-center gap-1 shadow-sm" title="إرسال">
+                <button type="submit" id="fullpageSendBtn" class="btn btn-primary rounded-pill px-3 px-md-4 py-2 d-flex align-items-center gap-1 shadow-sm" title="إرسال">
                     <i class="bi bi-send-fill"></i>
-                    <span>إرسال</span>
+                    <span class="d-none d-sm-inline">إرسال</span>
                 </button>
             </form>
         </div>
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const div = document.createElement('div');
         div.className = 'chat-message user-message mb-3 d-flex justify-content-end';
         div.innerHTML = `
-            <div class="message-bubble user-bubble bg-primary text-white p-3 rounded-3 shadow-sm" style="max-width: 80%;">
+            <div class="message-bubble user-bubble bg-primary text-white p-3 rounded-3 shadow-sm" style="max-width: 88%;">
                 ${escapeHtml(text)}
             </div>
         `;
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         div.innerHTML = `
-            <div class="message-bubble bot-bubble p-3 rounded-3 shadow-sm" style="max-width: 85%;">
+            <div class="message-bubble bot-bubble p-3 rounded-3 shadow-sm" style="max-width: 92%;">
                 <div>${formattedText}</div>
                 ${cardHtml}
                 ${buttonsHtml}

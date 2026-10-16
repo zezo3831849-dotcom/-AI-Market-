@@ -861,14 +861,306 @@ body {
     border-color: #f59e0b !important;
 }
 
-@media (max-width: 576px) {
-    .chatbot-window {
-        top: 60px;
-        right: 10px;
-        left: 10px;
-        width: auto;
-        height: calc(100vh - 80px);
-        max-height: none;
+/* Floating Chatbot Launcher Button (FAB) */
+.chatbot-floating-btn {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1045;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(67, 97, 238, 0.45);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.chatbot-floating-btn:hover {
+    transform: scale(1.08) translateY(-3px);
+    box-shadow: 0 14px 32px rgba(114, 9, 183, 0.55);
+    color: #ffffff;
+}
+
+.chatbot-floating-btn:active {
+    transform: scale(0.95);
+}
+
+.chatbot-floating-btn .chatbot-floating-icon {
+    font-size: 1.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.chatbot-floating-btn:hover .chatbot-floating-icon {
+    transform: rotate(12deg);
+}
+
+.chatbot-floating-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(67, 97, 238, 0.45);
+    animation: chatbot-pulse 2.2s infinite;
+    pointer-events: none;
+}
+
+@keyframes chatbot-pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.85;
+    }
+    70% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
     }
 }
+
+.chatbot-floating-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: #10b981;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.3px;
+}
+
+[data-bs-theme="dark"] .chatbot-floating-badge {
+    border-color: #0f172a;
+}
+
+/* Draggable Chatbot Header & State */
+.chatbot-header {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.drag-handle-icon {
+    cursor: grab;
+    font-size: 1.15rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.chatbot-header:hover .drag-handle-icon {
+    opacity: 1;
+}
+
+.chatbot-window.is-dragging {
+    cursor: grabbing !important;
+    user-select: none !important;
+    transition: none !important;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.4), 0 0 30px rgba(67, 97, 238, 0.25) !important;
+    opacity: 0.96;
+}
+
+.chatbot-window.is-dragging .chatbot-header {
+    cursor: grabbing !important;
+}
+
+/* Mobile Sidebar Backdrop Overlay */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ==========================================================
+   Responsive Mobile & Tablet Design System
+   ========================================================== */
+
+/* Tablets & Mobile (under 992px) */
+@media (max-width: 991.98px) {
+    .app-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 285px;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 1055;
+        transform: translateX(100%);
+        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: -8px 0 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar.show-mobile {
+        transform: translateX(0);
+    }
+
+    body.sidebar-open-mobile {
+        overflow: hidden;
+    }
+
+    .top-navbar {
+        padding: 0.6rem 0.9rem;
+    }
+
+    .page-body {
+        padding: 1rem 0.85rem;
+    }
+}
+
+/* Smartphones & Small Screens (under 768px) */
+@media (max-width: 767.98px) {
+    .top-navbar {
+        padding: 0.5rem 0.65rem;
+        gap: 0.4rem;
+    }
+
+    .search-container {
+        width: auto !important;
+        max-width: 140px !important;
+        transition: max-width 0.25s ease;
+    }
+
+    .search-container:focus-within {
+        max-width: 220px !important;
+    }
+
+    .top-navbar .btn {
+        padding: 0.35rem 0.55rem;
+        font-size: 0.82rem;
+    }
+
+    /* Prevent mobile input zooming on iOS */
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="search"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Responsive Tables */
+    .table-responsive {
+        border-radius: var(--radius-sm);
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .table {
+        font-size: 0.85rem;
+    }
+
+    .table th, .table td {
+        padding: 0.55rem 0.5rem;
+        white-space: nowrap;
+    }
+
+    /* Cards & Spacing */
+    .card {
+        border-radius: var(--radius-sm);
+        margin-bottom: 0.85rem;
+    }
+
+    .card-body {
+        padding: 0.95rem;
+    }
+
+    .card-header {
+        padding: 0.75rem 0.95rem;
+    }
+
+    /* Typography adjustment */
+    h1, .h1 { font-size: 1.55rem; }
+    h2, .h2 { font-size: 1.35rem; }
+    h3, .h3 { font-size: 1.2rem; }
+    h4, .h4 { font-size: 1.1rem; }
+    h5, .h5 { font-size: 1rem; }
+    h6, .h6 { font-size: 0.9rem; }
+
+    /* Button Groups & Actions */
+    .btn-group {
+        flex-wrap: wrap;
+    }
+}
+
+/* Extra Small Mobile Devices (under 576px) */
+@media (max-width: 575.98px) {
+    .chatbot-floating-btn {
+        bottom: 18px;
+        left: 18px;
+        width: 52px;
+        height: 52px;
+    }
+
+    .chatbot-floating-btn .chatbot-floating-icon {
+        font-size: 1.4rem;
+    }
+
+    /* Chatbot window converts into a sleek bottom sheet on small screens */
+    .chatbot-window {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        height: 85vh !important;
+        max-height: 85vh !important;
+        border-radius: 22px 22px 0 0 !important;
+        margin: 0 !important;
+        border-bottom: none !important;
+    }
+
+    .drag-handle-icon {
+        display: none !important;
+    }
+
+    .search-container {
+        max-width: 110px !important;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+        gap: 0.65rem !important;
+        padding: 0.65rem !important;
+    }
+
+    .pos-product-card {
+        padding: 0.65rem !important;
+    }
+}
+
 

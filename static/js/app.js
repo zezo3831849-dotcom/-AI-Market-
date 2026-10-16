@@ -142,9 +142,54 @@ const ThemeManager = {
     }
 };
 
+// Mobile Navigation Drawer Manager
+const MobileNavManager = {
+    init() {
+        const toggleBtn = document.getElementById('sidebarToggleBtn');
+        const closeBtn = document.getElementById('sidebarCloseBtn');
+        const sidebar = document.querySelector('.sidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+
+        if (!sidebar) return;
+
+        const openSidebar = () => {
+            sidebar.classList.add('show-mobile');
+            if (backdrop) backdrop.classList.add('show');
+            document.body.classList.add('sidebar-open-mobile');
+        };
+
+        const closeSidebar = () => {
+            sidebar.classList.remove('show-mobile');
+            if (backdrop) backdrop.classList.remove('show');
+            document.body.classList.remove('sidebar-open-mobile');
+        };
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+        // Auto-close sidebar on mobile when a link is clicked
+        sidebar.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && sidebar.classList.contains('show-mobile')) {
+                closeSidebar();
+            }
+        });
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     ThemeManager.init();
     OfflineManager.init();
+    MobileNavManager.init();
 
     // Register PWA Service Worker
     if ('serviceWorker' in navigator) {
@@ -217,7 +262,7 @@ function getCsrfToken() {
     return cookieValue || '';
 }
 
-// AI Market Assistant Chatbot Controller (Comprehensive 19-Feature Manager)
+// AI Market Assistant Chatbot Controller (Comprehensive 19-Feature Manager & Draggable Floating Window)
 const ChatbotController = {
     isOpen: false,
     currentPendingAction: null,
@@ -227,8 +272,10 @@ const ChatbotController = {
 
     init() {
         this.navbarBtn = document.getElementById('navbarChatbotBtn');
+        this.floatingBtn = document.getElementById('chatbotFloatingBtn');
         this.windowEl = document.getElementById('chatbotWindow');
         this.closeBtn = document.getElementById('chatbotCloseBtn');
+        this.minimizeBtn = document.getElementById('chatbotMinimizeBtn');
         this.clearBtn = document.getElementById('chatbotClearBtn');
         this.messagesContainer = document.getElementById('chatbotMessages');
         this.inputForm = document.getElementById('chatbotInputForm');
@@ -241,14 +288,16 @@ const ChatbotController = {
         this.cancelAuthBtn = document.getElementById('cancelAuthBtn');
         this.toggleAuthPasswordBtn = document.getElementById('toggleAuthPasswordBtn');
 
-        if (!this.windowEl) return;
-
-        // Skip widget initialization if on fullpage chatbot
+        // On the dedicated full-page chatbot, hide floating button to avoid duplication
         if (window.location.pathname.includes('/intelligence/chatbot/')) {
+            if (this.floatingBtn) this.floatingBtn.style.display = 'none';
             return;
         }
 
+        if (!this.windowEl) return;
+
         this.bindEvents();
+        this.initDraggable();
         this.loadStoredChat();
 
         // Listen for storage changes across tabs or pages
@@ -304,7 +353,20 @@ const ChatbotController = {
 
     bindEvents() {
         if (this.navbarBtn) {
-            this.navbarBtn.addEventListener('click', () => this.toggle());
+            this.navbarBtn.addEventListener('click', (e) => {
+                if (!window.location.pathname.includes('/intelligence/chatbot/')) {
+                    e.preventDefault();
+                    this.toggle();
+                }
+            });
+        }
+
+        if (this.floatingBtn) {
+            this.floatingBtn.addEventListener('click', () => this.toggle());
+        }
+
+        if (this.minimizeBtn) {
+            this.minimizeBtn.addEventListener('click', () => this.closeWindow());
         }
 
         if (this.closeBtn) {
@@ -371,6 +433,105 @@ const ChatbotController = {
                 this.toggleAuthPasswordBtn.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
             });
         }
+    },
+
+    initDraggable() {
+        const header = document.getElementById('chatbotDragHandle') || (this.windowEl ? this.windowEl.querySelector('.chatbot-header') : null);
+        if (!header || !this.windowEl) return;
+
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let initialLeft = 0, initialTop = 0;
+
+        const onStart = (clientX, clientY, target) => {
+            // Ignore if clicked on header buttons, links or form controls
+            if (target.closest('button') || target.closest('a') || target.closest('input')) {
+                return;
+            }
+
+            // Mobile devices dock at bottom, keep desktop dragging only
+            if (window.innerWidth <= 576) {
+                return;
+            }
+
+            isDragging = true;
+            this.windowEl.classList.add('is-dragging');
+
+            const rect = this.windowEl.getBoundingClientRect();
+            initialLeft = rect.left;
+            initialTop = rect.top;
+            startX = clientX;
+            startY = clientY;
+
+            this.windowEl.style.left = initialLeft + 'px';
+            this.windowEl.style.top = initialTop + 'px';
+            this.windowEl.style.right = 'auto';
+            this.windowEl.style.bottom = 'auto';
+            this.windowEl.style.margin = '0';
+        };
+
+        const onMove = (clientX, clientY) => {
+            if (!isDragging) return;
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+
+            let newLeft = initialLeft + dx;
+            let newTop = initialTop + dy;
+
+            // Bounds checking (stay fully visible inside viewport)
+            const winWidth = this.windowEl.offsetWidth;
+            const winHeight = this.windowEl.offsetHeight;
+            const maxLeft = Math.max(10, window.innerWidth - winWidth - 10);
+            const maxTop = Math.max(10, window.innerHeight - winHeight - 10);
+
+            newLeft = Math.max(10, Math.min(newLeft, maxLeft));
+            newTop = Math.max(10, Math.min(newTop, maxTop));
+
+            this.windowEl.style.left = newLeft + 'px';
+            this.windowEl.style.top = newTop + 'px';
+        };
+
+        const onEnd = () => {
+            if (isDragging) {
+                isDragging = false;
+                this.windowEl.classList.remove('is-dragging');
+            }
+        };
+
+        // Mouse listeners
+        header.addEventListener('mousedown', (e) => {
+            onStart(e.clientX, e.clientY, e.target);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                onMove(e.clientX, e.clientY);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            onEnd();
+        });
+
+        // Touch listeners
+        header.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                onStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches && e.touches.length === 1) {
+                e.preventDefault();
+                onMove(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
+            onEnd();
+        });
     },
 
     toggle(forceOpen) {

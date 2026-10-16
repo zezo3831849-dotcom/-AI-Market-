@@ -1,10 +1,20 @@
-<!-- AI Market Assistant Floating / Navbar-Triggered Chatbot Panel -->
+<!-- AI Market Assistant Floating / Draggable Chatbot Panel & Launcher -->
 <div id="aiMarketChatbotRoot" dir="rtl">
-    <!-- Chatbot Main Window Container -->
+    <!-- Floating Circular Launcher Button (FAB) -->
+    <button type="button" id="chatbotFloatingBtn" class="chatbot-floating-btn shadow-lg" title="فتح المساعد الذكي لإدارة السوق (Market AI)">
+        <span class="chatbot-floating-pulse"></span>
+        <div class="chatbot-floating-icon">
+            <i class="bi bi-robot"></i>
+        </div>
+        <span class="chatbot-floating-badge"><i class="bi bi-stars"></i> AI</span>
+    </button>
+
+    <!-- Chatbot Main Draggable Window Container -->
     <div id="chatbotWindow" class="chatbot-window shadow-2xl d-none">
-        <!-- Header -->
-        <div class="chatbot-header d-flex align-items-center justify-content-between p-3">
+        <!-- Draggable Header -->
+        <div class="chatbot-header d-flex align-items-center justify-content-between p-3" id="chatbotDragHandle" title="اضغط مع السحب لتحريك النافذة في أي مكان بالشاشة">
             <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-grip-vertical text-white-50 drag-handle-icon" title="اسحب لتحريك النافذة"></i>
                 <div class="chatbot-avatar-circle">
                     <i class="bi bi-robot text-white fs-5"></i>
                 </div>
@@ -15,7 +25,7 @@
                             <i class="bi bi-stars"></i> Gemini Pro
                         </span>
                     </div>
-                    <small class="chatbot-subtitle text-muted" style="font-size: 0.74rem;">تحكم ومتابعة حية للمميزات الـ 19 الأساسية</small>
+                    <small class="chatbot-subtitle text-muted" style="font-size: 0.74rem;">تحكم حي • اسحب لتحريك النافذة</small>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-1">
@@ -24,6 +34,9 @@
                 </a>
                 <button type="button" id="chatbotClearBtn" class="btn btn-sm btn-icon-subtle text-muted" title="مسح المحادثة">
                     <i class="bi bi-trash3"></i>
+                </button>
+                <button type="button" id="chatbotMinimizeBtn" class="btn btn-sm btn-icon-subtle text-muted" title="تصغير النافذة">
+                    <i class="bi bi-dash-lg"></i>
                 </button>
                 <button type="button" id="chatbotCloseBtn" class="btn btn-sm btn-icon-subtle text-muted" title="إغلاق النافذة">
                     <i class="bi bi-x-lg"></i>

@@ -42,10 +42,13 @@
         </button>
     </div>
 
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop d-lg-none"></div>
+
     <div class="app-wrapper">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
-            <div class="sidebar-header">
+            <div class="sidebar-header d-flex align-items-center justify-content-between">
                 <a href="{% url 'core:dashboard' %}" class="sidebar-brand">
                     <div class="p-2 rounded-3 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
                         <i class="bi bi-cpu-fill fs-5"></i>
@@ -55,6 +58,9 @@
                         <span class="brand-badge mt-1 d-inline-block">نظام ذكي متكامل AI</span>
                     </div>
                 </a>
+                <button type="button" id="sidebarCloseBtn" class="btn btn-sm btn-icon-subtle text-white d-lg-none" title="إغلاق القائمة">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
 
             <nav class="sidebar-nav">
@@ -203,43 +209,48 @@
         <div class="main-content">
             <!-- Top Navbar -->
             <header class="top-navbar">
-                <!-- Search with Auto-Complete -->
-                <div class="position-relative" style="width: 320px;">
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" id="globalQuickSearch" class="form-control bg-light border-start-0" placeholder="بحث سريع في السلع والفواتير...">
+                <!-- Hamburger Menu + Search with Auto-Complete -->
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" id="sidebarToggleBtn" class="btn btn-light btn-sm border d-lg-none" title="القائمة الرئيسية">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div class="position-relative search-container" style="width: 280px;">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" id="globalQuickSearch" class="form-control bg-light border-start-0" placeholder="بحث سريع في السلع والفواتير...">
+                        </div>
+                        <div id="globalSearchResults" class="dropdown-menu w-100 shadow-lg mt-1 p-0" style="display: none; max-height: 350px; overflow-y: auto;"></div>
                     </div>
-                    <div id="globalSearchResults" class="dropdown-menu w-100 shadow-lg mt-1 p-0" style="display: none; max-height: 350px; overflow-y: auto;"></div>
                 </div>
 
                 <!-- Status, Actions & User Details -->
-                <div class="d-flex align-items-center gap-3">
-                    <div id="networkStatusBadge"></div>
+                <div class="d-flex align-items-center gap-2 gap-md-3">
+                    <div id="networkStatusBadge" class="d-none d-sm-block"></div>
 
                     <!-- Offline queue button -->
                     <button class="btn btn-outline-warning btn-sm position-relative d-flex align-items-center gap-1" onclick="OfflineManager.syncQueue()" title="مزامنة مبيعات الأوفلاين">
                         <i class="bi bi-arrow-repeat"></i>
-                        <span>مزامنة</span>
+                        <span class="d-none d-md-inline">مزامنة</span>
                         <span id="offlineQueueCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">0</span>
                     </button>
 
                     <!-- Run AI Scan Button -->
-                    <a href="{% url 'intelligence:run_pipeline' %}" class="btn btn-ai btn-sm d-flex align-items-center gap-2">
+                    <a href="{% url 'intelligence:run_pipeline' %}" class="btn btn-ai btn-sm d-flex align-items-center gap-1 gap-md-2" title="تشغيل فحص الذكاء الاصطناعي">
                         <i class="bi bi-stars"></i>
-                        <span>فحص الذكاء الاصطناعي</span>
+                        <span class="d-none d-md-inline">فحص الذكاء الاصطناعي</span>
                     </a>
 
                     <!-- AI Market Assistant Chatbot Link in Navbar -->
-                    <a href="{% url 'intelligence:chatbot_page' %}" id="navbarChatbotBtn" class="btn btn-ai-chat btn-sm d-flex align-items-center gap-2 shadow-sm px-2 py-1 text-decoration-none" title="مساعد السوق الذكي الشامل (Market AI) مدعوم بـ Google Gemini Pro">
+                    <a href="{% url 'intelligence:chatbot_page' %}" id="navbarChatbotBtn" class="btn btn-ai-chat btn-sm d-flex align-items-center gap-1 gap-md-2 shadow-sm px-2 py-1 text-decoration-none" title="مساعد السوق الذكي الشامل (Market AI) مدعوم بـ Google Gemini Pro">
                         <i class="bi bi-chat-dots-fill fs-6 text-primary"></i>
-                        <span class="small fw-bold">المساعد الذكي</span>
+                        <span class="small fw-bold d-none d-sm-inline">المساعد الذكي</span>
                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill d-none d-xl-inline" style="font-size: 0.65rem;">Gemini Pro</span>
                     </a>
 
                     <!-- Dark Mode Toggle Button -->
                     <button id="themeToggleBtn" class="btn btn-light btn-sm border d-flex align-items-center gap-1 shadow-sm px-2 py-1" onclick="ThemeManager.toggle()" title="التبديل بين الوضع الليلي والنهاري">
                         <i id="themeIcon" class="bi bi-moon-stars-fill text-warning fs-6"></i>
-                        <span id="themeText" class="small fw-bold">ليلي</span>
+                        <span id="themeText" class="small fw-bold d-none d-sm-inline">ليلي</span>
                     </button>
 
                     <!-- User Profile Dropdown -->
