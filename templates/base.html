@@ -166,11 +166,6 @@
                     <i class="bi bi-shield-exclamation text-danger"></i>
                     <span>رصد الشذوذ والتجاوزات</span>
                 </a>
-                <a href="{% url 'intelligence:chatbot_page' %}" class="sidebar-link {% if request.resolver_match.url_name == 'chatbot_page' %}active{% endif %}">
-                    <i class="bi bi-robot text-primary"></i>
-                    <span>المساعد الذكي (AI Chatbot)</span>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-auto" style="font-size: 0.68rem;">مباشر</span>
-                </a>
                 <a href="{% url 'intelligence:calendar_events' %}" class="sidebar-link {% if request.resolver_match.url_name == 'calendar_events' %}active{% endif %}">
                     <i class="bi bi-calendar-event text-success"></i>
                     <span>التقويم الذكي والمواسم</span>
@@ -221,12 +216,6 @@
                         <i class="bi bi-arrow-repeat"></i>
                         <span>مزامنة</span>
                         <span id="offlineQueueCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">0</span>
-                    </button>
-
-                    <!-- AI Chatbot Quick Launch -->
-                    <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-sm" onclick="ChatbotController.toggle(true)" title="فتح مساعد السوق الذكي">
-                        <i class="bi bi-robot"></i>
-                        <span class="d-none d-lg-inline">المساعد الذكي</span>
                     </button>
 
                     <!-- Run AI Scan Button -->
@@ -293,9 +282,6 @@
             </div>
         </div>
     </div>
-
-    <!-- AI Market Assistant Floating Chatbot Widget -->
-    {% include 'components/chatbot_widget.html' %}
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
