@@ -43,9 +43,14 @@
                     <div class="d-flex flex-wrap gap-2 mt-3 pt-2 border-top">
                         <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="مبيعات اليوم">مبيعات اليوم 📈</button>
                         <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="النواقص في المخزن">النواقص في المخزن ⚠️</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="تقرير الأرباح والسيولة لهذا الشهر">تقرير الأرباح 📊</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="المنتجات القريبة من انتهاء الصلاحية">متابعة الصلاحية ⏳</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="تقرير الأرباح والسيولة لهذا الشهر">تحليل الأرباح والمصروفات 📊</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="أوامر الشراء ومواعيد زيارة الموردين">جدولة الموردين 🚚</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="اقتراحات العروض الذكية والخصومات">العروض الذكية 🏷️</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="توقعات الطلب المستقبلي والمواسم">التنبؤ بالطلب والمواسم 🌙</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="فحص التناقضات والشذوذ في المبيعات والمخزون">فحص التناقضات 🛡️</button>
                         <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="سجل مصروف كهرباء بقيمة 350">تسجيل مصروف 💸</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="ازاي ازود ارباح السوبر ماركت؟">استشارة لزيادة الأرباح 💡</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="ازاي ازود ارباح السوبر ماركت؟">استشارة ذكاء الأعمال 💡</button>
                     </div>
                 </div>
             </div>
@@ -113,6 +118,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const togglePasswordBtn = document.getElementById('toggleFullpagePasswordBtn');
 
     let currentPendingAction = null;
+
+    function getSafeCsrfToken() {
+        if (typeof getCsrfToken === 'function') {
+            try {
+                const t = getCsrfToken();
+                if (t) return t;
+            } catch (e) {}
+        }
+        const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+        if (cookie) return cookie.split('=')[1];
+        const input = document.querySelector('[name=csrfmiddlewaretoken]');
+        return input ? input.value : '';
+    }
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -235,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCsrfToken()
+                    'X-CSRFToken': getSafeCsrfToken()
                 },
                 body: JSON.stringify({
                     message: text,
@@ -289,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCsrfToken()
+                    'X-CSRFToken': getSafeCsrfToken()
                 },
                 body: JSON.stringify({
                     auth_data: authData,

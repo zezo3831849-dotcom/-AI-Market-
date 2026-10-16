@@ -229,12 +229,12 @@
                         <span>فحص الذكاء الاصطناعي</span>
                     </a>
 
-                    <!-- AI Market Assistant Chatbot Button in Navbar -->
-                    <button type="button" id="navbarChatbotBtn" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1 shadow-sm px-2 py-1" onclick="ChatbotController.toggle()" title="مساعد السوق الذكي الشامل">
-                        <i class="bi bi-robot fs-6 text-primary"></i>
+                    <!-- AI Market Assistant Chatbot Link in Navbar -->
+                    <a href="{% url 'intelligence:chatbot_page' %}" id="navbarChatbotBtn" class="btn btn-ai-chat btn-sm d-flex align-items-center gap-2 shadow-sm px-2 py-1 text-decoration-none" title="مساعد السوق الذكي الشامل (Market AI) مدعوم بـ Google Gemini Pro">
+                        <i class="bi bi-chat-dots-fill fs-6 text-primary"></i>
                         <span class="small fw-bold">المساعد الذكي</span>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill d-none d-xl-inline" style="font-size: 0.65rem;">Gemini Pro</span>
-                    </button>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill d-none d-xl-inline" style="font-size: 0.65rem;">Gemini Pro</span>
+                    </a>
 
                     <!-- Dark Mode Toggle Button -->
                     <button id="themeToggleBtn" class="btn btn-light btn-sm border d-flex align-items-center gap-1 shadow-sm px-2 py-1" onclick="ThemeManager.toggle()" title="التبديل بين الوضع الليلي والنهاري">

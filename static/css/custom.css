@@ -549,13 +549,42 @@ body {
    AI Market Assistant - Chatbot Styles
    ========================================================================== */
 
-#navbarChatbotBtn {
-    transition: all 0.2s ease-in-out;
+#navbarChatbotBtn,
+.btn-ai-chat {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.08) 0%, rgba(114, 9, 183, 0.12) 100%);
+    border: 1px solid rgba(114, 9, 183, 0.25);
+    color: #4361ee;
+    font-weight: 700;
+    transition: all 0.25s ease-in-out;
 }
 
-#navbarChatbotBtn:hover {
+#navbarChatbotBtn:hover,
+.btn-ai-chat:hover {
+    background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+    color: #ffffff !important;
+    border-color: transparent;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25) !important;
+    box-shadow: 0 4px 15px rgba(114, 9, 183, 0.35) !important;
+}
+
+#navbarChatbotBtn:hover i,
+#navbarChatbotBtn:hover span,
+.btn-ai-chat:hover i,
+.btn-ai-chat:hover span {
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] #navbarChatbotBtn,
+[data-bs-theme="dark"] .btn-ai-chat {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.2) 0%, rgba(114, 9, 183, 0.25) 100%);
+    border-color: rgba(129, 140, 248, 0.4);
+    color: #c7d2fe;
+}
+
+[data-bs-theme="dark"] #navbarChatbotBtn:hover,
+[data-bs-theme="dark"] .btn-ai-chat:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff !important;
 }
 
 /* Chatbot Window Container */
