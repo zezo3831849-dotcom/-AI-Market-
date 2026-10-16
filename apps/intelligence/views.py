@@ -215,12 +215,14 @@ def chatbot_api_view(request):
         message = data.get('message', '')
         auth_data = data.get('auth_data', None)
         pending_action = data.get('pending_action', None)
+        history = data.get('history', [])
 
         response_data = MarketAIChatbot.process_message(
             message=message,
             user=request.user if request.user.is_authenticated else None,
             auth_data=auth_data,
-            pending_action=pending_action
+            pending_action=pending_action,
+            history=history
         )
         return JsonResponse(response_data)
 

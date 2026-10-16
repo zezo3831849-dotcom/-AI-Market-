@@ -43,14 +43,14 @@
                     <div class="d-flex flex-wrap gap-2 mt-3 pt-2 border-top">
                         <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="مبيعات اليوم">مبيعات اليوم 📈</button>
                         <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="النواقص في المخزن">النواقص في المخزن ⚠️</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="المنتجات القريبة من انتهاء الصلاحية">متابعة الصلاحية ⏳</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="تقرير الأرباح والسيولة لهذا الشهر">تحليل الأرباح والمصروفات 📊</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="أوامر الشراء ومواعيد زيارة الموردين">جدولة الموردين 🚚</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="اقتراحات العروض الذكية والخصومات">العروض الذكية 🏷️</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="توقعات الطلب المستقبلي والمواسم">التنبؤ بالطلب والمواسم 🌙</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="فحص التناقضات والشذوذ في المبيعات والمخزون">فحص التناقضات 🛡️</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="سجل مصروف كهرباء بقيمة 350">تسجيل مصروف 💸</button>
-                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="ازاي ازود ارباح السوبر ماركت؟">استشارة ذكاء الأعمال 💡</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="متابعة الصلاحية">متابعة الصلاحية ⏳</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="تحليل الأرباح والمصروفات">تحليل الأرباح والمصروفات 📊</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="جدولة الموردين وأوامر الشراء">جدولة الموردين وأوامر الشراء 🚚</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="العروض الذكية والخصومات">العروض الذكية والخصومات 🏷️</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="التنبؤ بالطلب والمواسم">التنبؤ بالطلب والمواسم 🌙</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="فحص التناقضات والشذوذ">فحص التناقضات والشذوذ 🛡️</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="تسجيل المصروفات">تسجيل المصروفات 💸</button>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill fullpage-chip" data-msg="استشارة ذكاء الأعمال">استشارة ذكاء الأعمال 💡</button>
                     </div>
                 </div>
             </div>
@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const togglePasswordBtn = document.getElementById('toggleFullpagePasswordBtn');
 
     let currentPendingAction = null;
+    let conversationHistory = [];
 
     function getSafeCsrfToken() {
         if (typeof getCsrfToken === 'function') {
@@ -249,6 +250,8 @@ document.addEventListener('DOMContentLoaded', function() {
         showTyping();
 
         try {
+            conversationHistory.push({ role: 'user', text: text });
+
             const res = await fetch('/intelligence/chatbot/api/', {
                 method: 'POST',
                 headers: {
@@ -257,7 +260,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({
                     message: text,
-                    pending_action: currentPendingAction
+                    pending_action: currentPendingAction,
+                    history: conversationHistory.slice(-8)
                 })
             });
 
@@ -270,6 +274,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             hideTyping();
+
+            if (data.reply) {
+                conversationHistory.push({ role: 'model', text: data.reply });
+            }
 
             if (data.auth_required) {
                 currentPendingAction = data.pending_action;
@@ -390,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (welcome) messagesBox.appendChild(welcome);
             authContainer.classList.add('d-none');
             currentPendingAction = null;
+            conversationHistory = [];
         });
     }
 

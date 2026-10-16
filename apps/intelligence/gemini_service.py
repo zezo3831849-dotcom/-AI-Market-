@@ -86,19 +86,20 @@ class GeminiMarketAgent:
 
         # 2. Executive Financial & Operational Indicators (Features 2, 3, 4, 13)
         try:
-            total_prods = Product.objects.filter(is_active=True).count()
-            low_stock_count = Product.objects.filter(is_active=True, total_stock__lte=F('min_stock_limit')).count()
+            active_products = list(Product.objects.filter(is_active=True).prefetch_related('batches'))
+            total_prods = len(active_products)
+            low_stock_count = sum(1 for p in active_products if p.is_low_stock)
             
             # Today's Sales
             today_sales = Sale.objects.filter(created_at__date=today, status='COMPLETED')
-            today_rev = sum((s.final_amount for s in today_sales), Decimal('0.00'))
+            today_rev = sum((s.total_amount for s in today_sales), Decimal('0.00'))
             today_sales_count = today_sales.count()
 
             # Month Financials
             start_of_month = today.replace(day=1)
             month_sales = Sale.objects.filter(created_at__date__gte=start_of_month, created_at__date__lte=today, status='COMPLETED')
-            month_rev = sum((s.final_amount for s in month_sales), Decimal('0.00'))
-            month_cogs = sum((s.total_cogs for s in month_sales), Decimal('0.00'))
+            month_rev = sum((s.total_amount for s in month_sales), Decimal('0.00'))
+            month_cogs = sum((s.total_cost for s in month_sales), Decimal('0.00'))
             month_gross_profit = month_rev - month_cogs
             gross_margin_pct = (month_gross_profit / month_rev * Decimal('100.0')) if month_rev > 0 else Decimal('0.0')
 
@@ -170,7 +171,7 @@ class GeminiMarketAgent:
             suppliers = Supplier.objects.filter(is_active=True)[:5]
             if suppliers:
                 sup_lines = [
-                    f"• {s.company_name} (مندوب: {s.rep_name or 'غير محدد'}, هاتف: {s.phone}, مهلة التوريد: {s.lead_time_days} أيام, حد أدنى للطلب: {s.min_order_amount:,.2f} {currency})"
+                    f"• {s.company_name} (مندوب: {s.rep_name or 'غير محدد'}, هاتف: {s.phone}, مهلة التوريد: {s.lead_time_days} أيام, حد أدنى للطلب: {s.min_order_value:,.2f} {currency})"
                     for s in suppliers
                 ]
                 context_parts.append("🚚 [دليل الموردين النشطين]:\n" + "\n".join(sup_lines))
@@ -205,10 +206,10 @@ class GeminiMarketAgent:
 
         # 7. AI Recommendations & Forecasts (Features 7, 14, 15, 16)
         if any(w in user_message for w in ['توقع', 'توقعات', 'توصية', 'توصيات', 'عرض', 'عروض', 'شذوذ', 'تناقض', 'ذكاء']):
-            recs = AIRecommendation.objects.filter(status='PENDING').order_by('-confidence_score')[:4]
+            recs = AIRecommendation.objects.filter(status='PENDING').order_by('-confidence_level')[:4]
             if recs:
                 rec_lines = [
-                    f"• [{rec.get_recommendation_type_display()}] {rec.title}: {rec.rationale} (اليقين: {rec.confidence_score}%)"
+                    f"• [{rec.get_recommendation_type_display()}] {rec.title}: {rec.rationale} (اليقين: {rec.confidence_level}%)"
                     for rec in recs
                 ]
                 context_parts.append("💡 [توصيات الذكاء الاصطناعي قيد المراجعة]:\n" + "\n".join(rec_lines))
@@ -269,29 +270,49 @@ class GeminiMarketAgent:
     # =========================================================================
 
     @classmethod
-    def call_gemini(cls, user_message, store_context, user=None):
+    def call_gemini(cls, user_message, store_context, user=None, history=None):
         api_key = cls.get_api_key()
         if not api_key:
             return None, None
 
         system_instruction = cls.get_system_prompt(store_context, user)
-        models = cls.get_models()
+        models = [
+            'gemini-3-flash-preview',
+            'gemini-3.5-flash-lite',
+            'gemini-3.5-flash',
+            'gemini-flash-lite-latest',
+        ]
 
-        full_prompt = (
-            f"تعليمات وقواعد النظام والمتجر:\n{system_instruction}\n\n"
-            f"سؤال أو طلب المستخدم:\n{user_message}"
-        )
+        contents = [
+            {
+                "role": "user",
+                "parts": [{"text": f"[تعليمات وقواعد النظام والمتجر وقاعدة البيانات الحية]:\n{system_instruction}"}]
+            },
+            {
+                "role": "model",
+                "parts": [{"text": "مفهوم تماماً. أنا المساعد الذكي لإدارة السوق (Market AI)، متصل لحظياً بقاعدة بيانات المتجر ومستعد للإجابة بدقة وذكاء، التفكير والتحليل في كل أحوال المحل، والتعلم فوراً من أي ملاحظات أو تصحيحات يقدمها المدير."}]
+            }
+        ]
+
+        if history and isinstance(history, list):
+            for turn in history[-6:]:
+                role = "user" if turn.get('role') in ['user', 'human'] else "model"
+                txt = (turn.get('text') or turn.get('message') or "").strip()
+                if txt:
+                    contents.append({
+                        "role": role,
+                        "parts": [{"text": txt}]
+                    })
+
+        contents.append({
+            "role": "user",
+            "parts": [{"text": user_message}]
+        })
 
         payload = {
-            "contents": [
-                {
-                    "parts": [
-                        {"text": full_prompt}
-                    ]
-                }
-            ],
+            "contents": contents,
             "generationConfig": {
-                "temperature": 0.7,
+                "temperature": 0.65,
                 "topP": 0.95,
                 "maxOutputTokens": 1024
             }
@@ -306,7 +327,7 @@ class GeminiMarketAgent:
                 headers={"Content-Type": "application/json"}
             )
             try:
-                with urllib.request.urlopen(req, timeout=9) as resp:
+                with urllib.request.urlopen(req, timeout=10) as resp:
                     res_json = json.loads(resp.read().decode('utf-8'))
                     candidates = res_json.get('candidates', [])
                     if candidates and 'content' in candidates[0]:
@@ -324,7 +345,7 @@ class GeminiMarketAgent:
     # =========================================================================
 
     @classmethod
-    def generate_response(cls, user_message, user=None):
+    def generate_response(cls, user_message, user=None, history=None):
         user_message = (user_message or "").strip()
         if not user_message:
             return {
@@ -336,8 +357,8 @@ class GeminiMarketAgent:
         # 1. RAG search
         store_context = cls.search_store_database(user_message)
 
-        # 2. Call Gemini Pro
-        gemini_text, used_model = cls.call_gemini(user_message, store_context, user)
+        # 2. Call Gemini Pro with multi-turn conversation memory
+        gemini_text, used_model = cls.call_gemini(user_message, store_context, user, history)
 
         if not gemini_text:
             return None
