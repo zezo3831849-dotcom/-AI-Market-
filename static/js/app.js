@@ -221,6 +221,9 @@ function getCsrfToken() {
 const ChatbotController = {
     isOpen: false,
     currentPendingAction: null,
+    STORAGE_KEY: 'market_ai_persistent_chat_v1',
+    storedMessages: [],
+    conversationHistory: [],
 
     init() {
         this.navbarBtn = document.getElementById('navbarChatbotBtn');
@@ -240,7 +243,63 @@ const ChatbotController = {
 
         if (!this.windowEl) return;
 
+        // Skip widget initialization if on fullpage chatbot
+        if (window.location.pathname.includes('/intelligence/chatbot/')) {
+            return;
+        }
+
         this.bindEvents();
+        this.loadStoredChat();
+
+        // Listen for storage changes across tabs or pages
+        window.addEventListener('storage', (e) => {
+            if (e.key === this.STORAGE_KEY) {
+                this.loadStoredChat();
+            }
+        });
+    },
+
+    saveChatToStorage() {
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.storedMessages));
+        } catch (e) {
+            console.error("Failed to save chat to localStorage:", e);
+        }
+    },
+
+    loadStoredChat() {
+        if (!this.messagesContainer) return;
+        try {
+            const raw = localStorage.getItem(this.STORAGE_KEY);
+            if (raw) {
+                const list = JSON.parse(raw);
+                if (Array.isArray(list) && list.length > 0) {
+                    this.storedMessages = list;
+                    this.conversationHistory = [];
+
+                    const welcome = this.messagesContainer.querySelector('.chat-message:first-child');
+                    this.messagesContainer.innerHTML = '';
+                    if (welcome) {
+                        this.messagesContainer.appendChild(welcome);
+                    }
+
+                    list.forEach(item => {
+                        if (item.type === 'user') {
+                            this.renderUserMessage(item.text);
+                            this.conversationHistory.push({ role: 'user', text: item.text });
+                        } else if (item.type === 'bot' && item.data) {
+                            this.renderBotMessage(item.data);
+                            if (item.data.reply) {
+                                this.conversationHistory.push({ role: 'model', text: item.data.reply });
+                            }
+                        }
+                    });
+                    setTimeout(() => this.scrollToBottom(), 50);
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load chat from localStorage:", e);
+        }
     },
 
     bindEvents() {
@@ -355,6 +414,14 @@ const ChatbotController = {
 
     clearChat() {
         if (!this.messagesContainer) return;
+        if (!confirm("هل أنت متأكد من رغبتك في مسح سجل المحادثة بالكامل؟\n(لن يتم مسح المحادثة إلا بناءً على طلبك وتأكيدك)")) {
+            return;
+        }
+        try {
+            localStorage.removeItem(this.STORAGE_KEY);
+        } catch(e) {}
+        this.storedMessages = [];
+        this.conversationHistory = [];
         const welcome = this.messagesContainer.querySelector('.chat-message:first-child');
         this.messagesContainer.innerHTML = '';
         if (welcome) {
@@ -364,7 +431,7 @@ const ChatbotController = {
         this.currentPendingAction = null;
     },
 
-    appendUserMessage(text) {
+    renderUserMessage(text) {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'chat-message user-message mb-2';
         msgDiv.innerHTML = `
@@ -374,6 +441,12 @@ const ChatbotController = {
         `;
         this.messagesContainer.appendChild(msgDiv);
         this.scrollToBottom();
+    },
+
+    appendUserMessage(text) {
+        this.renderUserMessage(text);
+        this.storedMessages.push({ type: 'user', text: text, ts: Date.now() });
+        this.saveChatToStorage();
     },
 
     showTyping() {
@@ -402,6 +475,8 @@ const ChatbotController = {
         this.showTyping();
 
         try {
+            this.conversationHistory.push({ role: 'user', text: text });
+
             const res = await fetch('/intelligence/chatbot/api/', {
                 method: 'POST',
                 headers: {
@@ -410,7 +485,8 @@ const ChatbotController = {
                 },
                 body: JSON.stringify({
                     message: text,
-                    pending_action: this.currentPendingAction
+                    pending_action: this.currentPendingAction,
+                    history: this.conversationHistory.slice(-8)
                 })
             });
 
@@ -423,6 +499,9 @@ const ChatbotController = {
             }
 
             this.hideTyping();
+            if (data.reply) {
+                this.conversationHistory.push({ role: 'model', text: data.reply });
+            }
             this.handleBotResponse(data);
         } catch (err) {
             console.error("Chatbot sendMessage error:", err);
@@ -460,6 +539,9 @@ const ChatbotController = {
             }
 
             this.hideTyping();
+            if (data.reply) {
+                this.conversationHistory.push({ role: 'model', text: data.reply });
+            }
             this.handleBotResponse(data);
         } catch (err) {
             console.error("Chatbot sendAuthenticatedAction error:", err);
@@ -492,7 +574,7 @@ const ChatbotController = {
         this.appendBotMessage(data);
     },
 
-    appendBotMessage(data) {
+    renderBotMessage(data) {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'chat-message bot-message mb-3';
 
@@ -544,6 +626,12 @@ const ChatbotController = {
 
         this.messagesContainer.appendChild(msgDiv);
         this.scrollToBottom();
+    },
+
+    appendBotMessage(data) {
+        this.renderBotMessage(data);
+        this.storedMessages.push({ type: 'bot', data: data, ts: Date.now() });
+        this.saveChatToStorage();
     },
 
     formatMarkdown(text) {
