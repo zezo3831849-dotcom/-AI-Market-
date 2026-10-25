@@ -33,7 +33,7 @@
     <!-- Main Full-Page Chat Container -->
     <div class="card card-custom shadow-sm border overflow-hidden" style="height: calc(100vh - 170px); min-height: 480px;">
         <!-- Messages Box -->
-        <div id="fullpageMessages" class="card-body p-2 p-md-3 overflow-y-auto d-flex flex-column gap-3" style="background-color: var(--bs-tertiary-bg, #f8fafc);">
+        <div id="fullpageMessages" class="card-body p-2 p-md-3 overflow-y-auto d-flex flex-column gap-3" style="background-color: var(--bg-canvas);">
             <div id="initialWelcomeBox" class="chat-message bot-message mb-3">
                 <div class="message-bubble bot-bubble p-3 rounded-3 shadow-sm" style="max-width: 95%;">
                     <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card bg-white p-3 border shadow-sm rounded-3 mt-2">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <i class="bi ${data.card.icon || 'bi-box-seam'} text-primary fs-5"></i>
-                        <strong class="fs-7 text-dark">${data.card.title}</strong>
+                        <strong class="fs-7">${data.card.title}</strong>
                     </div>
                     <div class="small text-muted mb-2">${data.card.description || ''}</div>
                     ${data.card.url ? `<a href="${data.card.url}" class="btn btn-sm btn-primary w-100 fw-bold">${data.card.button_text || 'عرض التفاصيل'}</a>` : ''}

@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, FileResponse
 from django.utils import timezone
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q, F, Value, DecimalField
+from django.db.models.functions import TruncDate, Coalesce
 
 from .models import SystemSettings, AuditLog, BackupLog
 from .backup_service import perform_backup
@@ -27,34 +28,41 @@ def dashboard_view(request):
     # 1. Financial summary for current month
     finance = get_financial_summary(start_date=start_of_month, end_date=today)
 
-    # 2. Daily sales & profit trend for the last 10 days
+    # 2. Daily sales & profit trend for the last 10 days (Aggregated in 2 fast queries)
     last_10_days = [today - timedelta(days=i) for i in range(9, -1, -1)]
+    start_date = last_10_days[0]
+
+    sales_qs = Sale.objects.filter(
+        created_at__date__gte=start_date,
+        created_at__date__lte=today,
+        status='COMPLETED'
+    ).annotate(day=TruncDate('created_at')).values('day').annotate(
+        rev=Sum('total_amount'),
+        cost=Sum('total_cost')
+    )
+    sales_by_day = {item['day']: item for item in sales_qs}
+
+    exp_qs = OperatingExpense.objects.filter(
+        expense_date__gte=start_date,
+        expense_date__lte=today
+    ).values('expense_date').annotate(tot=Sum('amount'))
+    expenses_by_day = {item['expense_date']: float(item['tot'] or 0) for item in exp_qs}
+
     chart_dates = []
     chart_sales = []
-    chart_cogs = []
     chart_profit = []
     chart_expenses = []
 
     for d in last_10_days:
         chart_dates.append(d.strftime("%m/%d"))
-        
-        # Sales on this day
-        day_sales = Sale.objects.filter(created_at__date=d, status='COMPLETED').aggregate(
-            rev=Sum('total_amount'),
-            cost=Sum('total_cost')
-        )
-        s_rev = float(day_sales['rev'] or 0)
-        s_cost = float(day_sales['cost'] or 0)
-        
-        # Expenses on this day
-        day_exp = OperatingExpense.objects.filter(expense_date=d).aggregate(
-            tot=Sum('amount')
-        )['tot'] or 0
+        day_sales = sales_by_day.get(d, {})
+        s_rev = float(day_sales.get('rev') or 0)
+        s_cost = float(day_sales.get('cost') or 0)
+        day_exp = expenses_by_day.get(d, 0.0)
 
         chart_sales.append(s_rev)
-        chart_cogs.append(s_cost)
         chart_profit.append(round(s_rev - s_cost, 2))
-        chart_expenses.append(float(day_exp))
+        chart_expenses.append(day_exp)
 
     # 3. Expense breakdown by category for Doughnut Chart
     exp_cats = ExpenseCategory.objects.annotate(
@@ -73,8 +81,12 @@ def dashboard_view(request):
         total_profit=Sum('gross_profit')
     ).order_by('-total_sold')[:5]
 
-    # 5. Low stock alerts
-    low_stock_products = [p for p in Product.objects.filter(is_active=True) if p.is_low_stock][:6]
+    # 5. Low stock alerts (Single fast annotated query)
+    low_stock_products = Product.objects.filter(is_active=True).annotate(
+        total_stock_qty=Coalesce(Sum('batches__current_quantity'), Value(Decimal('0.00')))
+    ).filter(
+        total_stock_qty__lte=F('min_stock_limit')
+    ).order_by('total_stock_qty')[:6]
 
     # 6. Near-expiry batches
     thirty_days = today + timedelta(days=30)

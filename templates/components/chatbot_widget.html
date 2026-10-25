@@ -1,54 +1,55 @@
-<!-- AI Market Assistant Floating / Draggable Chatbot Panel & Launcher -->
+<!-- AI Market Assistant Floating / Draggable Chatbot Panel & Launcher (new_gui_market) -->
+<!-- Inspirations: Skiper UI Glass Window, 21st.dev Rotating Aura FAB, Sitereel Luxury Chat -->
 <div id="aiMarketChatbotRoot" dir="rtl">
     <!-- Floating Circular Launcher Button (FAB) -->
     <button type="button" id="chatbotFloatingBtn" class="chatbot-floating-btn shadow-lg" title="فتح المساعد الذكي لإدارة السوق (Market AI)">
         <span class="chatbot-floating-pulse"></span>
         <div class="chatbot-floating-icon">
-            <i class="bi bi-robot"></i>
+            <i class="bi bi-robot fs-4"></i>
         </div>
-        <span class="chatbot-floating-badge"><i class="bi bi-stars"></i> AI</span>
+        <span class="chatbot-floating-badge"><i class="bi bi-stars"></i> Gemini</span>
     </button>
 
     <!-- Chatbot Main Draggable Window Container -->
-    <div id="chatbotWindow" class="chatbot-window shadow-2xl d-none">
+    <div id="chatbotWindow" class="chatbot-window d-none">
         <!-- Draggable Header -->
-        <div class="chatbot-header d-flex align-items-center justify-content-between p-3" id="chatbotDragHandle" title="اضغط مع السحب لتحريك النافذة في أي مكان بالشاشة">
+        <div class="chatbot-header" id="chatbotDragHandle" title="اضغط مع السحب لتحريك النافذة في أي مكان بالشاشة">
             <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-grip-vertical text-white-50 drag-handle-icon" title="اسحب لتحريك النافذة"></i>
-                <div class="chatbot-avatar-circle">
-                    <i class="bi bi-robot text-white fs-5"></i>
+                <i class="bi bi-grip-vertical text-white-50 drag-handle-icon" title="اسحب لتحريك النافذة" style="cursor: grab; font-size: 1.2rem;"></i>
+                <div class="p-2 rounded-3 bg-white text-primary d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px;">
+                    <i class="bi bi-robot fs-5"></i>
                 </div>
                 <div>
                     <div class="d-flex align-items-center gap-2">
-                        <h6 class="mb-0 fw-bold chatbot-title">المساعد الذكي لإدارة السوق</h6>
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill py-0 px-2" style="font-size: 0.68rem;">
+                        <h6 class="mb-0 fw-bold chatbot-title text-white">المساعد الذكي للسوق</h6>
+                        <span class="badge bg-white text-primary fw-bold rounded-pill py-0 px-2" style="font-size: 0.65rem;">
                             <i class="bi bi-stars"></i> Gemini Pro
                         </span>
                     </div>
-                    <small class="chatbot-subtitle text-muted" style="font-size: 0.74rem;">تحكم حي • اسحب لتحريك النافذة</small>
+                    <small class="text-white-50" style="font-size: 0.72rem;">تحكم حي • اسحب لتحريك النافذة</small>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-1">
-                <a href="{% url 'intelligence:chatbot_page' %}" class="btn btn-sm btn-icon-subtle text-muted" title="فتح بالشاشة الكاملة">
+                <a href="{% url 'intelligence:chatbot_page' %}" class="btn btn-sm btn-icon-subtle text-white p-1" title="فتح بالشاشة الكاملة">
                     <i class="bi bi-arrows-fullscreen"></i>
                 </a>
-                <button type="button" id="chatbotClearBtn" class="btn btn-sm btn-icon-subtle text-muted" title="مسح المحادثة">
+                <button type="button" id="chatbotClearBtn" class="btn btn-sm btn-icon-subtle text-white p-1" title="مسح المحادثة">
                     <i class="bi bi-trash3"></i>
                 </button>
-                <button type="button" id="chatbotMinimizeBtn" class="btn btn-sm btn-icon-subtle text-muted" title="تصغير النافذة">
+                <button type="button" id="chatbotMinimizeBtn" class="btn btn-sm btn-icon-subtle text-white p-1" title="تصغير النافذة">
                     <i class="bi bi-dash-lg"></i>
                 </button>
-                <button type="button" id="chatbotCloseBtn" class="btn btn-sm btn-icon-subtle text-muted" title="إغلاق النافذة">
+                <button type="button" id="chatbotCloseBtn" class="btn btn-sm btn-icon-subtle text-white p-1" title="إغلاق النافذة">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
         </div>
 
         <!-- Messages Container -->
-        <div id="chatbotMessages" class="chatbot-messages p-3">
+        <div id="chatbotMessages" class="chatbot-messages">
             <!-- Initial Welcome Message -->
             <div class="chat-message bot-message mb-3">
-                <div class="message-bubble bot-bubble shadow-sm">
+                <div class="message-bubble bot-bubble">
                     <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
                         <i class="bi bi-stars text-warning fs-5"></i>
                         <strong class="fs-7">أهلاً بك يا مدير! أنا مساعدك الذكي الشامل.</strong>
@@ -58,20 +59,22 @@
                     </p>
                     <p class="mb-2 small text-muted">جرّب أحد الاستفسارات السريعة أو اكتب طلبك مباشرة:</p>
                     <div class="chatbot-suggestions d-flex flex-wrap gap-1 mt-2">
-                        <button type="button" class="btn btn-sm btn-suggestion" data-msg="مبيعات اليوم">مبيعات اليوم 📈</button>
-                        <button type="button" class="btn btn-sm btn-suggestion" data-msg="النواقص في المخزن">النواقص في المخزن ⚠️</button>
-                        <button type="button" class="btn btn-sm btn-suggestion" data-msg="سعر السكر كام في المخزن؟">سعر السكر كام؟ 📦</button>
-                        <button type="button" class="btn btn-sm btn-suggestion" data-msg="تقرير الأرباح والسيولة لهذا الشهر">تقرير الأرباح 📊</button>
-                        <button type="button" class="btn btn-sm btn-suggestion" data-msg="سجل مصروف كهرباء بقيمة 350">تسجيل مصروف 💸</button>
-                        <button type="button" class="btn btn-sm btn-suggestion" data-msg="ازاي أزود أرباح السوبر ماركت؟">استشارة لزيادة الأرباح 💡</button>
+                        <button type="button" class="btn-suggestion" data-msg="مبيعات اليوم">مبيعات اليوم 📈</button>
+                        <button type="button" class="btn-suggestion" data-msg="النواقص في المخزن">النواقص في المخزن ⚠️</button>
+                        <button type="button" class="btn-suggestion" data-msg="متابعة الصلاحية">متابعة الصلاحية ⏳</button>
+                        <button type="button" class="btn-suggestion" data-msg="تحليل الأرباح والمصروفات">تحليل الأرباح 📊</button>
+                        <button type="button" class="btn-suggestion" data-msg="جدولة الموردين وأوامر الشراء">جدولة الموردين 🚚</button>
+                        <button type="button" class="btn-suggestion" data-msg="العروض الذكية والخصومات">العروض الذكية 🏷️</button>
+                        <button type="button" class="btn-suggestion" data-msg="سجل مصروف كهرباء بقيمة 350">تسجيل مصروف 💸</button>
+                        <button type="button" class="btn-suggestion" data-msg="استشارة ذكاء الأعمال">استشارة ذكاء الأعمال 💡</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Authentication Challenge Box (Human-in-the-Loop Security) -->
-        <div id="chatbotAuthContainer" class="chatbot-auth-container p-3 border-top d-none">
-            <div class="card auth-challenge-card border-warning shadow-sm">
+        <div id="chatbotAuthContainer" class="chatbot-auth-container p-3 border-top d-none bg-body-tertiary">
+            <div class="card auth-challenge-card border-warning shadow-sm rounded-3">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center gap-2 mb-2 text-warning">
                         <i class="bi bi-shield-lock-fill fs-5"></i>
@@ -81,20 +84,20 @@
                     <form id="chatbotAuthForm" class="mt-2">
                         <div class="mb-2">
                             <label class="form-label small fw-semibold mb-1">اسم المستخدم:</label>
-                            <input type="text" id="chatbotAuthUsername" class="form-control form-control-sm" value="{{ request.user.username|default:'admin' }}" required>
+                            <input type="text" id="chatbotAuthUsername" class="form-control form-control-sm rounded-pill px-3" value="{{ request.user.username|default:'admin' }}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-semibold mb-1">كلمة المرور:</label>
                             <div class="input-group input-group-sm">
-                                <input type="password" id="chatbotAuthPassword" class="form-control" placeholder="اكتب كلمة المرور..." required autocomplete="current-password">
-                                <button class="btn btn-outline-secondary" type="button" id="toggleAuthPasswordBtn"><i class="bi bi-eye"></i></button>
+                                <input type="password" id="chatbotAuthPassword" class="form-control rounded-start-pill px-3" placeholder="اكتب كلمة المرور..." required autocomplete="current-password">
+                                <button class="btn btn-outline-secondary rounded-end-pill" type="button" id="toggleAuthPasswordBtn"><i class="bi bi-eye"></i></button>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-sm btn-warning fw-bold flex-grow-1">
+                            <button type="submit" class="btn btn-sm btn-warning fw-bold flex-grow-1 rounded-pill">
                                 <i class="bi bi-check-circle me-1"></i> تأكيد وتنفيذ التعديل
                             </button>
-                            <button type="button" id="cancelAuthBtn" class="btn btn-sm btn-outline-secondary">إلغاء</button>
+                            <button type="button" id="cancelAuthBtn" class="btn btn-sm btn-outline-secondary rounded-pill px-3">إلغاء</button>
                         </div>
                     </form>
                 </div>
@@ -102,10 +105,10 @@
         </div>
 
         <!-- Footer / Input Form -->
-        <div class="chatbot-footer p-2 border-top">
+        <div class="chatbot-footer">
             <form id="chatbotInputForm" class="d-flex align-items-center gap-2">
                 <input type="text" id="chatbotInputField" class="form-control chatbot-input shadow-none" placeholder="اسألني أي شيء أو اطلب إضافة أو تعديل..." autocomplete="off">
-                <button type="submit" id="chatbotSendBtn" class="btn btn-primary chatbot-send-btn d-flex align-items-center justify-content-center" title="إرسال">
+                <button type="submit" id="chatbotSendBtn" class="chatbot-send-btn" title="إرسال">
                     <i class="bi bi-send-fill fs-6"></i>
                 </button>
             </form>

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,3 +149,21 @@ GEMINI_MODELS = [
     'gemini-3.5-flash',
     'gemini-flash-lite-latest',
 ]
+
+# Static Files Caching
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MAX_AGE = 31536000  # 1 year caching for static assets
+
+# SQLite High-Performance Optimization (WAL mode + RAM caching)
+from django.db.backends.signals import connection_created
+
+def configure_sqlite_performance(sender, connection, **kwargs):
+    if connection.vendor == 'sqlite':
+        cursor = connection.cursor()
+        cursor.execute('PRAGMA journal_mode = WAL;')
+        cursor.execute('PRAGMA synchronous = NORMAL;')
+        cursor.execute('PRAGMA cache_size = -64000;')  # 64MB cache
+        cursor.execute('PRAGMA temp_store = MEMORY;')
+
+connection_created.connect(configure_sqlite_performance)
+

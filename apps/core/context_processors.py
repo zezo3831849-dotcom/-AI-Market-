@@ -1,19 +1,30 @@
+import time
 from .models import SystemSettings
 from apps.intelligence.models import AIRecommendation
-from apps.inventory.models import Product, ProductBatch
+from apps.inventory.models import ProductBatch
 from django.utils import timezone
 from datetime import timedelta
 
+_CACHED_SETTINGS = None
+_CACHED_SETTINGS_TIME = 0
+
+def get_cached_settings():
+    global _CACHED_SETTINGS, _CACHED_SETTINGS_TIME
+    now = time.time()
+    if _CACHED_SETTINGS is None or (now - _CACHED_SETTINGS_TIME) > 60:
+        try:
+            _CACHED_SETTINGS = SystemSettings.get_settings()
+            _CACHED_SETTINGS_TIME = now
+        except Exception:
+            return None
+    return _CACHED_SETTINGS
+
 
 def global_settings(request):
-    try:
-        settings_obj = SystemSettings.get_settings()
-    except Exception:
-        settings_obj = None
+    settings_obj = get_cached_settings()
 
     pending_recommendations_count = 0
     near_expiry_count = 0
-    low_stock_count = 0
 
     if request.user.is_authenticated:
         try:
@@ -26,10 +37,6 @@ def global_settings(request):
                 expiry_date__lte=thirty_days,
                 current_quantity__gt=0
             ).count()
-            # low stock count
-            low_stock_count = Product.objects.filter(is_active=True).filter(
-                batches__current_quantity__gt=0
-            ).distinct().count()
         except Exception:
             pass
 
@@ -38,3 +45,4 @@ def global_settings(request):
         'pending_ai_count': pending_recommendations_count,
         'near_expiry_count': near_expiry_count,
     }
+

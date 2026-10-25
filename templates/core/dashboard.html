@@ -4,154 +4,265 @@
 {% block title %}لوحة التحكم والتحليلات الذكية | {{ system_settings.store_name }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h3 class="fw-bold mb-1">لوحة التحكم والتحليلات المالية والذكاء الاصطناعي</h3>
-        <p class="text-muted small mb-0">نظرة شاملة ومحدثة فورياً على حركة المبيعات، المخزون، المصروفات التشغيلية، وصافي الأرباح.</p>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{% url 'sales:pos' %}" class="btn btn-warning fw-bold px-3 d-flex align-items-center gap-2 shadow-sm">
-            <i class="bi bi-upc-scan fs-5"></i>
-            <span>فتح نقطة البيع (POS)</span>
-        </a>
-        <a href="{% url 'intelligence:run_pipeline' %}" class="btn btn-ai px-3 d-flex align-items-center gap-2">
-            <i class="bi bi-stars"></i>
-            <span>تشغيل فحص الذكاء الاصطناعي</span>
-        </a>
-    </div>
-</div>
-
-<!-- 1. Executive Financial KPI Cards -->
-<div class="row g-3 mb-4">
-    <!-- Net Revenue -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-        <div class="metric-card primary shadow-sm">
-            <i class="bi bi-cash-coin icon-backdrop"></i>
-            <div class="metric-label">صافي إيرادات المبيعات</div>
-            <div class="metric-value my-1">{{ finance.net_sales_revenue|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
-            <div class="small opacity-75">إجمالي المبيعات المكتملة</div>
-        </div>
-    </div>
-
-    <!-- COGS -->
-    <div class="col-xl-2 col-md-4 col-sm-6">
-        <div class="metric-card teal shadow-sm">
-            <i class="bi bi-boxes icon-backdrop"></i>
-            <div class="metric-label">تكلفة البضاعة المباعة (COGS)</div>
-            <div class="metric-value my-1">{{ finance.cogs|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
-            <div class="small opacity-75">تكلفة شراء السلع المباعة</div>
-        </div>
-    </div>
-
-    <!-- Gross Profit -->
-    <div class="col-xl-3 col-md-6 col-sm-6">
-        <div class="metric-card success shadow-sm">
-            <i class="bi bi-graph-up-arrow icon-backdrop"></i>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="metric-label">مجمل الربح (Gross Profit)</div>
-                <span class="badge bg-white text-success fw-bold">هامش {{ finance.gross_margin_pct }}%</span>
+<!-- 1. Cyber Neural AI Scan Station & Fast Actions (Professional AI Inspection) -->
+<div class="ai-scan-station mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 position-relative" style="z-index: 2;">
+        <div class="d-flex align-items-center gap-3">
+            <!-- Pulsing Rotating 3D Neural Core Orb -->
+            <div class="neural-core-orb">
+                <i class="bi bi-stars text-white fs-3"></i>
             </div>
-            <div class="metric-value my-1">{{ finance.gross_profit|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
-            <div class="small opacity-75">الإيرادات − تكلفة البضاعة المباعة</div>
+            <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h4 class="fw-bold mb-0 ai-station-title">محطة فحص ومراقبة الذكاء الاصطناعي (AI Neural Station)</h4>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill py-1 px-3 d-inline-flex align-items-center gap-2 small">
+                        <span class="radar-pulse-box"><span class="radar-pulse-ring"></span><span class="radar-pulse-dot"></span></span>
+                        خوارزمية Gemini Pro نشطة
+                    </span>
+                </div>
+                <p class="ai-station-sub small mb-0 mt-1">
+                    فحص استباقي شامل لكافة معاملات المتجر: رصد نقص المخزون، تسعير الصلاحيات، تحليل الأرباح الحقيقية، وكشف التناقضات المالية.
+                </p>
+            </div>
         </div>
-    </div>
 
-    <!-- Operating Expenses -->
-    <div class="col-xl-2 col-md-6 col-sm-6">
-        <div class="metric-card danger shadow-sm">
-            <i class="bi bi-receipt-cutoff icon-backdrop"></i>
-            <div class="metric-label">المصروفات التشغيلية</div>
-            <div class="metric-value my-1">{{ finance.operating_expenses|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
-            <div class="small opacity-75">إيجار، كهرباء، رواتب، صيانة</div>
-        </div>
-    </div>
-
-    <!-- Net Operating Profit -->
-    <div class="col-xl-3 col-md-6 col-sm-12">
-        <div class="metric-card {% if finance.net_operating_profit >= 0 %}purple{% else %}danger{% endif %} shadow-sm">
-            <i class="bi bi-trophy-fill icon-backdrop"></i>
-            <div class="metric-label">صافي الربح التشغيلي الحقيقي</div>
-            <div class="metric-value my-1">{{ finance.net_operating_profit|floatformat:2|intcomma }} <small class="fs-6">{{ system_settings.currency }}</small></div>
-            <div class="small opacity-75">مجمل الربح − المصروفات التشغيلية</div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <!-- Fast POS Shimmer Button -->
+            <a href="{% url 'sales:pos' %}" class="btn-shimmer-pos text-white text-decoration-none">
+                <i class="bi bi-upc-scan fs-5"></i>
+                <span>كاشير POS السريع</span>
+            </a>
+            <!-- Cyber Neural AI Scan Button -->
+            <a href="{% url 'intelligence:run_pipeline' %}" class="btn-cyber-ai text-white text-decoration-none">
+                <i class="bi bi-cpu-fill fs-5"></i>
+                <span>تشغيل فحص الذكاء الاصطناعي الشامل</span>
+            </a>
         </div>
     </div>
 </div>
 
-<!-- 2. Charts Section -->
-<div class="row g-3 mb-4">
-    <!-- Trend Chart -->
-    <div class="col-lg-8">
-        <div class="card card-custom p-3 h-100">
+<!-- 2. Vengeance UI & 21st.dev Bento Grid: Executive Financial Metrics with Subtle White Hover -->
+<div class="bento-grid">
+    <!-- Bento 1: Hero Net Operating Profit (Purple Luxury Card) -->
+    <div class="bento-col-4">
+        <div class="bento-luxury-card hero-profit-card h-100">
+            <i class="bi bi-trophy-fill luxury-icon-backdrop"></i>
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small bento-card-sub fw-bold text-uppercase">صافي الربح التشغيلي الحقيقي</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill py-1 px-3 small">
+                        مجمل الربح − المصروفات
+                    </span>
+                </div>
+                <div class="hero-profit-value my-2">
+                    <span class="num-ticker" data-val="{{ finance.net_operating_profit }}">{{ finance.net_operating_profit|floatformat:2|intcomma }}</span>
+                    <small class="fs-6 bento-card-sub ms-1">{{ system_settings.currency }}</small>
+                </div>
+            </div>
+            <div class="pt-3 border-top bento-card-divider d-flex justify-content-between align-items-center small bento-card-sub">
+                <span>هامش الربح التشغيلي الفعلي:</span>
+                <span class="badge bg-white text-dark fw-bold rounded-pill px-3 py-1 shadow-sm">{{ finance.gross_margin_pct }}%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bento 2: Net Sales Revenue (Indigo Luxury Card) -->
+    <div class="bento-col-4">
+        <div class="bento-luxury-card surface-indigo h-100">
+            <i class="bi bi-cash-coin luxury-icon-backdrop"></i>
+            <div class="metric-tile-header">
+                <span class="small bento-card-sub fw-bold text-uppercase">صافي إيرادات المبيعات</span>
+                <div class="metric-tile-icon indigo">
+                    <i class="bi bi-receipt-cutoff"></i>
+                </div>
+            </div>
+            <div>
+                <div class="luxury-val val-indigo my-2">
+                    <span class="num-ticker" data-val="{{ finance.net_sales_revenue }}">{{ finance.net_sales_revenue|floatformat:2|intcomma }}</span>
+                    <small class="fs-6 bento-card-sub ms-1">{{ system_settings.currency }}</small>
+                </div>
+                <div class="d-flex align-items-center justify-content-between bento-card-sub small mt-2 pt-2 border-top bento-card-divider">
+                    <span>إجمالي المبيعات المكتملة</span>
+                    <span class="metric-tile-delta positive">
+                        <i class="bi bi-arrow-up-short"></i> مبيعات مباشرة
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bento 3: Gross Profit (Emerald Luxury Card) -->
+    <div class="bento-col-4">
+        <div class="bento-luxury-card surface-emerald h-100">
+            <i class="bi bi-graph-up-arrow luxury-icon-backdrop"></i>
+            <div class="metric-tile-header">
+                <span class="small bento-card-sub fw-bold text-uppercase">مجمل الربح (Gross Profit)</span>
+                <div class="metric-tile-icon emerald">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+            </div>
+            <div>
+                <div class="luxury-val val-emerald my-2">
+                    <span class="num-ticker" data-val="{{ finance.gross_profit }}">{{ finance.gross_profit|floatformat:2|intcomma }}</span>
+                    <small class="fs-6 bento-card-sub ms-1">{{ system_settings.currency }}</small>
+                </div>
+                <div class="d-flex align-items-center justify-content-between bento-card-sub small mt-2 pt-2 border-top bento-card-divider">
+                    <span>الإيرادات − تكلفة السلع</span>
+                    <span class="badge bg-success-subtle text-success fw-bold rounded-pill">هامش {{ finance.gross_margin_pct }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bento 4: COGS (Cyan Luxury Card) -->
+    <div class="bento-col-6">
+        <div class="bento-luxury-card surface-cyan h-100">
+            <i class="bi bi-boxes luxury-icon-backdrop"></i>
+            <div class="metric-tile-header">
+                <span class="small bento-card-sub fw-bold text-uppercase">تكلفة البضاعة المباعة (COGS)</span>
+                <div class="metric-tile-icon cyan">
+                    <i class="bi bi-boxes"></i>
+                </div>
+            </div>
+            <div>
+                <div class="luxury-val val-cyan my-2">
+                    <span class="num-ticker" data-val="{{ finance.cogs }}">{{ finance.cogs|floatformat:2|intcomma }}</span>
+                    <small class="fs-6 bento-card-sub ms-1">{{ system_settings.currency }}</small>
+                </div>
+                <div class="bento-card-sub small mt-2 pt-2 border-top bento-card-divider">
+                    التكلفة الأصلية للسلع التي تم بيعها وإخراجها من المخزون
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bento 5: Operating Expenses (Crimson Luxury Card) -->
+    <div class="bento-col-6">
+        <div class="bento-luxury-card surface-crimson h-100">
+            <i class="bi bi-cash-stack luxury-icon-backdrop"></i>
+            <div class="metric-tile-header">
+                <span class="small bento-card-sub fw-bold text-uppercase">المصروفات التشغيلية</span>
+                <div class="metric-tile-icon crimson">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+            </div>
+            <div>
+                <div class="luxury-val val-crimson my-2">
+                    <span class="num-ticker" data-val="{{ finance.operating_expenses }}">{{ finance.operating_expenses|floatformat:2|intcomma }}</span>
+                    <small class="fs-6 bento-card-sub ms-1">{{ system_settings.currency }}</small>
+                </div>
+                <div class="d-flex align-items-center justify-content-between bento-card-sub small mt-2 pt-2 border-top bento-card-divider">
+                    <span>إيجار، فواتير، رواتب، وصيانة</span>
+                    <a href="{% url 'expenses:expenses_list' %}" class="small text-danger fw-bold text-decoration-none">عرض البنود <i class="bi bi-chevron-left"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Bento Grid: Animated Interactive Charts -->
+<div class="bento-grid">
+    <!-- Trend Chart with Luxury Card -->
+    <div class="bento-col-8">
+        <div class="bento-luxury-card surface-dark-slate h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-line text-primary me-2"></i> حركة المبيعات ومجمل الربح والمصروفات (آخر 10 أيام)</h5>
-                <span class="badge bg-light text-muted border">تحديث لحظي</span>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="p-2 rounded-3 bg-primary-subtle text-primary">
+                        <i class="bi bi-bar-chart-line fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0 op-card-title">حركة المبيعات ومجمل الربح والمصروفات</h6>
+                        <small class="bento-card-sub">مقارنة يومية لآخر 10 أيام</small>
+                    </div>
+                </div>
+                <span class="badge bento-badge-live rounded-pill px-3 py-1">
+                    <i class="bi bi-activity text-success me-1"></i> تتبع لحظي
+                </span>
             </div>
-            <div style="height: 300px; position: relative;">
+            <div style="height: 310px; position: relative;">
                 <canvas id="salesTrendsChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Expenses Donut Chart -->
-    <div class="col-lg-4">
-        <div class="card card-custom p-3 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0"><i class="bi bi-pie-chart text-danger me-2"></i> توزيع المصروفات التشغيلية</h5>
-                <a href="{% url 'expenses:expenses_list' %}" class="small text-decoration-none">عرض الكل</a>
+    <!-- Expenses Donut Chart with Luxury Card -->
+    <div class="bento-col-4">
+        <div class="bento-luxury-card surface-dark-slate h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="p-2 rounded-3 bg-danger-subtle text-danger">
+                            <i class="bi bi-pie-chart fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 op-card-title">توزيع المصروفات</h6>
+                            <small class="bento-card-sub">حسب البنود التشغيلية</small>
+                        </div>
+                    </div>
+                    <a href="{% url 'expenses:expenses_list' %}" class="small text-decoration-none fw-bold text-danger">عرض الكل</a>
+                </div>
+                <div style="height: 240px; position: relative;">
+                    <canvas id="expensesDonutChart"></canvas>
+                </div>
             </div>
-            <div style="height: 240px; position: relative;">
-                <canvas id="expensesDonutChart"></canvas>
-            </div>
-            <div class="text-center mt-2 small text-muted">
-                إجمالي المصروفات: <strong>{{ finance.operating_expenses|floatformat:2 }} {{ system_settings.currency }}</strong>
+            <div class="text-center pt-2 border-top bento-card-divider small bento-card-sub">
+                إجمالي المصروفات المسجلة: <strong class="text-danger">{{ finance.operating_expenses|floatformat:2 }} {{ system_settings.currency }}</strong>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 3. Actionable AI Recommendations (Human-in-the-Loop) -->
-<div class="card card-custom p-3 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
-                <i class="bi bi-stars text-info fs-4"></i>
-                <span>توصيات الذكاء الاصطناعي الحديثة بانتظار قرار المدير (Human-in-the-Loop)</span>
-            </h5>
-            <small class="text-muted">يقدم الذكاء الاصطناعي الأسباب والبيانات الداعمة، ويبقى القرار النهائي للإدارة.</small>
+<!-- 4. Actionable AI Recommendations (Human-in-the-Loop) -->
+<div class="bento-luxury-card surface-dark-slate mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <div class="neural-core-orb" style="width: 44px; height: 44px;">
+                <i class="bi bi-stars text-white fs-4"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold mb-0 op-card-title">توصيات الذكاء الاصطناعي بانتظار قرار الإدارة (Human-in-the-Loop)</h5>
+                <small class="bento-card-sub">يقدم الذكاء الاصطناعي أسباب وتفاصيل كل توصية، ويبقى القرار التنفيذي بيدك.</small>
+            </div>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{% url 'intelligence:center' %}" class="btn btn-outline-primary btn-sm">مركز الذكاء الاصطناعي الكامل</a>
-        </div>
+        <a href="{% url 'intelligence:center' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+            <i class="bi bi-grid-fill me-1"></i> مركز الذكاء الاصطناعي الكامل
+        </a>
     </div>
 
     <div class="row g-3">
         {% for rec in ai_recs %}
         <div class="col-md-6">
-            <div class="ai-card {% if rec.recommendation_type == 'SMART_OFFER' %}offer{% elif rec.recommendation_type == 'ANOMALY' %}anomaly{% elif rec.recommendation_type == 'RESTOCK' %}restock{% else %}seasonal{% endif %}">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                        <span class="badge-ai mb-1 d-inline-block">{{ rec.get_recommendation_type_display }}</span>
-                        <h6 class="fw-bold mb-0 mt-1">{{ rec.title }}</h6>
+            <div class="ai-recommend-tile h-100 d-flex flex-column justify-content-between p-3 rounded-3">
+                <div>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="ai-type-pill {% if rec.recommendation_type == 'SMART_OFFER' %}offer{% elif rec.recommendation_type == 'ANOMALY' %}anomaly{% elif rec.recommendation_type == 'RESTOCK' %}restock{% else %}seasonal{% endif %} mb-1">
+                                {{ rec.get_recommendation_type_display }}
+                            </span>
+                            <h6 class="fw-bold mb-0 mt-1 op-card-title">{{ rec.title }}</h6>
+                        </div>
+                        <span class="badge bento-badge-live rounded-pill px-2 py-1 small">
+                            يقين {{ rec.confidence_level }}%
+                        </span>
                     </div>
-                    <span class="badge bg-light text-dark border">يقين {{ rec.confidence_level }}%</span>
+                    <p class="bento-card-sub small mb-2">{{ rec.description }}</p>
+                    <div class="ai-action-box p-2 rounded-3 small mb-2">
+                        <strong class="text-primary d-block mb-1"><i class="bi bi-lightbulb"></i> الإجراء المقترح:</strong>
+                        <span class="op-item-name">{{ rec.suggested_action }}</span>
+                    </div>
+                    <div class="bento-card-sub small mb-3">
+                        <strong class="op-card-title">السبب والتحليل:</strong> {{ rec.rationale }}
+                    </div>
                 </div>
-                <p class="text-dark small mb-2">{{ rec.description }}</p>
-                <div class="bg-light p-2 rounded small mb-2 border-start border-3 border-primary">
-                    <strong class="text-primary d-block mb-1"><i class="bi bi-lightbulb"></i> الإجراء المقترح:</strong>
-                    {{ rec.suggested_action }}
-                </div>
-                <div class="text-muted small mb-3">
-                    <strong>السبب والتحليل:</strong> {{ rec.rationale }}
-                </div>
-                
+
                 <!-- Action Form -->
                 {% if request.user.is_admin_or_manager %}
-                <form action="{% url 'intelligence:recommendation_decision' rec.id %}" method="POST" class="d-flex gap-2">
+                <form action="{% url 'intelligence:recommendation_decision' rec.id %}" method="POST" class="d-flex gap-2 pt-2 border-top bento-card-divider">
                     {% csrf_token %}
-                    <button type="submit" name="decision" value="APPROVED" class="btn btn-sm btn-success fw-bold flex-grow-1">
+                    <button type="submit" name="decision" value="APPROVED" class="btn btn-sm btn-success fw-bold flex-grow-1 rounded-pill">
                         <i class="bi bi-check-lg"></i> موافقة وتطبيق
                     </button>
-                    <button type="submit" name="decision" value="REJECTED" class="btn btn-sm btn-outline-secondary">
+                    <button type="submit" name="decision" value="REJECTED" class="btn btn-sm btn-outline-danger rounded-pill px-3">
                         <i class="bi bi-x-lg"></i> رفض
                     </button>
                 </form>
@@ -159,22 +270,29 @@
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-4 text-muted">
+        <div class="col-12 text-center py-5 bento-card-sub">
             <i class="bi bi-check-circle-fill text-success fs-2 d-block mb-2"></i>
-            لا توجد توصيات معلقة حالياً. النظام يعمل بأعلى كفاءة!
+            لا توجد توصيات معلقة حالياً. المتجر يعمل بأعلى درجات الكفاءة!
         </div>
         {% endfor %}
     </div>
 </div>
 
-<!-- 4. Operational Tables & Alerts Grid -->
-<div class="row g-3">
+<!-- 5. Operational Tables & Alerts Grid (Adaptive Light & Dark Luxury Styling) -->
+<div class="bento-grid">
     <!-- Top Selling Products -->
-    <div class="col-lg-4">
-        <div class="card card-custom p-3 h-100">
-            <h6 class="fw-bold mb-3"><i class="bi bi-award-fill text-warning me-2"></i> السلع الأكثر مبيعاً</h6>
+    <div class="bento-col-4">
+        <div class="bento-luxury-card surface-dark-slate h-100">
+            <i class="bi bi-award-fill luxury-icon-backdrop"></i>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 op-card-title d-flex align-items-center gap-2">
+                    <i class="bi bi-award-fill text-warning fs-5"></i>
+                    <span>السلع الأكثر مبيعاً</span>
+                </h6>
+                <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">هذا الأسبوع</span>
+            </div>
             <div class="table-responsive">
-                <table class="table table-custom table-sm mb-0">
+                <table class="table table-hover table-sm mb-0 dashboard-op-table">
                     <thead>
                         <tr>
                             <th>المنتج</th>
@@ -186,14 +304,14 @@
                         {% for item in top_products %}
                         <tr>
                             <td>
-                                <strong class="d-block text-truncate" style="max-width: 130px;">{{ item.product__name }}</strong>
-                                <small class="text-muted">{{ item.product__code }}</small>
+                                <strong class="d-block text-truncate op-item-name" style="max-width: 130px;">{{ item.product__name }}</strong>
+                                <small class="op-item-sub">{{ item.product__code }}</small>
                             </td>
-                            <td><span class="badge bg-primary-subtle text-primary">{{ item.total_sold }}</span></td>
+                            <td><span class="badge bg-primary-subtle text-primary rounded-pill">{{ item.total_sold }}</span></td>
                             <td class="fw-bold text-success">{{ item.total_rev|floatformat:1 }} {{ system_settings.currency }}</td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="3" class="text-center text-muted">لا توجد مبيعات مسجلة</td></tr>
+                        <tr><td colspan="3" class="text-center op-item-sub py-3">لا توجد مبيعات مسجلة</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -202,14 +320,18 @@
     </div>
 
     <!-- Low Stock Alerts -->
-    <div class="col-lg-4">
-        <div class="card card-custom p-3 h-100">
+    <div class="bento-col-4">
+        <div class="bento-luxury-card surface-dark-slate h-100">
+            <i class="bi bi-exclamation-triangle-fill luxury-icon-backdrop"></i>
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i> تنبيهات نقص المخزون</h6>
-                <a href="{% url 'inventory:products_list' %}?stock=low" class="small text-decoration-none">إدارة</a>
+                <h6 class="fw-bold mb-0 text-danger d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <span>نقص المخزون</span>
+                </h6>
+                <a href="{% url 'inventory:products_list' %}?stock=low" class="small text-danger fw-bold text-decoration-none">إدارة <i class="bi bi-chevron-left"></i></a>
             </div>
             <div class="table-responsive">
-                <table class="table table-custom table-sm mb-0">
+                <table class="table table-hover table-sm mb-0 dashboard-op-table">
                     <thead>
                         <tr>
                             <th>المنتج</th>
@@ -221,18 +343,18 @@
                         {% for prod in low_stock_products %}
                         <tr>
                             <td>
-                                <strong class="d-block text-truncate" style="max-width: 140px;">{{ prod.name }}</strong>
-                                <small class="text-muted">{{ prod.code }}</small>
+                                <strong class="d-block text-truncate op-item-name" style="max-width: 140px;">{{ prod.name }}</strong>
+                                <small class="op-item-sub">{{ prod.code }}</small>
                             </td>
                             <td>
-                                <span class="badge {% if prod.total_stock == 0 %}bg-danger{% else %}bg-warning text-dark{% endif %}">
-                                    {{ prod.total_stock }} {{ prod.get_unit_display }}
+                                <span class="badge {% if prod.total_stock_qty == 0 %}badge-expired-stock{% else %}badge-warning-stock{% endif %}">
+                                    {{ prod.total_stock_qty|floatformat:0 }} {{ prod.get_unit_display }}
                                 </span>
                             </td>
-                            <td class="text-muted">{{ prod.min_stock_limit }}</td>
+                            <td class="op-item-meta">{{ prod.min_stock_limit }}</td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="3" class="text-center text-muted">المخزون بمستويات آمنة</td></tr>
+                        <tr><td colspan="3" class="text-center op-item-sub py-3">المخزون بمستويات آمنة</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -241,14 +363,18 @@
     </div>
 
     <!-- Near Expiry Batches -->
-    <div class="col-lg-4">
-        <div class="card card-custom p-3 h-100">
+    <div class="bento-col-4">
+        <div class="bento-luxury-card surface-dark-slate h-100">
+            <i class="bi bi-clock-history luxury-icon-backdrop"></i>
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold mb-0 text-warning"><i class="bi bi-clock-history me-2"></i> دفعات تقترب صلاحيتها</h6>
-                <a href="{% url 'inventory:batches_list' %}?filter=near_expiry" class="small text-decoration-none">عرض</a>
+                <h6 class="fw-bold mb-0 text-warning d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history fs-5"></i>
+                    <span>تنبيهات الصلاحية</span>
+                </h6>
+                <a href="{% url 'inventory:batches_list' %}?filter=near_expiry" class="small text-warning fw-bold text-decoration-none">عرض <i class="bi bi-chevron-left"></i></a>
             </div>
             <div class="table-responsive">
-                <table class="table table-custom table-sm mb-0">
+                <table class="table table-hover table-sm mb-0 dashboard-op-table">
                     <thead>
                         <tr>
                             <th>المنتج والتشغيلة</th>
@@ -260,14 +386,14 @@
                         {% for b in near_expiry_batches %}
                         <tr>
                             <td>
-                                <strong class="d-block text-truncate" style="max-width: 130px;">{{ b.product.name }}</strong>
-                                <small class="text-muted">{{ b.batch_number }}</small>
+                                <strong class="d-block text-truncate op-item-name" style="max-width: 130px;">{{ b.product.name }}</strong>
+                                <small class="op-item-sub">{{ b.batch_number }}</small>
                             </td>
-                            <td><span class="badge bg-warning-subtle text-dark">{{ b.current_quantity }}</span></td>
-                            <td class="text-danger fw-bold">{{ b.expiry_date|date:"Y-m-d" }}</td>
+                            <td><span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">{{ b.current_quantity }}</span></td>
+                            <td class="text-danger fw-bold op-item-meta">{{ b.expiry_date|date:"Y-m-d" }}</td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="3" class="text-center text-muted">لا توجد دفعات منتهية أو قاربت</td></tr>
+                        <tr><td colspan="3" class="text-center op-item-sub py-3">لا توجد دفعات منتهية أو قاربت</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -280,6 +406,11 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const isLight = document.documentElement.getAttribute('data-bs-theme') === 'light' || document.documentElement.getAttribute('data-theme') === 'light';
+    const textColor = isLight ? '#0f172a' : '#e2e8f0';
+    const subColor = isLight ? '#64748b' : '#94a3b8';
+    const gridColor = isLight ? '#f1f5f9' : 'rgba(255, 255, 255, 0.08)';
+
     // 1. Sales & Profit Trend Chart
     const ctxTrend = document.getElementById('salesTrendsChart').getContext('2d');
     const chartDates = {{ chart_dates_json|safe }};
@@ -295,20 +426,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 {
                     label: 'إيراد المبيعات',
                     data: chartSales,
-                    backgroundColor: 'rgba(59, 130, 246, 0.75)',
-                    borderRadius: 6,
+                    backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                    borderRadius: 8,
                 },
                 {
                     label: 'مجمل الربح',
                     data: chartProfit,
-                    backgroundColor: 'rgba(16, 185, 129, 0.75)',
-                    borderRadius: 6,
+                    backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                    borderRadius: 8,
                 },
                 {
                     label: 'المصروفات التشغيلية',
                     data: chartExpenses,
-                    backgroundColor: 'rgba(239, 68, 68, 0.75)',
-                    borderRadius: 6,
+                    backgroundColor: 'rgba(239, 68, 68, 0.85)',
+                    borderRadius: 8,
                 }
             ]
         },
@@ -316,10 +447,22 @@ document.addEventListener('DOMContentLoaded', function() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'top', rtl: true }
+                legend: {
+                    position: 'top',
+                    rtl: true,
+                    labels: { color: textColor, font: { family: 'Cairo', weight: '600' } }
+                }
             },
             scales: {
-                y: { beginAtZero: true }
+                y: {
+                    beginAtZero: true,
+                    grid: { color: gridColor },
+                    ticks: { color: subColor }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: subColor }
+                }
             }
         }
     });
@@ -336,19 +479,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: donutLabels,
                 datasets: [{
                     data: donutValues,
-                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#06b6d4']
+                    backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#8b5cf6', '#10b981', '#06b6d4'],
+                    borderWidth: 2,
+                    borderColor: isLight ? '#ffffff' : '#0f172a'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', rtl: true }
-                }
+                    legend: {
+                        position: 'bottom',
+                        rtl: true,
+                        labels: { color: textColor, font: { family: 'Cairo' } }
+                    }
+                },
+                cutout: '72%'
             }
         });
     } else {
-        ctxDonut.canvas.parentNode.innerHTML = '<div class="text-center py-5 text-muted">لا توجد بيانات مصروفات كافية</div>';
+        ctxDonut.canvas.parentNode.innerHTML = '<div class="text-center py-5 bento-card-sub">لا توجد بيانات مصروفات كافية</div>';
     }
 });
 </script>

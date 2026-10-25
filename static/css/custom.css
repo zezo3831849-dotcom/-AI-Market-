@@ -1,59 +1,172 @@
-/* AI-Powered Market Manager - Modern Design System */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap');
+/* ==========================================================================
+   AI-POWERED MARKET MANAGER - NEXT-GENERATION GUI SYSTEM (new_gui_market)
+   Inspirations: 
+     - Skiper UI (Floating Glass Island, Minimalist Dark Canvas, Command Palette)
+     - Vengeance UI (Bento Grid Architecture, Glowing Mesh, Border Beam)
+     - 21st.dev & Aceternity UI (Shimmer Buttons, Radar Pulse, Floating Dock)
+     - Animmaster Lib (Mouse Spotlight Tracking, Laser Scanline, Micro-Interactions)
+     - Sitereel.ai (Retail ERP Luxury Palette, Cohesive Retail Hierarchy)
+   ========================================================================== */
+/* Fonts defined via preconnected link tags in templates for high performance */
 
+/* --- 1. DESIGN TOKENS & DYNAMIC THEMES --- */
 :root {
-    --primary: #4361ee;
-    --primary-hover: #3a56d4;
-    --primary-light: #eef2ff;
-    --secondary: #3f37c9;
-    --success: #10b981;
-    --success-light: #ecfdf5;
-    --warning: #f59e0b;
-    --warning-light: #fffbeb;
-    --danger: #ef4444;
-    --danger-light: #fef2f2;
-    --info: #06b6d4;
-    --info-light: #ecfeff;
-    --dark: #0f172a;
-    --dark-surface: #1e293b;
-    --dark-card: #1e293b;
-    --light-bg: #f8fafc;
-    --card-bg: #ffffff;
-    --border-color: #e2e8f0;
-    --text-primary: #1e293b;
+    /* Fonts */
+    --font-ar: 'Cairo', system-ui, -apple-system, sans-serif;
+    --font-num: 'Plus Jakarta Sans', 'Cairo', sans-serif;
+
+    /* Light Theme (Porcelain & Ice Glass) */
+    --bg-canvas: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-glass: rgba(255, 255, 255, 0.85);
+    --bg-surface-elevated: #ffffff;
+    --bg-muted: #f1f5f9;
+    --border-subtle: rgba(226, 232, 240, 0.9);
+    --border-glass: rgba(255, 255, 255, 0.6);
+    --border-hover: #cbd5e1;
+    --text-main: #0f172a;
     --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+
+    /* Retail Brand Palette */
+    --fresh-emerald: #10b981;
+    --fresh-emerald-glow: rgba(16, 185, 129, 0.25);
+    --fresh-emerald-light: #ecfdf5;
+
+    --neural-indigo: #6366f1;
+    --neural-indigo-glow: rgba(99, 102, 241, 0.25);
+    --neural-indigo-light: #eef2ff;
+
+    --neural-purple: #8b5cf6;
+    --neural-purple-glow: rgba(139, 92, 246, 0.25);
+
+    --amber-warning: #f59e0b;
+    --amber-warning-glow: rgba(245, 158, 11, 0.25);
+    --amber-warning-light: #fffbeb;
+
+    --crimson-danger: #ef4444;
+    --crimson-danger-glow: rgba(239, 68, 68, 0.25);
+    --crimson-danger-light: #fef2f2;
+
+    --pos-cyan: #06b6d4;
+    --pos-cyan-glow: rgba(6, 182, 212, 0.25);
+    --pos-cyan-light: #ecfeff;
+
+    /* Gradients */
+    --gradient-ai: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    --gradient-emerald: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --gradient-indigo: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+    --gradient-amber: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --gradient-crimson: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --gradient-dark-glass: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+    --gradient-mesh: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                         radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+
+    /* Radii & Shadows */
     --radius-sm: 8px;
     --radius-md: 14px;
-    --radius-lg: 20px;
-    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    --shadow-hover: 0 10px 25px -3px rgba(67, 97, 238, 0.12);
-    --gradient-primary: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
-    --gradient-ai: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-    --gradient-profit: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    --gradient-expenses: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --radius-lg: 22px;
+    --radius-xl: 30px;
+    --radius-pill: 9999px;
+
+    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+    --shadow-elevated: 0 20px 35px -10px rgba(15, 23, 42, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-glow-ai: 0 0 25px rgba(99, 102, 241, 0.35);
+    --shadow-glow-emerald: 0 0 25px rgba(16, 185, 129, 0.3);
+
+    /* Animation Timing */
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Tokens (Deep Obsidian / OLED Sleek Canvas) */
+[data-bs-theme="dark"], [data-theme="dark"] {
+    --bg-canvas: #090d16;
+    --bg-surface: #0f172a;
+    --bg-surface-glass: rgba(15, 23, 42, 0.85);
+    --bg-surface-elevated: #162036;
+    --bg-muted: #1e293b;
+    --border-subtle: rgba(255, 255, 255, 0.09);
+    --border-glass: rgba(255, 255, 255, 0.12);
+    --border-hover: rgba(255, 255, 255, 0.2);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+
+    --fresh-emerald-light: rgba(16, 185, 129, 0.15);
+    --neural-indigo-light: rgba(99, 102, 241, 0.15);
+    --amber-warning-light: rgba(245, 158, 11, 0.15);
+    --crimson-danger-light: rgba(239, 68, 68, 0.15);
+    --pos-cyan-light: rgba(6, 182, 212, 0.15);
+
+    --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(255, 255, 255, 0.05) inset;
+    --shadow-elevated: 0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(255, 255, 255, 0.08) inset;
+    --gradient-mesh: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 60%),
+                         radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 60%);
+}
+
+/* --- 2. BASE STYLING & RESET --- */
+* {
+    box-sizing: border-box;
 }
 
 body {
-    font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--light-bg);
-    color: var(--text-primary);
+    font-family: var(--font-ar);
+    background-color: var(--bg-canvas);
+    background-image: var(--gradient-mesh);
+    background-attachment: fixed;
+    color: var(--text-main);
     direction: rtl;
     text-align: right;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Sidebar & Navbar Layout */
+/* Smooth Arabic Typography & Numbers */
+h1, h2, h3, h4, h5, h6, .fw-bold {
+    font-family: var(--font-ar);
+    letter-spacing: -0.02em;
+}
+
+.num-font {
+    font-family: var(--font-num) !important;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-hover);
+    border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* --- 3. LAYOUT ARCHITECTURE --- */
 .app-wrapper {
     display: flex;
     min-height: 100vh;
 }
 
+/* Modern Minimalist Sidebar (Inspired by Skiper UI & 21st.dev) */
 .sidebar {
-    width: 270px;
-    background: #0f172a;
-    color: #f8fafc;
+    width: 280px;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-subtle);
+    color: var(--text-main);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -61,80 +174,146 @@ body {
     top: 0;
     height: 100vh;
     z-index: 1000;
-    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    transition: all 0.3s var(--ease-spring);
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.02);
+}
+
+[data-bs-theme="dark"] .sidebar {
+    background: #0b1120;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .sidebar-header {
-    padding: 1.5rem 1.25rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.25rem 1.25rem;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .sidebar-brand {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #fff;
-    text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
+    text-decoration: none;
+    color: var(--text-main);
 }
 
-.sidebar-brand .brand-badge {
+.brand-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
     background: var(--gradient-ai);
-    color: white;
-    font-size: 0.7rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-glow-ai);
+    position: relative;
+    overflow: hidden;
+}
+
+.brand-icon-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.brand-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.brand-badge {
+    background: var(--neural-indigo-light);
+    color: var(--neural-indigo);
+    font-size: 0.68rem;
     font-weight: 700;
     padding: 2px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    display: inline-block;
 }
 
 .sidebar-nav {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem 0.75rem;
+    padding: 1rem 0.85rem 6rem;
 }
 
 .nav-section-title {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: #64748b;
-    padding: 0.75rem 0.75rem 0.25rem;
-    letter-spacing: 0.5px;
+    color: var(--text-subtle);
+    padding: 0.85rem 0.75rem 0.35rem;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.8rem;
     padding: 0.65rem 0.85rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     font-weight: 600;
-    font-size: 0.92rem;
-    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    transition: all 0.2s var(--ease-spring);
     margin-bottom: 3px;
-}
-
-.sidebar-link:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.07);
-    transform: translateX(-4px);
-}
-
-.sidebar-link.active {
-    color: #fff;
-    background: var(--primary);
-    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.35);
+    position: relative;
 }
 
 .sidebar-link i {
     font-size: 1.15rem;
+    transition: transform 0.2s ease;
 }
 
+.sidebar-link:hover {
+    color: var(--text-main);
+    background: var(--bg-muted);
+    transform: translateX(-3px);
+}
+
+.sidebar-link:hover i {
+    transform: scale(1.15);
+}
+
+.sidebar-link.active {
+    color: #ffffff !important;
+    background: var(--gradient-indigo);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+}
+
+.sidebar-link.active i {
+    color: #ffffff !important;
+}
+
+/* Special Highlight Link for POS */
+.sidebar-link.link-pos {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px dashed rgba(245, 158, 11, 0.3);
+}
+[data-bs-theme="dark"] .sidebar-link.link-pos {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.15);
+}
+.sidebar-link.link-pos:hover {
+    background: #f59e0b;
+    color: #ffffff;
+    box-shadow: var(--shadow-glow-emerald);
+}
+
+/* Main Content Workspace */
 .main-content {
     flex: 1;
     display: flex;
@@ -142,112 +321,798 @@ body {
     min-width: 0;
 }
 
+/* --- 4. SKIPER UI INSPIRED FLOATING GLASS NAVBAR --- */
 .top-navbar {
-    background: #fff;
-    border-bottom: 1px solid var(--border-color);
-    padding: 0.75rem 1.5rem;
+    background: var(--bg-surface-glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border-glass);
+    padding: 0.85rem 1.75rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: sticky;
     top: 0;
     z-index: 990;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
 }
 
+/* Skiper UI Command Palette Trigger */
+.cmd-palette-btn {
+    background: var(--bg-muted);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 0.4rem 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-spring);
+    width: 290px;
+}
+
+.cmd-palette-btn:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.cmd-badge {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-size: 0.72rem;
+    font-family: var(--font-num);
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-right: auto;
+}
+
+/* Page Body Container */
 .page-body {
-    padding: 1.75rem;
+    padding: 2rem 2rem 5rem;
     flex: 1;
 }
 
-/* Glassmorphism & Modern Cards */
-.card-custom {
-    background: #fff;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+@media (max-width: 768px) {
+    .page-body {
+        padding: 1.25rem 1rem 6rem;
+    }
 }
 
-.card-custom:hover {
-    box-shadow: var(--shadow-hover);
+/* --- 5. 21ST.DEV & VENGEANCE UI BENTO GRID SYSTEM --- */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
-/* Metric KPI Cards */
-.metric-card {
-    padding: 1.25rem;
-    border-radius: var(--radius-md);
+.bento-col-12 { grid-column: span 12; }
+.bento-col-8  { grid-column: span 8; }
+.bento-col-7  { grid-column: span 7; }
+.bento-col-6  { grid-column: span 6; }
+.bento-col-5  { grid-column: span 5; }
+.bento-col-4  { grid-column: span 4; }
+.bento-col-3  { grid-column: span 3; }
+
+@media (max-width: 1200px) {
+    .bento-col-3 { grid-column: span 6; }
+    .bento-col-4 { grid-column: span 6; }
+    .bento-col-8 { grid-column: span 12; }
+    .bento-col-7 { grid-column: span 12; }
+    .bento-col-5 { grid-column: span 12; }
+}
+
+@media (max-width: 768px) {
+    .bento-col-3, .bento-col-4, .bento-col-6 { grid-column: span 12; }
+}
+
+/* Bento Card Base & Animmaster Mouse Spotlight */
+.bento-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
     position: relative;
     overflow: hidden;
-    color: #fff;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-spring), border-color 0.25s ease;
 }
 
-.metric-card.primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
-.metric-card.success { background: linear-gradient(135deg, #10b981 0%, #047857 100%); }
-.metric-card.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-.metric-card.danger { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
-.metric-card.purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
-.metric-card.teal { background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); }
+.bento-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--border-hover);
+}
 
-.metric-card .icon-backdrop {
+/* Spotlight Hover Effect (Tracks mouse position) */
+.spotlight-card {
+    position: relative;
+}
+
+.spotlight-card::before {
+    content: '';
     position: absolute;
-    left: -10px;
-    bottom: -15px;
-    font-size: 5rem;
-    opacity: 0.15;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.12), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
     pointer-events: none;
+    z-index: 1;
 }
 
-.metric-value {
-    font-size: 1.75rem;
-    font-weight: 800;
-    line-height: 1.2;
+.spotlight-card:hover::before {
+    opacity: 1;
 }
 
-.metric-label {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    font-weight: 600;
+/* 21st.dev Border Beam Animation */
+.border-beam-card {
+    position: relative;
 }
 
-/* AI Recommendation Card */
-.ai-card {
-    background: #ffffff;
+
+/* Border beam lasers neutralized - replaced by clean white hover micro-animation */
+.border-beam-card::after,
+.active-beam::after {
+    display: none !important;
+    animation: none !important;
+    opacity: 0 !important;
+}
+
+
+@keyframes rotate-beam {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* --- 6. RETAIL KPI METRIC CARDS --- */
+.metric-tile {
+    padding: 1.35rem;
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: all 0.25s var(--ease-spring);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.metric-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-elevated);
+}
+
+.metric-tile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+}
+
+.metric-tile-icon {
+    width: 44px;
+    height: 44px;
     border-radius: var(--radius-md);
-    border-right: 5px solid #8b5cf6;
-    border-top: 1px solid var(--border-color);
-    border-left: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.metric-tile-icon.emerald { background: var(--fresh-emerald-light); color: var(--fresh-emerald); }
+.metric-tile-icon.indigo  { background: var(--neural-indigo-light); color: var(--neural-indigo); }
+.metric-tile-icon.amber   { background: var(--amber-warning-light); color: var(--amber-warning); }
+.metric-tile-icon.crimson { background: var(--crimson-danger-light); color: var(--crimson-danger); }
+.metric-tile-icon.cyan    { background: var(--pos-cyan-light); color: var(--pos-cyan); }
+
+.metric-tile-value {
+    font-family: var(--font-num);
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.1;
+    margin-bottom: 0.35rem;
+}
+
+.metric-tile-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.metric-tile-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--font-num);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+}
+
+.metric-tile-delta.positive {
+    background: var(--fresh-emerald-light);
+    color: var(--fresh-emerald);
+}
+
+.metric-tile-delta.negative {
+    background: var(--crimson-danger-light);
+    color: var(--crimson-danger);
+}
+
+/* Hero Financial Bento Card (Net Operating Profit) */
+.hero-profit-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 15px 35px -5px rgba(99, 102, 241, 0.3);
+}
+
+[data-bs-theme="dark"] .hero-profit-card {
+    background: linear-gradient(135deg, #090d16 0%, #181438 100%);
+}
+
+.hero-profit-card .hero-profit-value {
+    font-family: var(--font-num);
+    font-size: 2.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+}
+
+/* --- 7. SHIMMER BUTTONS & MICRO-INTERACTIONS (21st.dev Style) --- */
+.btn-shimmer-primary {
+    position: relative;
+    background: var(--gradient-indigo);
+    color: #ffffff !important;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1.35rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+    transition: all 0.25s var(--ease-spring);
+    cursor: pointer;
+}
+
+.btn-shimmer-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.45);
+}
+
+.btn-shimmer-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer-sweep 3s infinite;
+}
+
+@keyframes shimmer-sweep {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
+}
+
+/* Shimmer Button for AI Scan */
+.btn-shimmer-ai {
+    position: relative;
+    background: var(--gradient-ai);
+    color: #ffffff !important;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1.35rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow-glow-ai);
+    transition: all 0.25s var(--ease-spring);
+    text-decoration: none;
+}
+
+.btn-shimmer-ai:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5);
+    color: #ffffff;
+}
+
+.btn-shimmer-ai::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer-sweep 2.5s infinite;
+}
+
+/* Shimmer Button for Fast POS */
+.btn-shimmer-pos {
+    position: relative;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff !important;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1.35rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    transition: all 0.25s var(--ease-spring);
+    text-decoration: none;
+}
+
+.btn-shimmer-pos:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+    color: #ffffff;
+}
+
+/* Radar Pulse Real-Time Indicator */
+.radar-pulse-box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 10px;
+    height: 10px;
+}
+
+.radar-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--fresh-emerald);
+}
+
+.radar-pulse-ring {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.4);
+    animation: radar-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes radar-ping {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* --- 8. ACTIONABLE AI RECOMMENDATION CARDS (Human-in-the-Loop) --- */
+.ai-recommend-tile {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 1.35rem;
+    position: relative;
+    transition: all 0.25s var(--ease-spring);
     margin-bottom: 1rem;
+    box-shadow: var(--shadow-card);
+}
+
+.ai-recommend-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--neural-indigo);
+}
+
+.ai-type-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ai-type-pill.offer { background: var(--amber-warning-light); color: var(--amber-warning); }
+.ai-type-pill.anomaly { background: var(--crimson-danger-light); color: var(--crimson-danger); }
+.ai-type-pill.restock { background: var(--neural-indigo-light); color: var(--neural-indigo); }
+.ai-type-pill.seasonal { background: var(--fresh-emerald-light); color: var(--fresh-emerald); }
+
+.ai-action-box {
+    background: var(--bg-muted);
+    border-right: 3px solid var(--neural-indigo);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    margin: 0.85rem 0;
+    font-size: 0.88rem;
+}
+
+/* --- 9. NEXT-GEN CHATBOT WIDGET (Market AI Gemini Pro) --- */
+#aiMarketChatbotRoot {
+    position: fixed;
+    z-index: 1050;
+    bottom: 24px;
+    left: 24px;
+    font-family: var(--font-ar);
+}
+
+/* Floating Action Button (FAB) */
+.chatbot-floating-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--gradient-ai);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.45);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s var(--ease-spring);
+}
+
+.chatbot-floating-btn:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+}
+
+.chatbot-floating-pulse {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #6366f1, #8b5cf6, #ec4899, #6366f1);
+    animation: rotate-beam 3s linear infinite;
+    z-index: -1;
+    opacity: 0.7;
+    filter: blur(4px);
+}
+
+.chatbot-floating-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+    border: 2px solid #ffffff;
+}
+
+/* Draggable Chatbot Window (Skiper UI Glassmorphic Window) */
+.chatbot-window {
+    width: 440px;
+    height: 620px;
+    max-width: calc(100vw - 30px);
+    max-height: calc(100vh - 80px);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: fixed;
+    bottom: 95px;
+    left: 24px;
+    z-index: 1055;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+[data-bs-theme="dark"] .chatbot-window {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.chatbot-header {
+    background: var(--gradient-ai);
+    color: #ffffff;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    user-select: none;
+}
+
+.chatbot-header:active {
+    cursor: grabbing;
+}
+
+.chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    background: var(--bg-canvas);
+}
+
+/* Chat Bubbles */
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    max-width: 90%;
+    animation: fadeInMessage 0.25s var(--ease-spring);
+}
+
+@keyframes fadeInMessage {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-message.user-message {
+    align-self: flex-start;
+}
+
+.chat-message.bot-message {
+    align-self: flex-end;
+}
+
+.message-bubble {
+    padding: 0.85rem 1.15rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.user-bubble {
+    background: var(--gradient-indigo);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+}
+
+.bot-bubble {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    border: 1px solid var(--border-subtle);
+    border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow-subtle);
+}
+
+/* Chatbot Suggestion Chips */
+.btn-suggestion {
+    background: var(--bg-muted);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-main);
+    transition: all 0.2s var(--ease-spring);
+    cursor: pointer;
+}
+
+.btn-suggestion:hover {
+    background: var(--neural-indigo-light);
+    color: var(--neural-indigo);
+    border-color: var(--neural-indigo);
+    transform: translateY(-2px);
+}
+
+/* Chat Input Bar */
+.chatbot-footer {
+    padding: 0.85rem 1rem;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.chatbot-input {
+    background: var(--bg-muted);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    color: var(--text-main);
     transition: all 0.2s ease;
 }
 
-.ai-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.1);
+.chatbot-input:focus {
+    background: var(--bg-surface);
+    border-color: var(--neural-indigo);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
-.ai-card.offer { border-right-color: #f59e0b; }
-.ai-card.anomaly { border-right-color: #ef4444; }
-.ai-card.restock { border-right-color: #3b82f6; }
-.ai-card.seasonal { border-right-color: #10b981; }
-
-.badge-ai {
+.chatbot-send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     background: var(--gradient-ai);
-    color: white;
-    font-weight: 700;
-    font-size: 0.75rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 30px;
+    border: none;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-glow-ai);
+    transition: all 0.2s var(--ease-spring);
 }
 
-/* POS specific UI */
+.chatbot-send-btn:hover {
+    transform: scale(1.08);
+}
+
+/* --- 10. POS LASER & RETAIL COMPONENT EFFECTS --- */
+.pos-laser-box {
+    position: relative;
+    overflow: hidden;
+}
+
+.pos-laser-box::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444, 0 0 15px #ef4444;
+    animation: pos-laser-sweep 2.5s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes pos-laser-sweep {
+    0% { top: 0%; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* Retail Freshness & Stock Status Badges */
+.badge-fresh {
+    background: #10b981;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-warning-stock {
+    background: #f59e0b;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-expired-stock {
+    background: #ef4444;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* --- 11. 21ST.DEV MOBILE FLOATING DOCK --- */
+.mobile-floating-dock {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-surface-glass);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-pill);
+    padding: 0.45rem 1rem;
+    display: none;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
+    z-index: 980;
+}
+
+@media (max-width: 991px) {
+    .mobile-floating-dock {
+        display: flex;
+    }
+    .sidebar {
+        position: fixed;
+        right: -320px;
+        transition: right 0.35s var(--ease-spring);
+    }
+    .sidebar.open {
+        right: 0;
+    }
+    .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+    }
+    .sidebar-backdrop.show {
+        display: block;
+    }
+}
+
+.dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition: all 0.2s var(--ease-spring);
+}
+
+.dock-item i {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+}
+
+.dock-item.active {
+    color: var(--neural-indigo);
+}
+
+.dock-fab-pos {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+    margin-top: -18px;
+    border: 3px solid var(--bg-surface);
+    transition: transform 0.2s var(--ease-spring);
+}
+
+.dock-fab-pos:active {
+    transform: scale(0.92);
+}
+
+/* --- 12. POS & CATALOG COMPONENT ARCHITECTURE --- */
 .pos-wrapper {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 400px;
     gap: 1.25rem;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 130px);
 }
 
 @media (max-width: 992px) {
@@ -258,902 +1123,1060 @@ body {
 }
 
 .pos-catalog {
-    background: #fff;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: var(--shadow-card);
 }
 
 .pos-cart {
-    background: #fff;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     height: 100%;
+    box-shadow: var(--shadow-card);
 }
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     gap: 1rem;
-    padding: 1rem;
+    padding: 1.25rem;
     overflow-y: auto;
     flex: 1;
 }
 
 .pos-product-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: var(--radius-sm);
-    padding: 0.9rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s var(--ease-spring);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: var(--shadow-subtle);
 }
 
 .pos-product-card:hover {
-    border-color: var(--primary);
-    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.15);
-    transform: translateY(-2px);
+    border-color: var(--neural-indigo);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+    transform: translateY(-3px);
 }
 
 .cart-items-list {
     flex: 1;
     overflow-y: auto;
-    padding: 0.75rem;
+    padding: 1rem;
 }
 
 .cart-item-row {
-    padding: 0.65rem;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: background 0.15s ease;
 }
 
-/* Offline Banner */
-.offline-banner {
-    background: linear-gradient(90deg, #ea580c 0%, #c2410c 100%);
-    color: white;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    animation: pulse 2s infinite;
+.cart-item-row:hover {
+    background: var(--bg-muted);
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.85; }
+/* Legacy Card & Table Mappings for Full Site Compatibility */
+.card-custom {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Tables */
+.card-custom:hover {
+    box-shadow: var(--shadow-elevated);
+}
+
 .table-custom {
     border-collapse: separate;
     border-spacing: 0;
+    width: 100%;
 }
 
 .table-custom thead th {
-    background-color: #f8fafc;
-    color: #475569;
+    background-color: var(--bg-muted);
+    color: var(--text-muted);
     font-weight: 700;
-    font-size: 0.85rem;
-    border-bottom: 2px solid var(--border-color);
+    font-size: 0.82rem;
+    border-bottom: 1px solid var(--border-subtle);
     padding: 0.85rem;
 }
 
 .table-custom tbody td {
     padding: 0.85rem;
     vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.88rem;
 }
 
 .table-custom tbody tr:hover {
-    background-color: #f8fafc;
-}
-
-/* Buttons */
-.btn-primary {
-    background: var(--primary);
-    border-color: var(--primary);
-    font-weight: 600;
-    border-radius: var(--radius-sm);
-    padding: 0.5rem 1.15rem;
-}
-
-.btn-primary:hover {
-    background: var(--primary-hover);
-    border-color: var(--primary-hover);
-}
-
-.btn-ai {
-    background: var(--gradient-ai);
-    color: white;
-    border: none;
-    font-weight: 700;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-}
-
-.btn-ai:hover {
-    color: white;
-    filter: brightness(1.1);
+    background-color: var(--bg-muted);
 }
 
 /* ==========================================================================
-   Dark Mode Theme System (الوضع الليلي)
+   --- 13. COLORED BORDER BEAMS (Inspired by 21st.dev & Vengeance UI) ---
    ========================================================================== */
-[data-bs-theme="dark"] {
-    --light-bg: #090d16;
-    --card-bg: #131b2e;
-    --border-color: #232f48;
-    --text-primary: #f1f5f9;
-    --text-muted: #94a3b8;
-    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-    --shadow-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.6);
+
+/* Active beam rotating laser disabled */
+.active-beam::after { display: none !important; animation: none !important; }
+
+/* Indigo / Violet Beam */
+.beam-indigo::after {
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #4f46e5 50deg, #818cf8 90deg, transparent 140deg) !important;
 }
 
-[data-bs-theme="dark"] body {
-    background-color: var(--light-bg);
-    color: var(--text-primary);
+/* Emerald / Mint Beam */
+.beam-emerald::after {
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #059669 50deg, #34d399 90deg, transparent 140deg) !important;
 }
 
-[data-bs-theme="dark"] .top-navbar {
-    background-color: #0f172a;
-    border-bottom: 1px solid #1e293b;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+/* Cyan / Ice Blue Beam */
+.beam-cyan::after {
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #0891b2 50deg, #38bdf8 90deg, transparent 140deg) !important;
 }
 
-[data-bs-theme="dark"] .card-custom {
-    background-color: var(--card-bg);
-    border-color: var(--border-color);
-    color: var(--text-primary);
+/* Crimson / Red Beam */
+.beam-crimson::after {
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #dc2626 50deg, #f87171 90deg, transparent 140deg) !important;
 }
 
-[data-bs-theme="dark"] .table-custom thead th {
-    background-color: #172138;
-    color: #cbd5e1;
-    border-bottom: 2px solid #232f48;
+/* Amber / Golden Beam */
+.beam-amber::after {
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #d97706 50deg, #fbbf24 90deg, transparent 140deg) !important;
 }
 
-[data-bs-theme="dark"] .table-custom tbody td {
-    border-bottom: 1px solid #1c263c;
-    color: #e2e8f0;
-}
-
-[data-bs-theme="dark"] .table-custom tbody tr:hover {
-    background-color: #19243d;
-}
-
-[data-bs-theme="dark"] .bg-light {
-    background-color: #111827 !important;
-    color: #f1f5f9 !important;
-}
-
-[data-bs-theme="dark"] .bg-white {
-    background-color: #151e33 !important;
-    color: #f1f5f9 !important;
-}
-
-[data-bs-theme="dark"] .text-dark {
-    color: #f8fafc !important;
-}
-
-[data-bs-theme="dark"] .text-muted {
-    color: #94a3b8 !important;
-}
-
-/* POS in Dark Mode */
-[data-bs-theme="dark"] .pos-catalog,
-[data-bs-theme="dark"] .pos-cart {
-    background-color: var(--card-bg);
-    border-color: var(--border-color);
-}
-
-[data-bs-theme="dark"] .pos-product-card {
-    background-color: #0d1527;
-    border-color: #232f48;
-    color: #f8fafc;
-}
-
-[data-bs-theme="dark"] .pos-product-card:hover {
-    border-color: var(--primary);
-    background-color: #131e36;
-}
-
-[data-bs-theme="dark"] .cart-item-row {
-    border-bottom-color: #1e293b;
-}
-
-/* AI Cards in Dark Mode */
-[data-bs-theme="dark"] .ai-card {
-    background-color: var(--card-bg);
-    border-top-color: var(--border-color);
-    border-left-color: var(--border-color);
-    border-bottom-color: var(--border-color);
-}
-
-/* Form inputs in Dark Mode */
-[data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
-    background-color: #0b1120;
-    border-color: #232f48;
-    color: #f8fafc;
-}
-
-[data-bs-theme="dark"] .form-control:focus,
-[data-bs-theme="dark"] .form-select:focus {
-    background-color: #0e1629;
-    border-color: var(--primary);
-    color: #ffffff;
-}
-
-[data-bs-theme="dark"] .input-group-text {
-    background-color: #131b2e;
-    border-color: #232f48;
-    color: #94a3b8;
-}
-
-[data-bs-theme="dark"] .modal-content {
-    background-color: #131b2e;
-    border-color: #232f48;
-    color: #f8fafc;
-}
-
-[data-bs-theme="dark"] .dropdown-menu {
-    background-color: #131b2e;
-    border-color: #232f48;
-    color: #f8fafc;
-}
-
-[data-bs-theme="dark"] .dropdown-item {
-    color: #cbd5e1;
-}
-
-[data-bs-theme="dark"] .dropdown-item:hover {
-    background-color: #1e293b;
-    color: #ffffff;
-}
-
-[data-bs-theme="dark"] .border {
-    border-color: var(--border-color) !important;
-}
-
-[data-bs-theme="dark"] .border-bottom {
-    border-bottom-color: var(--border-color) !important;
-}
-
-[data-bs-theme="dark"] .border-top {
-    border-top-color: var(--border-color) !important;
-}
-
-[data-bs-theme="dark"] .btn-light {
-    background-color: #1e293b;
-    border-color: #334155;
-    color: #f8fafc;
-}
-
-[data-bs-theme="dark"] .btn-light:hover {
-    background-color: #2e3d56;
-    color: #ffffff;
+/* Purple / Neural AI Beam */
+.beam-purple::after {
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #7c3aed 50deg, #ec4899 90deg, transparent 140deg) !important;
 }
 
 /* ==========================================================================
-   AI Market Assistant - Chatbot Styles
+   --- 14. LUXURY BENTO CARDS (Obsidian Surfaces with High-Contrast Typography) ---
    ========================================================================== */
-
-#navbarChatbotBtn,
-.btn-ai-chat {
-    background: linear-gradient(135deg, rgba(67, 97, 238, 0.08) 0%, rgba(114, 9, 183, 0.12) 100%);
-    border: 1px solid rgba(114, 9, 183, 0.25);
-    color: #4361ee;
-    font-weight: 700;
-    transition: all 0.25s ease-in-out;
-}
-
-#navbarChatbotBtn:hover,
-.btn-ai-chat:hover {
-    background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
-    color: #ffffff !important;
-    border-color: transparent;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(114, 9, 183, 0.35) !important;
-}
-
-#navbarChatbotBtn:hover i,
-#navbarChatbotBtn:hover span,
-.btn-ai-chat:hover i,
-.btn-ai-chat:hover span {
-    color: #ffffff !important;
-}
-
-[data-bs-theme="dark"] #navbarChatbotBtn,
-[data-bs-theme="dark"] .btn-ai-chat {
-    background: linear-gradient(135deg, rgba(67, 97, 238, 0.2) 0%, rgba(114, 9, 183, 0.25) 100%);
-    border-color: rgba(129, 140, 248, 0.4);
-    color: #c7d2fe;
-}
-
-[data-bs-theme="dark"] #navbarChatbotBtn:hover,
-[data-bs-theme="dark"] .btn-ai-chat:hover {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    color: #ffffff !important;
-}
-
-/* Chatbot Window Container */
-.chatbot-window {
-    position: fixed;
-    top: 65px;
-    left: 20px;
-    width: 420px;
-    max-width: calc(100vw - 32px);
-    height: 640px;
-    max-height: calc(100vh - 85px);
-    background: #ffffff;
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1060;
+.bento-luxury-card {
+    color: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    position: relative;
     overflow: hidden;
-    animation: chatbot-slide-down 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2), 0 0 20px rgba(67, 97, 238, 0.1);
-}
-
-@keyframes chatbot-slide-down {
-    from {
-        opacity: 0;
-        transform: translateY(-15px) scale(0.97);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.chatbot-header {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #ffffff;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.chatbot-avatar-circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
-}
-
-.btn-icon-subtle {
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    border: none;
-    background: rgba(255, 255, 255, 0.08);
-    color: #94a3b8;
-    transition: all 0.2s;
-}
-
-.btn-icon-subtle:hover {
-    background: rgba(255, 255, 255, 0.18);
-    color: #ffffff;
-}
-
-/* Chat Messages */
-.chatbot-messages {
-    flex-grow: 1;
-    overflow-y: auto;
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.12);
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    background-color: #f8fafc;
-    scroll-behavior: smooth;
+    justify-content: space-between;
+    transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-spring);
 }
 
-.chat-message {
-    display: flex;
-    flex-direction: column;
-    max-width: 90%;
-    animation: message-pop 0.2s ease forwards;
+.bento-luxury-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 45px -5px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
-@keyframes message-pop {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Surface Variations */
+.surface-indigo {
+    background: linear-gradient(135deg, #091326 0%, #0e2448 100%);
+    border: 1px solid rgba(99, 102, 241, 0.25);
 }
 
-.bot-message {
-    align-self: flex-start;
+.surface-emerald {
+    background: linear-gradient(135deg, #041c14 0%, #083a28 100%);
+    border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-.user-message {
-    align-self: flex-end;
+.surface-cyan {
+    background: linear-gradient(135deg, #061824 0%, #092e3e 100%);
+    border: 1px solid rgba(6, 182, 212, 0.25);
 }
 
-.message-bubble {
-    padding: 12px 15px;
-    border-radius: 16px;
-    font-size: 0.88rem;
-    line-height: 1.55;
-    word-break: break-word;
+.surface-crimson {
+    background: linear-gradient(135deg, #1c080e 0%, #38101a 100%);
+    border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
-.bot-bubble {
-    background: #ffffff;
-    color: #1e293b;
-    border: 1px solid #e2e8f0;
-    border-top-right-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+.surface-dark-slate {
+    background: linear-gradient(135deg, #0b1120 0%, #151f33 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.user-bubble {
-    background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
-    color: #ffffff;
-    border-top-left-radius: 4px;
-    box-shadow: 0 3px 12px rgba(67, 97, 238, 0.25);
+.surface-amber {
+    background: linear-gradient(135deg, #1c1305 0%, #382408 100%);
+    border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
-/* Suggestion Buttons */
-.btn-suggestion {
-    background: #f1f5f9;
-    color: #334155;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    font-size: 0.76rem;
-    font-weight: 600;
-    padding: 5px 12px;
-    transition: all 0.2s;
+/* Luxury Big Numeric Typography */
+.luxury-val {
+    font-family: var(--font-num);
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
 }
 
-.btn-suggestion:hover {
-    background: #eef2ff;
-    color: var(--primary, #4361ee);
-    border-color: #c7d2fe;
-    transform: translateY(-1px);
+.luxury-val.val-white {
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* Chat Action Cards */
-.chat-action-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 12px;
-    margin-top: 8px;
+.luxury-val.val-emerald {
+    background: linear-gradient(135deg, #34d399 0%, #a7f3d0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* Footer & Input */
-.chatbot-footer {
-    background: #ffffff;
+.luxury-val.val-indigo {
+    background: linear-gradient(135deg, #818cf8 0%, #c7d2fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.chatbot-input {
-    border-radius: 24px;
-    padding: 9px 16px;
-    font-size: 0.88rem;
-    border: 1px solid #cbd5e1;
-    background: #f8fafc;
+.luxury-val.val-cyan {
+    background: linear-gradient(135deg, #38bdf8 0%, #bae6fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.chatbot-input:focus {
-    border-color: var(--primary, #4361ee);
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+.luxury-val.val-crimson {
+    background: linear-gradient(135deg, #f87171 0%, #fecaca 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.chatbot-send-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
-    border: none;
-    transition: all 0.2s;
-}
-
-.chatbot-send-btn:hover {
-    transform: scale(1.06);
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.35);
-}
-
-/* Typing Dots */
-.typing-dots {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-    padding: 4px 6px;
-}
-
-.typing-dots span {
-    width: 6px;
-    height: 6px;
-    background: #94a3b8;
-    border-radius: 50%;
-    animation: typing-dot 1.2s infinite ease-in-out;
-}
-
-.typing-dots span:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-dots span:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-@keyframes typing-dot {
-    0%, 80%, 100% {
-        transform: scale(0.6);
-        opacity: 0.4;
-    }
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* Dark Mode Overrides for Chatbot */
-[data-bs-theme="dark"] .chatbot-window {
-    background: #0f172a;
-    border-color: #232f48;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(67, 97, 238, 0.15);
-}
-
-[data-bs-theme="dark"] .chatbot-messages {
-    background: #090e1a;
-}
-
-[data-bs-theme="dark"] .bot-bubble {
-    background: #1e293b;
-    color: #f8fafc;
-    border-color: #2e3d56;
-}
-
-[data-bs-theme="dark"] .btn-suggestion {
-    background: #1e293b;
-    color: #cbd5e1;
-    border-color: #334155;
-}
-
-[data-bs-theme="dark"] .btn-suggestion:hover {
-    background: #2a374f;
-    color: #818cf8;
-    border-color: #4f46e5;
-}
-
-[data-bs-theme="dark"] .chatbot-footer {
-    background: #0f172a;
-    border-color: #1e293b !important;
-}
-
-[data-bs-theme="dark"] .chatbot-input {
-    background: #1e293b;
-    border-color: #334155;
-    color: #f8fafc;
-}
-
-[data-bs-theme="dark"] .chatbot-input:focus {
-    background: #172033;
-    border-color: var(--primary, #4361ee);
-}
-
-[data-bs-theme="dark"] .auth-challenge-card {
-    background: #1e293b;
-    border-color: #f59e0b !important;
-}
-
-/* Floating Chatbot Launcher Button (FAB) */
-.chatbot-floating-btn {
-    position: fixed;
-    bottom: 25px;
-    left: 25px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
-    color: #ffffff;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1045;
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(67, 97, 238, 0.45);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-}
-
-.chatbot-floating-btn:hover {
-    transform: scale(1.08) translateY(-3px);
-    box-shadow: 0 14px 32px rgba(114, 9, 183, 0.55);
-    color: #ffffff;
-}
-
-.chatbot-floating-btn:active {
-    transform: scale(0.95);
-}
-
-.chatbot-floating-btn .chatbot-floating-icon {
-    font-size: 1.65rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-}
-
-.chatbot-floating-btn:hover .chatbot-floating-icon {
-    transform: rotate(12deg);
-}
-
-.chatbot-floating-pulse {
+/* Glass backdrop icons */
+.luxury-icon-backdrop {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(67, 97, 238, 0.45);
-    animation: chatbot-pulse 2.2s infinite;
+    left: -15px;
+    bottom: -15px;
+    font-size: 6.5rem;
+    opacity: 0.08;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.bento-luxury-card:hover .luxury-icon-backdrop {
+    transform: scale(1.1) rotate(-5deg);
+    opacity: 0.14;
+}
+
+/* ==========================================================================
+   --- 15. CYBER NEURAL AI SCAN STATION & BUTTONS (Next-Gen AI Pipeline) ---
+   ========================================================================== */
+.ai-scan-station {
+    background: linear-gradient(135deg, #090d16 0%, #15102a 50%, #0d1e2e 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    box-shadow: 0 15px 40px -10px rgba(99, 102, 241, 0.35);
+}
+
+.ai-scan-station::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.25) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.2) 0%, transparent 40%);
     pointer-events: none;
 }
 
-@keyframes chatbot-pulse {
+/* Pulsing Neural Core Orb with Smooth Rotating Orbital Ring */
+.neural-core-orb {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.7);
+    flex-shrink: 0;
+    animation: neural-orb-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes neural-orb-pulse {
     0% {
-        transform: scale(0.95);
-        opacity: 0.85;
-    }
-    70% {
-        transform: scale(1.5);
-        opacity: 0;
+        box-shadow: 0 0 16px rgba(99, 102, 241, 0.5);
+        transform: scale(1);
     }
     100% {
-        transform: scale(1.5);
-        opacity: 0;
+        box-shadow: 0 0 32px rgba(236, 72, 153, 0.85);
+        transform: scale(1.04);
     }
 }
 
-.chatbot-floating-badge {
+.neural-core-orb::after {
+    content: '';
     position: absolute;
-    top: -3px;
-    right: -3px;
-    background: #10b981;
-    color: white;
-    font-size: 0.65rem;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px dashed rgba(236, 72, 153, 0.8);
+    animation: orb-spin 8s linear infinite !important;
+}
+
+@keyframes orb-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Professional Cyber AI Button */
+.btn-cyber-ai {
+    position: relative;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-pill);
+    padding: 0.7rem 1.6rem;
     font-weight: 800;
-    padding: 2px 6px;
-    border-radius: 10px;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    letter-spacing: 0.3px;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 0 25px rgba(124, 58, 237, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.25s var(--ease-spring);
 }
 
-[data-bs-theme="dark"] .chatbot-floating-badge {
-    border-color: #0f172a;
+.btn-cyber-ai:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 35px rgba(236, 72, 153, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
-/* Draggable Chatbot Header & State */
-.chatbot-header {
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-.drag-handle-icon {
-    cursor: grab;
-    font-size: 1.15rem;
-    opacity: 0.6;
-    transition: opacity 0.2s;
-}
-
-.chatbot-header:hover .drag-handle-icon {
-    opacity: 1;
-}
-
-.chatbot-window.is-dragging {
-    cursor: grabbing !important;
-    user-select: none !important;
-    transition: none !important;
-    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.4), 0 0 30px rgba(67, 97, 238, 0.25) !important;
-    opacity: 0.96;
-}
-
-.chatbot-window.is-dragging .chatbot-header {
-    cursor: grabbing !important;
-}
-
-/* Mobile Sidebar Backdrop Overlay */
-.sidebar-backdrop {
-    position: fixed;
+.btn-cyber-ai::after {
+    content: '';
+    position: absolute;
     top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(4px);
-    z-index: 1040;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer-sweep 2.2s infinite;
 }
 
-.sidebar-backdrop.show {
-    opacity: 1;
-    visibility: visible;
+/* ==========================================================================
+   --- 16. ULTRA-PROFESSIONAL LOGIN INTERFACE (Skiper UI & 21st.dev) ---
+   ========================================================================== */
+.login-canvas-pro {
+    min-height: 100vh;
+    background: #090d16;
+    background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.22) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(16, 185, 129, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 90%, rgba(236, 72, 153, 0.12) 0%, transparent 60%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    font-family: var(--font-ar);
 }
 
-/* ==========================================================
-   Responsive Mobile & Tablet Design System
-   ========================================================== */
+.login-card-pro {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(28px) saturate(190%);
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-xl);
+    padding: 2.5rem 2.25rem;
+    position: relative;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
 
-/* Tablets & Mobile (under 992px) */
-@media (max-width: 991.98px) {
-    .app-wrapper {
-        flex-direction: column;
-    }
+.login-brand-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 50%, #ec4899 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+    margin-bottom: 1.25rem;
+    position: relative;
+}
 
-    .sidebar {
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 285px;
-        max-width: 85vw;
-        height: 100vh;
-        z-index: 1055;
-        transform: translateX(100%);
-        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: -8px 0 30px rgba(0, 0, 0, 0.35);
-    }
+.login-input-pro {
+    background: rgba(30, 41, 59, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    border-radius: var(--radius-md) !important;
+    padding: 0.8rem 1rem 0.8rem 3rem !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+}
 
-    .sidebar.show-mobile {
-        transform: translateX(0);
-    }
+.login-input-pro:focus {
+    background: rgba(30, 41, 59, 0.9) !important;
+    border-color: #818cf8 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+}
 
-    body.sidebar-open-mobile {
-        overflow: hidden;
-    }
+.login-input-pro::placeholder {
+    color: rgba(255, 255, 255, 0.35) !important;
+}
 
-    .top-navbar {
-        padding: 0.6rem 0.9rem;
-    }
+.login-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #818cf8;
+    font-size: 1.15rem;
+    pointer-events: none;
+    z-index: 5;
+}
 
+.login-password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 0;
+    z-index: 5;
+}
+
+.login-password-toggle:hover {
+    color: #ffffff;
+}
+
+.credential-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-pill);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    transition: all 0.2s var(--ease-spring);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.credential-chip:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #818cf8;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   --- 17. COMPREHENSIVE DARK MODE CONTRAST & HARMONIOUS SYSTEM ---
+   Fixes all inverted/hidden text, bad reflections, dark-on-dark labels, 
+   unreadable badges, and button text across all ERP pages
+   ========================================================================== */
+
+/* Universal Dark Mode Tokens & Overrides */
+[data-bs-theme="dark"],
+[data-theme="dark"] {
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+    --bg-canvas: #090d16;
+    --bg-surface: #0f172a;
+    --bg-muted: #1e293b;
+    color-scheme: dark;
+}
+
+/* 1. Universal elimination of text-dark on dark surfaces */
+[data-bs-theme="dark"] .text-dark:not(.btn-warning):not(.btn-warning *):not(.badge-warning):not(.badge-warning *),
+[data-theme="dark"] .text-dark:not(.btn-warning):not(.btn-warning *):not(.badge-warning):not(.badge-warning *),
+[data-bs-theme="dark"] strong.text-dark,
+[data-theme="dark"] strong.text-dark,
+[data-bs-theme="dark"] h1.text-dark,
+[data-theme="dark"] h1.text-dark,
+[data-bs-theme="dark"] h2.text-dark,
+[data-theme="dark"] h2.text-dark,
+[data-bs-theme="dark"] h3.text-dark,
+[data-theme="dark"] h3.text-dark,
+[data-bs-theme="dark"] h4.text-dark,
+[data-theme="dark"] h4.text-dark,
+[data-bs-theme="dark"] h5.text-dark,
+[data-theme="dark"] h5.text-dark,
+[data-bs-theme="dark"] h6.text-dark,
+[data-theme="dark"] h6.text-dark,
+[data-bs-theme="dark"] div.text-dark,
+[data-theme="dark"] div.text-dark,
+[data-bs-theme="dark"] span.text-dark:not(.badge):not(.btn *),
+[data-theme="dark"] span.text-dark:not(.badge):not(.btn *) {
+    color: #f8fafc !important;
+}
+
+/* 2. Text Muted & Secondary High Contrast Boost (WCAG AA > 4.5:1) */
+[data-bs-theme="dark"] .text-muted,
+[data-theme="dark"] .text-muted,
+[data-bs-theme="dark"] small.text-muted,
+[data-theme="dark"] small.text-muted {
+    color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .text-secondary,
+[data-theme="dark"] .text-secondary {
+    color: #cbd5e1 !important;
+}
+
+.text-white-50 {
+    color: rgba(241, 245, 249, 0.78) !important;
+}
+
+/* 3. Surface & Light Container Re-mapping */
+[data-bs-theme="dark"] .bg-light,
+[data-theme="dark"] .bg-light {
+    background-color: #131d33 !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-white {
+    background-color: #162442 !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .bg-body-tertiary,
+[data-theme="dark"] .bg-body-tertiary {
+    background-color: #0c1424 !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .card,
+[data-theme="dark"] .card,
+[data-bs-theme="dark"] .card-custom,
+[data-theme="dark"] .card-custom {
+    background-color: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+}
+
+/* 4. Complete Harmonious Badge Matrix in Dark Mode */
+/* Warning Badges (Amber Luminous on Glass) */
+[data-bs-theme="dark"] .badge.bg-warning,
+[data-theme="dark"] .badge.bg-warning,
+[data-bs-theme="dark"] .badge.bg-warning-subtle,
+[data-theme="dark"] .badge.bg-warning-subtle,
+[data-bs-theme="dark"] .badge.bg-warning.text-dark,
+[data-theme="dark"] .badge.bg-warning.text-dark,
+[data-bs-theme="dark"] .badge.bg-warning-subtle.text-dark,
+[data-theme="dark"] .badge.bg-warning-subtle.text-dark {
+    background-color: rgba(245, 158, 11, 0.22) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    font-weight: 700 !important;
+}
+
+/* Info Badges (Cyan Luminous on Glass) */
+[data-bs-theme="dark"] .badge.bg-info,
+[data-theme="dark"] .badge.bg-info,
+[data-bs-theme="dark"] .badge.bg-info-subtle,
+[data-theme="dark"] .badge.bg-info-subtle,
+[data-bs-theme="dark"] .badge.bg-info.text-dark,
+[data-theme="dark"] .badge.bg-info.text-dark,
+[data-bs-theme="dark"] .badge.bg-info-subtle.text-dark,
+[data-theme="dark"] .badge.bg-info-subtle.text-dark {
+    background-color: rgba(6, 182, 212, 0.22) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(6, 182, 212, 0.45) !important;
+    font-weight: 700 !important;
+}
+
+/* Success Badges (Mint Luminous on Glass) */
+[data-bs-theme="dark"] .badge.bg-success,
+[data-theme="dark"] .badge.bg-success,
+[data-bs-theme="dark"] .badge.bg-success-subtle,
+[data-theme="dark"] .badge.bg-success-subtle {
+    background-color: rgba(16, 185, 129, 0.22) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(16, 185, 129, 0.45) !important;
+    font-weight: 700 !important;
+}
+
+/* Danger Badges (Coral Luminous on Glass) */
+[data-bs-theme="dark"] .badge.bg-danger,
+[data-theme="dark"] .badge.bg-danger,
+[data-bs-theme="dark"] .badge.bg-danger-subtle,
+[data-theme="dark"] .badge.bg-danger-subtle {
+    background-color: rgba(239, 68, 68, 0.22) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(239, 68, 68, 0.45) !important;
+    font-weight: 700 !important;
+}
+
+/* Primary Badges (Indigo Luminous on Glass) */
+[data-bs-theme="dark"] .badge.bg-primary,
+[data-theme="dark"] .badge.bg-primary,
+[data-bs-theme="dark"] .badge.bg-primary-subtle,
+[data-theme="dark"] .badge.bg-primary-subtle {
+    background-color: rgba(99, 102, 241, 0.22) !important;
+    color: #a5b4fc !important;
+    border: 1px solid rgba(99, 102, 241, 0.45) !important;
+    font-weight: 700 !important;
+}
+
+/* Secondary Badges (Slate on Glass) */
+[data-bs-theme="dark"] .badge.bg-secondary,
+[data-theme="dark"] .badge.bg-secondary,
+[data-bs-theme="dark"] .badge.bg-secondary-subtle,
+[data-theme="dark"] .badge.bg-secondary-subtle {
+    background-color: rgba(148, 163, 184, 0.18) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid rgba(148, 163, 184, 0.3) !important;
+}
+
+/* Light & White Badges (Translucent Ice Pill) */
+[data-bs-theme="dark"] .badge.bg-light,
+[data-theme="dark"] .badge.bg-light,
+[data-bs-theme="dark"] .badge.bg-white,
+[data-theme="dark"] .badge.bg-white,
+[data-bs-theme="dark"] .badge.bg-light.text-dark,
+[data-theme="dark"] .badge.bg-light.text-dark,
+[data-bs-theme="dark"] .badge.bg-white.text-dark,
+[data-theme="dark"] .badge.bg-white.text-dark {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+[data-bs-theme="dark"] .badge.bg-light.text-muted,
+[data-theme="dark"] .badge.bg-light.text-muted {
+    color: #cbd5e1 !important;
+}
+
+/* 5. Buttons Contrast in Dark Mode */
+[data-bs-theme="dark"] .btn-warning,
+[data-theme="dark"] .btn-warning {
+    background-color: #f59e0b !important;
+    border-color: #d97706 !important;
+    color: #090d16 !important;
+    font-weight: 700 !important;
+}
+
+[data-bs-theme="dark"] .btn-warning.text-dark,
+[data-theme="dark"] .btn-warning.text-dark,
+[data-bs-theme="dark"] .btn-warning * {
+    color: #090d16 !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-warning,
+[data-theme="dark"] .btn-outline-warning,
+[data-bs-theme="dark"] .btn-outline-warning.text-dark,
+[data-theme="dark"] .btn-outline-warning.text-dark {
+    color: #fbbf24 !important;
+    border-color: rgba(245, 158, 11, 0.6) !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-warning:hover,
+[data-theme="dark"] .btn-outline-warning:hover {
+    background-color: #f59e0b !important;
+    color: #090d16 !important;
+}
+
+[data-bs-theme="dark"] .btn-light,
+[data-theme="dark"] .btn-light {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .btn-light:hover,
+[data-theme="dark"] .btn-light:hover {
+    background-color: rgba(255, 255, 255, 0.16) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* 6. Tables & Lists in Dark Mode */
+[data-bs-theme="dark"] .table,
+[data-theme="dark"] .table,
+[data-bs-theme="dark"] .table-custom,
+[data-theme="dark"] .table-custom {
+    color: #f1f5f9 !important;
+    --bs-table-color: #f1f5f9 !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-border-color: rgba(255, 255, 255, 0.08) !important;
+    --bs-table-hover-color: #ffffff !important;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-bs-theme="dark"] .table th,
+[data-theme="dark"] .table th,
+[data-bs-theme="dark"] .table-custom thead th,
+[data-theme="dark"] .table-custom thead th {
+    background-color: #131d33 !important;
+    color: #94a3b8 !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-bs-theme="dark"] .table td,
+[data-theme="dark"] .table td,
+[data-bs-theme="dark"] .table-custom tbody td,
+[data-theme="dark"] .table-custom tbody td {
+    color: #e2e8f0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+[data-bs-theme="dark"] .table tbody tr:hover,
+[data-theme="dark"] .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 7. Form Controls & Dropdowns */
+[data-bs-theme="dark"] .form-control,
+[data-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select,
+[data-theme="dark"] .form-select {
+    background-color: #131c30 !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus,
+[data-theme="dark"] .form-select:focus {
+    background-color: #17233d !important;
+    border-color: #818cf8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] .form-control::placeholder {
+    color: #64748b !important;
+}
+
+[data-bs-theme="dark"] .input-group-text,
+[data-theme="dark"] .input-group-text {
+    background-color: #17233d !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .dropdown-menu {
+    background-color: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7) !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item,
+[data-theme="dark"] .dropdown-item {
+    color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+    background-color: rgba(99, 102, 241, 0.2) !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .dropdown-divider,
+[data-theme="dark"] .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 8. Modals & Popups in Dark Mode */
+[data-bs-theme="dark"] .modal-content,
+[data-theme="dark"] .modal-content {
+    background-color: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #f8fafc !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-bs-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-header,
+[data-bs-theme="dark"] .modal-footer,
+[data-theme="dark"] .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .btn-close,
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* 9. POS Products & Chatbot in Dark Mode */
+[data-bs-theme="dark"] .pos-product-card,
+[data-theme="dark"] .pos-product-card {
+    background: #111a2e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .pos-product-card:hover,
+[data-theme="dark"] .pos-product-card:hover {
+    border-color: #818cf8 !important;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .bot-bubble,
+[data-theme="dark"] .bot-bubble {
+    background-color: #141e33 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .btn-suggestion,
+[data-theme="dark"] .btn-suggestion {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .btn-suggestion:hover,
+[data-theme="dark"] .btn-suggestion:hover {
+    background: rgba(99, 102, 241, 0.25) !important;
+    border-color: #818cf8 !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .chatbot-input,
+[data-theme="dark"] .chatbot-input {
+    background-color: #101827 !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .chatbot-footer,
+[data-theme="dark"] .chatbot-footer {
+    background-color: #0b1120 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] code,
+[data-theme="dark"] code {
+    background-color: #1e293b !important;
+    color: #a5b4fc !important;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   --- 18. MOBILE PRECISION LAYOUT & ICON ALIGNMENT SYSTEM ---
+   Fixes icon wrapping, overflow, overlapping buttons, and touch usability
+   ========================================================================== */
+
+/* Universal mobile icon centering helper */
+.icon-center {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Ensure all Bootstrap icons inside buttons & badges are vertically centered */
+.btn i.bi,
+.badge i.bi,
+.dock-item i.bi,
+.sidebar-link i.bi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+@media (max-width: 991px) {
+    /* Page Body Bottom Clearance for Dock */
     .page-body {
-        padding: 1rem 0.85rem;
+        padding-bottom: 95px !important;
     }
-}
 
-/* Smartphones & Small Screens (under 768px) */
-@media (max-width: 767.98px) {
+    /* Top Navbar Optimization */
     .top-navbar {
-        padding: 0.5rem 0.65rem;
-        gap: 0.4rem;
+        padding: 0.5rem 0.75rem !important;
+        gap: 0.5rem;
     }
 
-    .search-container {
+    /* Compress Command Palette search so it never breaks line */
+    .cmd-palette-btn {
         width: auto !important;
-        max-width: 140px !important;
-        transition: max-width 0.25s ease;
+        max-width: 170px !important;
+        padding: 0.35rem 0.65rem !important;
+        font-size: 0.8rem !important;
     }
 
-    .search-container:focus-within {
-        max-width: 220px !important;
-    }
-
-    .top-navbar .btn {
-        padding: 0.35rem 0.55rem;
-        font-size: 0.82rem;
-    }
-
-    /* Prevent mobile input zooming on iOS */
-    input[type="text"],
-    input[type="number"],
-    input[type="password"],
-    input[type="search"],
-    select,
-    textarea {
-        font-size: 16px !important;
-    }
-
-    /* Responsive Tables */
-    .table-responsive {
-        border-radius: var(--radius-sm);
-        -webkit-overflow-scrolling: touch;
-        margin-bottom: 1rem;
-        border: 1px solid var(--border-color);
-    }
-
-    .table {
-        font-size: 0.85rem;
-    }
-
-    .table th, .table td {
-        padding: 0.55rem 0.5rem;
-        white-space: nowrap;
-    }
-
-    /* Cards & Spacing */
-    .card {
-        border-radius: var(--radius-sm);
-        margin-bottom: 0.85rem;
-    }
-
-    .card-body {
-        padding: 0.95rem;
-    }
-
-    .card-header {
-        padding: 0.75rem 0.95rem;
-    }
-
-    /* Typography adjustment */
-    h1, .h1 { font-size: 1.55rem; }
-    h2, .h2 { font-size: 1.35rem; }
-    h3, .h3 { font-size: 1.2rem; }
-    h4, .h4 { font-size: 1.1rem; }
-    h5, .h5 { font-size: 1rem; }
-    h6, .h6 { font-size: 0.9rem; }
-
-    /* Button Groups & Actions */
-    .btn-group {
-        flex-wrap: wrap;
-    }
-}
-
-/* Extra Small Mobile Devices (under 576px) */
-@media (max-width: 575.98px) {
-    .chatbot-floating-btn {
-        bottom: 18px;
-        left: 18px;
-        width: 52px;
-        height: 52px;
-    }
-
-    .chatbot-floating-btn .chatbot-floating-icon {
-        font-size: 1.4rem;
-    }
-
-    /* Chatbot window converts into a sleek bottom sheet on small screens */
-    .chatbot-window {
-        position: fixed !important;
-        top: auto !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        max-width: 100vw !important;
-        height: 85vh !important;
-        max-height: 85vh !important;
-        border-radius: 22px 22px 0 0 !important;
-        margin: 0 !important;
-        border-bottom: none !important;
-    }
-
-    .drag-handle-icon {
+    .cmd-badge {
         display: none !important;
     }
 
-    .search-container {
-        max-width: 110px !important;
+    /* Hide redundant desktop-only floating chatbot button when mobile dock is active */
+    #chatbotFloatingBtn {
+        display: none !important;
     }
 
+    /* Sidebar Mobile Full Height Drawer */
+    .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        right: -320px !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        z-index: 1060 !important;
+        box-shadow: -5px 0 35px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .sidebar.open {
+        right: 0 !important;
+    }
+
+    .sidebar-nav {
+        padding-bottom: 90px !important;
+    }
+
+    .sidebar-link {
+        min-height: 44px;
+        padding: 0.7rem 0.9rem !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .sidebar-link i {
+        width: 24px;
+        text-align: center;
+        flex-shrink: 0;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Close Button on Mobile Drawer */
+    #sidebarCloseBtn {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* POS Wrapper on Tablet */
+    .pos-wrapper {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Compact Search Input for Small Phones */
+    .cmd-palette-btn {
+        max-width: 120px !important;
+        padding: 0.35rem 0.5rem !important;
+    }
+
+    .cmd-palette-btn input {
+        font-size: 0.76rem !important;
+    }
+
+    /* Compact Top Navbar Icons */
+    #sidebarToggleBtn {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    #themeToggleBtn {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Compact Cyber AI button on phones */
+    .btn-cyber-ai {
+        padding: 0.35rem 0.65rem !important;
+        font-size: 0.78rem !important;
+    }
+
+    /* AI Scan Station on phones */
+    .ai-scan-station {
+        padding: 1.15rem 1rem !important;
+        border-radius: var(--radius-lg) !important;
+    }
+
+    .neural-core-orb {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    /* Mobile Chatbot Full Width Bottom Sheet */
+    .chatbot-window {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 86vh !important;
+        max-height: 86vh !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
+        border-radius: 24px 24px 0 0 !important;
+        border-bottom: none !important;
+    }
+
+    /* Bento Grid Padding and Value Size on phones */
+    .bento-grid {
+        gap: 0.85rem !important;
+    }
+
+    .bento-luxury-card {
+        padding: 1.15rem !important;
+    }
+
+    .luxury-val {
+        font-size: 1.7rem !important;
+    }
+
+    .luxury-icon-backdrop {
+        font-size: 4rem !important;
+        opacity: 0.05 !important;
+    }
+
+    /* POS 2-Column Catalog Grid on Phones */
     .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.65rem !important;
         padding: 0.65rem !important;
     }
@@ -1161,6 +2184,819 @@ body {
     .pos-product-card {
         padding: 0.65rem !important;
     }
+
+    /* Mobile Floating Dock Alignment & Spacing */
+    .mobile-floating-dock {
+        width: calc(100% - 20px) !important;
+        bottom: 10px !important;
+        padding: 0.35rem 0.5rem !important;
+        gap: 0.35rem !important;
+    }
+
+    .dock-item {
+        font-size: 0.65rem !important;
+        padding: 3px 4px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .dock-item i {
+        font-size: 1.15rem !important;
+        margin-bottom: 2px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .dock-fab-pos {
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 1.25rem !important;
+        margin-top: -20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
 }
 
+
+/* ==========================================================================
+   --- 19. SUBTLE WHITE HOVER MICRO-ANIMATION SYSTEM (Apple / Linear Aesthetic) ---
+   Replaces spinning/rotating lasers with calm, elegant white hover aura
+   ========================================================================== */
+
+/* Universal Card Smooth Transitions */
+.bento-luxury-card,
+.ai-scan-station,
+.ai-recommend-tile,
+.login-card-pro,
+.card-custom,
+.metric-tile,
+.fin-report-container {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.28s ease,
+                box-shadow 0.28s ease !important;
+}
+
+/* Subtle White Border Highlight & Soft Aura on Hover (Dark Mode) */
+.bento-luxury-card:hover,
+.ai-scan-station:hover,
+.ai-recommend-tile:hover,
+.login-card-pro:hover,
+.card-custom:hover,
+.metric-tile:hover {
+    transform: translateY(-3px) !important;
+    border-color: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), 
+                0 0 0 1px rgba(255, 255, 255, 0.22), 
+                0 0 22px rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Light Mode Subtle Lift & White Border Elevation */
+[data-bs-theme="light"] .bento-luxury-card:hover,
+[data-theme="light"] .bento-luxury-card:hover,
+[data-bs-theme="light"] .ai-scan-station:hover,
+[data-theme="light"] .ai-scan-station:hover,
+[data-bs-theme="light"] .login-card-pro:hover,
+[data-theme="light"] .login-card-pro:hover,
+[data-bs-theme="light"] .card-custom:hover,
+[data-theme="light"] .card-custom:hover,
+[data-bs-theme="light"] .metric-tile:hover,
+[data-theme="light"] .metric-tile:hover {
+    border-color: rgba(99, 102, 241, 0.35) !important;
+    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.12),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                0 0 20px rgba(255, 255, 255, 0.5) !important;
+}
+
+
+/* ==========================================================================
+   --- 20. FINANCIAL & LIQUIDITY STATEMENT (تقرير الأرباح والسيولة) ---
+   100% High-Contrast, Harmonious Dark Mode Legibility & Accounting Layout
+   ========================================================================== */
+
+.fin-report-container {
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: var(--radius-lg);
+}
+
+.fin-title-store {
+    color: #f8fafc !important;
+}
+
+.fin-statement-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* Section Header (1. Revenue, 2. COGS, 3. Expenses) */
+.fin-sec-header {
+    background: #141f38 !important;
+    border-top: 2px solid rgba(255, 255, 255, 0.15) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.fin-sec-title {
+    color: #ffffff !important;
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    padding: 0.9rem 1rem !important;
+}
+
+.fin-sec-cur {
+    color: #94a3b8 !important;
+    font-size: 0.8rem !important;
+    padding: 0.9rem 1rem !important;
+}
+
+/* Line Items */
+.fin-row-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    transition: background-color 0.15s ease;
+}
+
+.fin-row-item:hover {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.fin-item-label {
+    color: #f1f5f9 !important;
+    font-size: 0.92rem;
+    padding: 0.85rem 1rem !important;
+}
+
+.fin-item-label small {
+    color: #94a3b8 !important;
+    display: block;
+    margin-top: 2px;
+}
+
+/* High Contrast Operators (+, -, =) */
+.fin-op-cell {
+    width: 50px;
+    vertical-align: middle;
+}
+
+.fin-op {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.fin-op-plus {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.fin-op-minus {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.fin-op-equals {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+.fin-item-num {
+    font-family: var(--font-num);
+    font-size: 1.05rem;
+    padding: 0.85rem 1rem !important;
+}
+
+/* Subtotal Rows */
+.fin-row-subtotal {
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.fin-subtotal-revenue {
+    background: rgba(99, 102, 241, 0.14) !important;
+    color: #ffffff !important;
+}
+
+.fin-subtotal-revenue strong {
+    color: #ffffff !important;
+}
+
+.fin-subtotal-gross {
+    background: rgba(16, 185, 129, 0.16) !important;
+    color: #ffffff !important;
+}
+
+.fin-subtotal-expenses {
+    background: rgba(239, 68, 68, 0.14) !important;
+    color: #ffffff !important;
+}
+
+/* Grand Net Operating Profit Row (Default / Dark Mode) */
+.fin-row-grand-profit {
+    border-top: 2px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.fin-row-grand-profit.profit-positive {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 182, 212, 0.18) 100%) !important;
+    border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+.fin-row-grand-profit.profit-negative {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.18) 100%) !important;
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+.fin-grand-title {
+    color: #ffffff;
+}
+
+.fin-grand-desc {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.fin-grand-curr {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.fin-grand-amount {
+    font-family: var(--font-num);
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    padding: 0.95rem 1rem !important;
+}
+
+/* Informational Notes Box */
+.fin-note-box {
+    background: #111a2f !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #cbd5e1 !important;
+}
+
+.fin-note-box strong {
+    color: #f8fafc !important;
+}
+
+.fin-kpi-sub {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.fin-kpi-icon-box {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* Light Theme Overrides for Financial Report */
+[data-bs-theme="light"] .fin-report-container,
+[data-theme="light"] .fin-report-container {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+[data-bs-theme="light"] .fin-title-store,
+[data-theme="light"] .fin-title-store {
+    color: #0f172a !important;
+}
+
+[data-bs-theme="light"] .fin-sec-header,
+[data-theme="light"] .fin-sec-header {
+    background: #f1f5f9 !important;
+    border-top: 2px solid #cbd5e1 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-bs-theme="light"] .fin-sec-title,
+[data-theme="light"] .fin-sec-title {
+    color: #0f172a !important;
+}
+
+[data-bs-theme="light"] .fin-sec-cur,
+[data-theme="light"] .fin-sec-cur {
+    color: #64748b !important;
+}
+
+[data-bs-theme="light"] .fin-row-item:hover,
+[data-theme="light"] .fin-row-item:hover {
+    background-color: rgba(15, 23, 42, 0.03) !important;
+}
+
+[data-bs-theme="light"] .fin-item-label,
+[data-theme="light"] .fin-item-label {
+    color: #0f172a !important;
+}
+
+[data-bs-theme="light"] .fin-item-label small,
+[data-theme="light"] .fin-item-label small {
+    color: #64748b !important;
+}
+
+[data-bs-theme="light"] .fin-row-item,
+[data-theme="light"] .fin-row-item {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+[data-bs-theme="light"] .fin-subtotal-revenue,
+[data-theme="light"] .fin-subtotal-revenue {
+    background: #eef2ff !important;
+    color: #1e1b4b !important;
+}
+
+[data-bs-theme="light"] .fin-subtotal-revenue strong,
+[data-theme="light"] .fin-subtotal-revenue strong {
+    color: #1e1b4b !important;
+}
+
+[data-bs-theme="light"] .fin-subtotal-gross,
+[data-theme="light"] .fin-subtotal-gross {
+    background: #ecfdf5 !important;
+    color: #064e3b !important;
+}
+
+[data-bs-theme="light"] .fin-subtotal-gross strong,
+[data-theme="light"] .fin-subtotal-gross strong {
+    color: #064e3b !important;
+}
+
+[data-bs-theme="light"] .fin-subtotal-expenses,
+[data-theme="light"] .fin-subtotal-expenses {
+    background: #fef2f2 !important;
+    color: #7f1d1d !important;
+}
+
+[data-bs-theme="light"] .fin-subtotal-expenses strong,
+[data-theme="light"] .fin-subtotal-expenses strong {
+    color: #7f1d1d !important;
+}
+
+/* Light Mode Positive Operating Profit */
+[data-bs-theme="light"] .fin-row-grand-profit.profit-positive,
+[data-theme="light"] .fin-row-grand-profit.profit-positive {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%) !important;
+    border: 2px solid #a7f3d0 !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-title,
+[data-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-title {
+    color: #065f46 !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-desc,
+[data-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-desc {
+    color: #047857 !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-curr,
+[data-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-curr {
+    color: #065f46 !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-amount,
+[data-theme="light"] .fin-row-grand-profit.profit-positive .fin-grand-amount {
+    color: #059669 !important;
+}
+
+/* Light Mode Operating Loss (العجز التشغيلي) */
+[data-bs-theme="light"] .fin-row-grand-profit.profit-negative,
+[data-theme="light"] .fin-row-grand-profit.profit-negative {
+    background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%) !important;
+    border: 2px solid #fecdd3 !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-title,
+[data-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-title {
+    color: #991b1b !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-desc,
+[data-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-desc {
+    color: #b91c1c !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-curr,
+[data-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-curr {
+    color: #991b1b !important;
+}
+
+[data-bs-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-amount,
+[data-theme="light"] .fin-row-grand-profit.profit-negative .fin-grand-amount {
+    color: #dc2626 !important;
+}
+
+[data-bs-theme="light"] .fin-kpi-sub,
+[data-theme="light"] .fin-kpi-sub {
+    color: #64748b !important;
+}
+
+[data-bs-theme="light"] .surface-indigo .fin-kpi-icon-box,
+[data-theme="light"] .surface-indigo .fin-kpi-icon-box {
+    background: #eef2ff !important;
+    color: #4f46e5 !important;
+}
+
+[data-bs-theme="light"] .surface-cyan .fin-kpi-icon-box,
+[data-theme="light"] .surface-cyan .fin-kpi-icon-box {
+    background: #ecfeff !important;
+    color: #0891b2 !important;
+}
+
+[data-bs-theme="light"] .surface-crimson .fin-kpi-icon-box,
+[data-theme="light"] .surface-crimson .fin-kpi-icon-box {
+    background: #fff1f2 !important;
+    color: #e11d48 !important;
+}
+
+[data-bs-theme="light"] .hero-profit-card .fin-kpi-icon-box,
+[data-theme="light"] .hero-profit-card .fin-kpi-icon-box {
+    background: #faf5ff !important;
+    color: #7c3aed !important;
+}
+
+[data-bs-theme="light"] .fin-note-box,
+[data-theme="light"] .fin-note-box {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #475569 !important;
+}
+
+[data-bs-theme="light"] .fin-note-box strong,
+[data-theme="light"] .fin-note-box strong {
+    color: #0f172a !important;
+}
+
+
+/* ==========================================================================
+   --- 21. LIGHT MODE HARMONY & OPERATIONAL TABLES (الرئيسية والتحليلات وجداول العمليات) ---
+   100% Balanced, Clean, High-Contrast Daytime Aesthetic
+   ========================================================================== */
+
+/* Universal Adaptive Classes (Default / Dark Mode) */
+.op-card-title {
+    color: #f8fafc;
+}
+
+.bento-card-sub {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.bento-card-divider {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ai-station-title {
+    color: #ffffff;
+}
+
+.ai-station-sub {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.bento-badge-live {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ai-recommend-tile {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-action-box {
+    background: rgba(15, 23, 42, 0.6);
+    color: #f8fafc;
+}
+
+.ai-decision-action-box {
+    background: rgba(15, 23, 42, 0.7);
+    color: #f8fafc;
+}
+
+.ai-decision-rationale-box {
+    background: rgba(30, 41, 59, 0.4);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-decision-history-box {
+    background: rgba(15, 23, 42, 0.6);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-decision-input {
+    background: rgba(15, 23, 42, 0.6) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.btn-filter-neutral {
+    background: transparent;
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-filter-neutral:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+/* Dashboard Operational Tables (نقص المخزون، تنبيهات الصلاحية، السلع الأكثر مبيعاً) */
+.dashboard-op-table {
+    --bs-table-bg: transparent;
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.04);
+    color: inherit;
+}
+
+.dashboard-op-table thead tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-op-table thead th {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.55rem 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: transparent;
+    border: none;
+}
+
+.dashboard-op-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.15s ease;
+}
+
+.dashboard-op-table tbody td {
+    padding: 0.65rem 0.5rem;
+    vertical-align: middle;
+    background: transparent;
+    border: none;
+}
+
+.dashboard-op-table .op-item-name {
+    color: #f8fafc;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.dashboard-op-table .op-item-sub {
+    color: #94a3b8;
+    font-size: 0.76rem;
+    display: block;
+}
+
+.dashboard-op-table .op-item-meta {
+    color: #cbd5e1;
+    font-size: 0.84rem;
+}
+
+/* ==========================================================================
+   --- LIGHT MODE HARMONY OVERRIDES (الوضع النهاري المتناسق) ---
+   ========================================================================== */
+[data-bs-theme="light"],
+[data-theme="light"] {
+
+    /* Cards & Glass Surfaces */
+    .bento-luxury-card {
+        color: #0f172a !important;
+        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
+    }
+
+    .surface-dark-slate {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+
+    .surface-indigo {
+        background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%) !important;
+        border: 1px solid #c7d2fe !important;
+        color: #0f172a !important;
+    }
+
+    .surface-emerald {
+        background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%) !important;
+        border: 1px solid #a7f3d0 !important;
+        color: #0f172a !important;
+    }
+
+    .surface-cyan {
+        background: linear-gradient(135deg, #ffffff 0%, #ecfeff 100%) !important;
+        border: 1px solid #a5f3fc !important;
+        color: #0f172a !important;
+    }
+
+    .surface-crimson {
+        background: linear-gradient(135deg, #ffffff 0%, #fff1f2 100%) !important;
+        border: 1px solid #fecdd3 !important;
+        color: #0f172a !important;
+    }
+
+    .hero-profit-card {
+        background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%) !important;
+        border: 1px solid #e9d5ff !important;
+        color: #0f172a !important;
+    }
+
+    .ai-scan-station {
+        background: linear-gradient(135deg, #ffffff 0%, #fbfbfe 50%, #f5f3ff 100%) !important;
+        border: 1px solid #ddd6fe !important;
+        color: #0f172a !important;
+        box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.08) !important;
+    }
+
+    .ai-scan-station::before {
+        background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.06) 0%, transparent 40%) !important;
+    }
+
+    /* Headings, Subtitles and Dividers */
+    .op-card-title {
+        color: #0f172a !important;
+    }
+
+    .bento-card-sub {
+        color: #64748b !important;
+    }
+
+    .bento-card-divider {
+        border-color: #e2e8f0 !important;
+    }
+
+    .ai-station-title {
+        color: #0f172a !important;
+    }
+
+    .ai-station-sub {
+        color: #475569 !important;
+    }
+
+    .bento-badge-live {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    /* Big Numeric Typography in Light Mode */
+    .luxury-val.val-white {
+        background: none !important;
+        -webkit-text-fill-color: #0f172a !important;
+        color: #0f172a !important;
+    }
+
+    .luxury-val.val-indigo {
+        background: none !important;
+        -webkit-text-fill-color: #4338ca !important;
+        color: #4338ca !important;
+    }
+
+    .luxury-val.val-emerald {
+        background: none !important;
+        -webkit-text-fill-color: #047857 !important;
+        color: #047857 !important;
+    }
+
+    .luxury-val.val-cyan {
+        background: none !important;
+        -webkit-text-fill-color: #0e7490 !important;
+        color: #0e7490 !important;
+    }
+
+    .luxury-val.val-crimson {
+        background: none !important;
+        -webkit-text-fill-color: #be123c !important;
+        color: #be123c !important;
+    }
+
+    .hero-profit-value {
+        background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #c026d3 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+    }
+
+    /* Icon Watermarks & Backdrops */
+    .luxury-icon-backdrop {
+        color: #0f172a !important;
+        opacity: 0.04 !important;
+    }
+
+    .bento-luxury-card:hover .luxury-icon-backdrop {
+        opacity: 0.08 !important;
+    }
+
+    /* Metric Tile Icon Boxes */
+    .metric-tile-icon.indigo {
+        background: #eef2ff !important;
+        color: #4f46e5 !important;
+    }
+
+    .metric-tile-icon.emerald {
+        background: #ecfdf5 !important;
+        color: #059669 !important;
+    }
+
+    .metric-tile-icon.cyan {
+        background: #ecfeff !important;
+        color: #0891b2 !important;
+    }
+
+    .metric-tile-icon.crimson {
+        background: #fff1f2 !important;
+        color: #e11d48 !important;
+    }
+
+    /* AI Recommendations in Dashboard */
+    .ai-recommend-tile {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+
+    .ai-action-box {
+        background: #f1f5f9 !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+
+    /* Intelligence Decision Center Boxes */
+    .ai-decision-action-box {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
+        border-left: 3px solid var(--neural-indigo) !important;
+    }
+
+    .ai-decision-rationale-box {
+        background: #f8fafc !important;
+        color: #334155 !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .ai-decision-history-box {
+        background: #f8fafc !important;
+        color: #475569 !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .ai-decision-input {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    .ai-decision-input::placeholder {
+        color: #94a3b8 !important;
+    }
+
+    .btn-filter-neutral {
+        background: #ffffff !important;
+        color: #475569 !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    .btn-filter-neutral:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+
+    /* Operational Tables (نقص المخزون، تنبيهات الصلاحية، السلع الأكثر مبيعاً) in Light Mode */
+    .dashboard-op-table {
+        --bs-table-hover-bg: rgba(15, 23, 42, 0.03);
+        color: #0f172a;
+    }
+
+    .dashboard-op-table thead tr {
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .dashboard-op-table thead th {
+        color: #64748b !important;
+    }
+
+    .dashboard-op-table tbody tr {
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .dashboard-op-table .op-item-name {
+        color: #0f172a !important;
+        font-weight: 700 !important;
+    }
+
+    .dashboard-op-table .op-item-sub {
+        color: #64748b !important;
+    }
+
+    .dashboard-op-table .op-item-meta {
+        color: #475569 !important;
+    }
+}
 

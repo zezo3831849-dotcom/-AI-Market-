@@ -1,4 +1,5 @@
-// AI-Powered Market Manager - Global Application Scripts & Offline Sync Manager
+// AI-Powered Market Manager - Next-Generation Global Application Controller (new_gui_market)
+// Inspirations: Skiper UI, Vengeance UI, 21st.dev, Animmaster Lib, Sitereel.ai
 
 const OfflineManager = {
     STORAGE_KEY: 'market_offline_sales_queue',
@@ -21,8 +22,8 @@ const OfflineManager = {
         }
         if (statusBadge) {
             statusBadge.innerHTML = isOnline 
-                ? '<span class="badge bg-success-subtle text-success border border-success"><i class="bi bi-wifi"></i> متصل بالخادم</span>'
-                : '<span class="badge bg-warning-subtle text-warning border border-warning"><i class="bi bi-wifi-off"></i> غير متصل (أوفلاين)</span>';
+                ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill py-1 px-3 d-inline-flex align-items-center gap-2"><span class="radar-pulse-box"><span class="radar-pulse-ring"></span><span class="radar-pulse-dot"></span></span> متصل بالخادم</span>'
+                : '<span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill py-1 px-3 d-inline-flex align-items-center gap-1"><i class="bi bi-wifi-off"></i> غير متصل (أوفلاين)</span>';
         }
     },
 
@@ -75,7 +76,7 @@ const OfflineManager = {
         if (queue.length === 0) return;
 
         try {
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            const csrfToken = getCsrfToken();
             const res = await fetch('/sales/api/sync-offline/', {
                 method: 'POST',
                 headers: {
@@ -101,8 +102,10 @@ const OfflineManager = {
     showToast(title, message, type = 'info') {
         const toastEl = document.getElementById('liveToast');
         if (!toastEl) return;
-        document.getElementById('toastTitle').innerText = title;
-        document.getElementById('toastBody').innerText = message;
+        const titleEl = document.getElementById('toastTitle');
+        const bodyEl = document.getElementById('toastBody');
+        if (titleEl) titleEl.innerText = title;
+        if (bodyEl) bodyEl.innerText = message;
         toastEl.className = `toast align-items-center text-bg-${type} border-0`;
         const toast = new bootstrap.Toast(toastEl);
         toast.show();
@@ -153,22 +156,21 @@ const MobileNavManager = {
         if (!sidebar) return;
 
         const openSidebar = () => {
-            sidebar.classList.add('show-mobile');
+            sidebar.classList.add('open');
             if (backdrop) backdrop.classList.add('show');
-            document.body.classList.add('sidebar-open-mobile');
+            document.body.classList.add('overflow-hidden');
         };
 
         const closeSidebar = () => {
-            sidebar.classList.remove('show-mobile');
+            sidebar.classList.remove('open');
             if (backdrop) backdrop.classList.remove('show');
-            document.body.classList.remove('sidebar-open-mobile');
+            document.body.classList.remove('overflow-hidden');
         };
 
         if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
         if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
         if (backdrop) backdrop.addEventListener('click', closeSidebar);
 
-        // Auto-close sidebar on mobile when a link is clicked
         sidebar.querySelectorAll('.sidebar-link').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth < 992) {
@@ -177,74 +179,75 @@ const MobileNavManager = {
             });
         });
 
-        // Close on Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && sidebar.classList.contains('show-mobile')) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
                 closeSidebar();
             }
         });
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    ThemeManager.init();
-    OfflineManager.init();
-    MobileNavManager.init();
-
-    // Register PWA Service Worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+// Animmaster Lib & 21st.dev Mouse Spotlight Tracker
+const SpotlightTracker = {
+    init() {
+        const cards = document.querySelectorAll('.spotlight-card, .bento-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
     }
+};
 
-    // Quick Search Input
-    const searchInput = document.getElementById('globalQuickSearch');
-    const searchDropdown = document.getElementById('globalSearchResults');
+// 21st.dev Animated Number Ticker
+const NumberTicker = {
+    init() {
+        const elements = document.querySelectorAll('.num-ticker');
+        elements.forEach(el => {
+            const raw = parseFloat(el.getAttribute('data-val') || el.innerText.replace(/[^0-9.-]+/g, ''));
+            if (isNaN(raw)) return;
 
-    if (searchInput && searchDropdown) {
-        let debounceTimer;
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            const query = e.target.value.trim();
-            if (query.length < 2) {
-                searchDropdown.style.display = 'none';
-                return;
-            }
+            let start = 0;
+            const duration = 1200;
+            const startTime = performance.now();
 
-            debounceTimer = setTimeout(async () => {
-                try {
-                    const res = await fetch(`/quick-search/?q=${encodeURIComponent(query)}`);
-                    const data = await res.json();
-                    if (data.results && data.results.length > 0) {
-                        searchDropdown.innerHTML = data.results.map(r => `
-                            <a href="${r.url}" class="dropdown-item py-2 border-bottom">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-primary-subtle text-primary">${r.type}</span>
-                                    <strong class="text-truncate" style="max-width: 250px;">${r.title}</strong>
-                                </div>
-                                <div class="small text-muted text-truncate">${r.subtitle}</div>
-                            </a>
-                        `).join('');
-                        searchDropdown.style.display = 'block';
-                    } else {
-                        searchDropdown.innerHTML = '<div class="p-3 text-center text-muted small">لا توجد نتائج مطابقة</div>';
-                        searchDropdown.style.display = 'block';
-                    }
-                } catch (err) {
-                    console.error(err);
+            const step = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out expo
+                const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                const currentVal = (raw * easeProgress).toFixed(2);
+                
+                el.innerText = Number(currentVal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
                 }
-            }, 250);
+            };
+            requestAnimationFrame(step);
         });
+    }
+};
 
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
-                searchDropdown.style.display = 'none';
+// Skiper UI Command Palette Keyboard Listener
+const CommandPalette = {
+    init() {
+        const searchInput = document.getElementById('globalQuickSearch');
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
             }
         });
     }
-
-    // Initialize AI Market Assistant Chatbot
-    ChatbotController.init();
-});
+};
 
 // CSRF Token Helper
 function getCsrfToken() {
@@ -273,6 +276,7 @@ const ChatbotController = {
     init() {
         this.navbarBtn = document.getElementById('navbarChatbotBtn');
         this.floatingBtn = document.getElementById('chatbotFloatingBtn');
+        this.dockBtn = document.getElementById('dockChatbotBtn');
         this.windowEl = document.getElementById('chatbotWindow');
         this.closeBtn = document.getElementById('chatbotCloseBtn');
         this.minimizeBtn = document.getElementById('chatbotMinimizeBtn');
@@ -300,7 +304,6 @@ const ChatbotController = {
         this.initDraggable();
         this.loadStoredChat();
 
-        // Listen for storage changes across tabs or pages
         window.addEventListener('storage', (e) => {
             if (e.key === this.STORAGE_KEY) {
                 this.loadStoredChat();
@@ -363,6 +366,13 @@ const ChatbotController = {
 
         if (this.floatingBtn) {
             this.floatingBtn.addEventListener('click', () => this.toggle());
+        }
+
+        if (this.dockBtn) {
+            this.dockBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggle();
+            });
         }
 
         if (this.minimizeBtn) {
@@ -444,12 +454,10 @@ const ChatbotController = {
         let initialLeft = 0, initialTop = 0;
 
         const onStart = (clientX, clientY, target) => {
-            // Ignore if clicked on header buttons, links or form controls
             if (target.closest('button') || target.closest('a') || target.closest('input')) {
                 return;
             }
 
-            // Mobile devices dock at bottom, keep desktop dragging only
             if (window.innerWidth <= 576) {
                 return;
             }
@@ -479,7 +487,6 @@ const ChatbotController = {
             let newLeft = initialLeft + dx;
             let newTop = initialTop + dy;
 
-            // Bounds checking (stay fully visible inside viewport)
             const winWidth = this.windowEl.offsetWidth;
             const winHeight = this.windowEl.offsetHeight;
             const maxLeft = Math.max(10, window.innerWidth - winWidth - 10);
@@ -499,7 +506,6 @@ const ChatbotController = {
             }
         };
 
-        // Mouse listeners
         header.addEventListener('mousedown', (e) => {
             onStart(e.clientX, e.clientY, e.target);
         });
@@ -515,7 +521,6 @@ const ChatbotController = {
             onEnd();
         });
 
-        // Touch listeners
         header.addEventListener('touchstart', (e) => {
             if (e.touches && e.touches.length === 1) {
                 onStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
@@ -615,11 +620,9 @@ const ChatbotController = {
         typingDiv.id = 'chatbotTypingIndicator';
         typingDiv.className = 'chat-message bot-message mb-2';
         typingDiv.innerHTML = `
-            <div class="message-bubble bot-bubble text-muted">
-                <span class="typing-dots">
-                    <span></span><span></span><span></span>
-                </span>
-                <small class="ms-1">المساعد يبحث ويحلل...</small>
+            <div class="message-bubble bot-bubble text-muted d-flex align-items-center gap-2">
+                <span class="spinner-grow spinner-grow-sm text-primary" role="status"></span>
+                <small class="fw-semibold">المساعد يحلل بيانات المتجر عبر Gemini Pro...</small>
             </div>
         `;
         this.messagesContainer.appendChild(typingDiv);
@@ -744,7 +747,7 @@ const ChatbotController = {
         let cardHtml = '';
         if (data.card) {
             cardHtml = `
-                <div class="chat-action-card shadow-sm mt-2">
+                <div class="chat-action-card shadow-sm mt-2 p-3 bg-light rounded-3 border">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <i class="bi ${data.card.icon || 'bi-box-seam'} text-primary fs-5"></i>
                         <strong class="fs-7">${data.card.title}</strong>
@@ -824,3 +827,66 @@ const ChatbotController = {
     }
 };
 
+// Global Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    ThemeManager.init();
+    OfflineManager.init();
+    MobileNavManager.init();
+    SpotlightTracker.init();
+    NumberTicker.init();
+    CommandPalette.init();
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+    }
+
+    // Quick Search Input
+    const searchInput = document.getElementById('globalQuickSearch');
+    const searchDropdown = document.getElementById('globalSearchResults');
+
+    if (searchInput && searchDropdown) {
+        let debounceTimer;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            const query = e.target.value.trim();
+            if (query.length < 2) {
+                searchDropdown.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch(`/quick-search/?q=${encodeURIComponent(query)}`);
+                    const data = await res.json();
+                    if (data.results && data.results.length > 0) {
+                        searchDropdown.innerHTML = data.results.map(r => `
+                            <a href="${r.url}" class="dropdown-item py-2 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary-subtle text-primary">${r.type}</span>
+                                    <strong class="text-truncate" style="max-width: 250px;">${r.title}</strong>
+                                </div>
+                                <div class="small text-muted text-truncate">${r.subtitle}</div>
+                            </a>
+                        `).join('');
+                        searchDropdown.style.display = 'block';
+                    } else {
+                        searchDropdown.innerHTML = '<div class="p-3 text-center text-muted small">لا توجد نتائج مطابقة</div>';
+                        searchDropdown.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }, 250);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.style.display = 'none';
+            }
+        });
+    }
+
+    // Initialize AI Market Assistant Chatbot
+    ChatbotController.init();
+});
